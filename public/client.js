@@ -13,11 +13,11 @@ const mediaConstraints = {
   audio: true,
   video: { width: 1280, height: 720 },
 }
-let localStream
-let remoteStream
-let isRoomCreator
-let rtcPeerConnection // Connection between the local device and the remote peer.
-let roomId
+var localStream
+var remoteStream
+var isRoomCreator
+var rtcPeerConnection // Connection between the local device and the remote peer.
+var roomId
 
 // Free public STUN servers provided by Google.
 const iceServers = {
@@ -41,6 +41,7 @@ socket.on('room_created', async () => {
 
   await setLocalStream(mediaConstraints)
   isRoomCreator = true
+  console.log("room_created over")
 })
 
 socket.on('room_joined', async () => {
@@ -73,7 +74,7 @@ function showVideoConference() {
 }
 
 async function setLocalStream(mediaConstraints) {
-  let stream
+  var stream
   try {
     stream = await navigator.mediaDevices.getUserMedia(mediaConstraints)
   } catch (error) {
@@ -135,7 +136,7 @@ socket.on('start_call', async () => {
   }
   
   async function createOffer(rtcPeerConnection) {
-    let sessionDescription
+    var sessionDescription
     try {
       sessionDescription = await rtcPeerConnection.createOffer()
       rtcPeerConnection.setLocalDescription(sessionDescription)
@@ -151,7 +152,7 @@ socket.on('start_call', async () => {
   }
   
   async function createAnswer(rtcPeerConnection) {
-    let sessionDescription
+    var sessionDescription
     try {
       sessionDescription = await rtcPeerConnection.createAnswer()
       rtcPeerConnection.setLocalDescription(sessionDescription)
