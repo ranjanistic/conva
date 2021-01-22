@@ -7,6 +7,7 @@ const videoChatContainer = document.getElementById('video-chat-container')
 const localVideoComponent = document.getElementById('local-video')
 const remoteVideoComponent = document.getElementById('remote-video')
 
+
 // Variables.
 const socket = io()
 const mediaConstraints = {
@@ -31,9 +32,9 @@ const iceServers = {
 }
 
 // BUTTON LISTENER ============================================================
-connectButton.addEventListener('click', () => {
+connectButton.onclick=_=>{
   joinRoom(roomInput.value)
-})
+}
 
 // SOCKET EVENT CALLBACKS =====================================================
 socket.on('room_created', async () => {
@@ -169,6 +170,7 @@ socket.on('start_call', async () => {
   
   function setRemoteStream(event) {
     remoteVideoComponent.srcObject = event.streams[0]
+    console.log(event.stream);
     remoteStream = event.stream
   }
   
@@ -182,3 +184,6 @@ socket.on('start_call', async () => {
     }
   }
   
+  window.onunload=_=>{
+    
+  }
