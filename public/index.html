@@ -2,32 +2,20 @@
 <html lang="en">
   <head>
     <title>Conva</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="main.css" />
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
-
   <body>
-
-    <div id="room-selection-container" class="centered">
-      <h1>WebRTC video conference</h1>
-      <label>Enter the room ID</label>
-      <input id="room-input" type="text" />
-      <button id="connect-button">CONNECT</button>
-    </div>
-
-    <div id="video-chat-container" class="video-position" style="display: none">
-      <video id="local-video" autoplay="autoplay"></video>
-      <div id="others">
-        <video id="remote-video" autoplay="autoplay"></video>
-      </div>
-    </div>
-
-    <button id="toggleVideo">Toggle Video</button>
-    <button id="toggleAudio">Toggle Audio</button>
-    <button id="endCall">End Call</button>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="client.js"></script>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   </body>
 </html>
