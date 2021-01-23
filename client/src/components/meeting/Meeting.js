@@ -1,35 +1,33 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { logoutUser } from "../../actions/authActions";
+import { leaveMeeting } from "../../actions/meetActions";
 
-class Dashboard extends Component {
-  onLogoutClick = (e) => {
+class Meeting extends Component {
+  onLeaveClick = (e) => {
     e.preventDefault();
-    this.props.logoutUser();
+    this.props.leaveMeeting();
   };
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.meet.isActive) {
+      this.props.history.push("/dashboard"); // push user to dashboard when they login
+    }
+    if (nextProps.errors) {
+      this.setState({
+        errors: nextProps.errors,
+      });
+    }
+  }
   render() {
     const { user } = this.props.auth;
+    // const { meet } = this.props;
     return (
       <div style={{ height: "75vh" }} className="container valign-wrapper">
         <div className="row">
           <div className="col s12 center-align">
             <h4>
-              <b>Hello</b> {user.name.split(" ")[0]}
+              In Meeting room as {user.name}
             </h4>
-            <div className="col s6">
-            <Link
-              to="/meeting"
-              className="btn btn-large waves-effect waves-light blue accent-3"
-              style={{
-                borderRadius: "3px",
-                fontFamily: "Questrial",
-              }}
-            >
-              Meeting
-            </Link>
-          </div>
             <button
               style={{
                 width: "150px",
@@ -37,10 +35,10 @@ class Dashboard extends Component {
                 letterSpacing: "1.5px",
                 marginTop: "1rem",
               }}
-              onClick={this.onLogoutClick}
+              onClick={this.onLeaveClick}
               className="btn btn-large waves-effect waves-light hoverable blue accent-3"
             >
-              Logout
+              Leave
             </button>
           </div>
         </div>
@@ -49,11 +47,14 @@ class Dashboard extends Component {
   }
 }
 
-Dashboard.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
+Meeting.propTypes = {
+  leaveMeeting: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  meet:PropTypes.object.isRequired
 };
+
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  meet: state.meet
 });
-export default connect(mapStateToProps, { logoutUser })(Dashboard);
+export default connect(mapStateToProps, { leaveMeeting })(Meeting);

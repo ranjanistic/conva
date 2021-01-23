@@ -10,24 +10,21 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
-// Check for token to keep user logged in
-if (localStorage.jwtToken) {
-  // Set auth token header auth
-  const token = localStorage.jwtToken;
+import Meeting from "./components/meeting/Meeting";
+import {Key} from "./keys";
+
+const token = localStorage.getItem(Key.sessionToken);
+if (token) {
   setAuthToken(token);
-  // Decode token and get user info and exp
   const decoded = jwt_decode(token);
-  // Set user and isAuthenticated
   store.dispatch(setCurrentUser(decoded));
-// Check for expired token
   const currentTime = Date.now() / 1000; // to get in milliseconds
   if (decoded.exp < currentTime) {
-    // Logout user
     store.dispatch(logoutUser());
-    // Redirect to login
     window.location.href = "./login";
   }
 }
+
 class App extends Component {
   render() {
     return (
@@ -39,6 +36,7 @@ class App extends Component {
             <Route exact path="/login" component={Login} />
             <Switch>
               <PrivateRoute exact path="/dashboard" component={Dashboard} />
+              <PrivateRoute exact path="/meeting" component={Meeting} />
             </Switch>
           </div>
         </Router>

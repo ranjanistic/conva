@@ -3,10 +3,11 @@ const express = require('express'),
   server = require('http').createServer(app),
   bodyParser = require('body-parser'),
   // io = require('socket.io')(server),
+  jwt = require("jsonwebtoken"),
   helmet = require("helmet");
 
-app.use(bodyParser.json());
 app.use(helmet());
+app.use(bodyParser.json());
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (roomId) => {
@@ -51,6 +52,35 @@ app.use(helmet());
 //     socket.broadcast.to(event.roomId).emit('webrtc_ice_candidate', event)
 //   })
 // })
+
+// app.use("/auth",require('routes/auth.js'))
+// app.use("/room",require('routes/room.js'))
+
+app.post("/auth/login",(req,res)=>{
+  console.log(req.body);
+  let data = {
+    success:true,
+    token:jwt.sign({
+      id: "23874923847",
+      name: "Priyanshu"
+    },'secret'),
+  };
+  console.log(data);
+  res.json(data);
+});
+
+app.post("/auth/signup",(req,res)=>{
+  console.log(req.body);
+  let data = {
+    success:true,
+    token:jwt.sign({
+      id: "23874923847",
+      name: "Priyanshu"
+    },'secret'),
+  };
+  console.log(data);
+  res.json(data);
+});
 
 const server_port = process.env.PORT|| 5000 || 80;
 const server_host = '0.0.0.0' || 'localhost';
