@@ -65,7 +65,7 @@ app.post("/auth/login",(req,res)=>{
     success:true,
     token:jwt.sign({
       id: "23874923847",
-      name: "Priyanshu"
+      name: "Developer"
     },'secret'),
   };
   console.log(data);
@@ -89,6 +89,6 @@ const server_port = process.env.PORT|| 5000 || 80;
 const server_host = '0.0.0.0' || 'localhost';
 
 server.listen(server_port, server_host, ()=>{ 
-  console.log(`Server on ${server_port}`);
+  console.log(`Server on ${server_host}:${server_port}`);
 });
 
