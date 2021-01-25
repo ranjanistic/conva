@@ -6,11 +6,13 @@ on:
     paths-ignore:
       - "client/**"
       - "test/**"
+      - ".github/workflows/**"
   pull_request:
     branches: [ main ]
     paths-ignore: 
       - "client/**"
       - "test/**"
+      - ".github/workflows/**"
 
 jobs:
   deploy:
