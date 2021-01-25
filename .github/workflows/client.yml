@@ -16,18 +16,25 @@ on:
 jobs:
   build_deploy:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
     steps:
-      - name: Build
-        run: |
-          ls
-          cd.. && cd client
-          ls
-          npm run build
-      - uses: actions/checkout@v2
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CONVAMEET }}'
-          projectId: convameet
-        env:
-          FIREBASE_CLI_PREVIEWS: hostingchannels
+    - uses: actions/checkout@v2
+    - name: Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build
+      run: |
+        npm run client-install
+        npm run client-build
+    - uses: actions/checkout@v2
+    - uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CONVAMEET }}'
+        projectId: convameet
+      env:
+        FIREBASE_CLI_PREVIEWS: hostingchannels

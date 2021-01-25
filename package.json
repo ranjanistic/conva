@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "client-install": "npm install --prefix client",
-    "client-build": "cd client && npm run build",
+    "client-build": "npm run build --prefix client",
     "client-deploy": "npm run deploy --prefix client",
     "heroku-prebuild": "npm install pm2 -g",
     "start": "pm2-runtime start ecosystem.config.js --env production",
