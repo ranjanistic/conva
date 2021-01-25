@@ -7,17 +7,21 @@ on:
     branches: [ main ]
     paths:
       - "client/**"
+      - ".github/workflows/client.yml"
   pull_request:
     branches: [ main ]
     paths: 
       - "client/**"
+      - ".github/workflows/client.yml"
 jobs:
   build_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Build
         run: |
-          cd client
+          ls
+          cd.. && cd client
+          ls
           npm run build
       - uses: actions/checkout@v2
       - uses: FirebaseExtended/action-hosting-deploy@v0
