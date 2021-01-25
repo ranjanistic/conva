@@ -49,7 +49,7 @@ class Landing extends Component {
                 fontFamily: "Questrial",
               }}
             >
-              Signup
+            Signup
             </Link>
           </div>
           <div className="col s6">
