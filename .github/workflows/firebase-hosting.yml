@@ -12,7 +12,7 @@ on:
     paths: 
       - "client/**"
 jobs:
-  build_and_preview:
+  build_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Build
