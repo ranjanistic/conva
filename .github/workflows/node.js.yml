@@ -32,4 +32,4 @@ jobs:
     - name: Unshallowing
       run: git fetch --all --unshallow
     - name: Final Deploy
-      run: git push heroku main
+      run: git push --force heroku main
