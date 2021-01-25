@@ -1,18 +1,19 @@
+# Deployment workflow
 name: Backend Deploy
 
 on:
   push:
+    branches: [ main ]
     paths: 
       - "!client/**"
       - "!docs/**"
       - "!**.md"
-    branches: [ main ]
   pull_request:
+    branches: [ main ]
     paths: 
       - "!client/**"
       - "!docs/**"
       - "!**.md"
-    branches: [ main ]
 
 jobs:
   deploy:
