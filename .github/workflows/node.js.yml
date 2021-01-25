@@ -29,5 +29,7 @@ jobs:
     - run: npm test
     - name: Connecting remote
       run: git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
+    - name: Unshallowing
+      run: git fetch --all --unshallow
     - name: Final Deploy
-      run: git push --force heroku main
+      run: git push heroku main
