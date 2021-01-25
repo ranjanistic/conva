@@ -56,6 +56,9 @@ app.use(bodyParser.json());
 // app.use("/auth",require('routes/auth.js'))
 // app.use("/room",require('routes/room.js'))
 
+app.get("/",(req,res)=>{
+  res.send("Conva Backend.");
+});
 app.post("/auth/login",(req,res)=>{
   console.log(req.body);
   let data = {
