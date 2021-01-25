@@ -28,8 +28,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Build
       run: |
-        npm run client-install
+        npm run client-ci
         npm run client-build
+        cd client
     - uses: actions/checkout@v2
     - uses: FirebaseExtended/action-hosting-deploy@v0
       with:

@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha",
     "client-install": "npm install --prefix client",
+    "client-ci": "npm ci --prefix client",
     "client-build": "npm run build --prefix client",
     "client-deploy": "npm run deploy --prefix client",
     "heroku-prebuild": "npm install pm2 -g",
