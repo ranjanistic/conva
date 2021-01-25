@@ -6,19 +6,23 @@
   "scripts": {
     "test": "mocha",
     "client-install": "npm install --prefix client",
-    "postinstall": "npm run client-install",
-    "start": "node server",
+    "client-build": "npm build --prefix client",
+    "client-deploy": "npm run deploy --prefix client",
+    "heroku-prebuild": "npm install pm2 -g",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "server": "nodemon server",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "client-build": "npm build --prefix client"
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ranjanistic/conva.git"
   },
   "author": "",
-  "contributors": ["Priyanshu Ranjan", "Rajat Shrivastav"],
+  "contributors": [
+    "Priyanshu Ranjan",
+    "Rajat Shrivastav"
+  ],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ranjanistic/conva/issues"
@@ -26,10 +30,15 @@
   "homepage": "https://github.com/ranjanistic/conva#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "concurrently": "^5.3.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^4.4.1",
     "jsonwebtoken": "^8.5.1",
     "socket.io": "^3.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "mocha": "^8.2.1",
+    "nodemon": "^2.0.7"
   }
 }
