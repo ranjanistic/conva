@@ -4,8 +4,9 @@ on:
   pull_request:
     branches: [ main ]
     paths: 
-      - "client/build/**"
+      - "client/**"
       - ".github/workflows/client.yml"
+      - ".github/workflows/client-pull.yml"
 jobs:
   build:
     runs-on: ubuntu-latest

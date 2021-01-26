@@ -4,8 +4,9 @@ on:
   push:
     branches: [ main ]
     paths:
-      - "client/build/**"
+      - "client/**"
       - ".github/workflows/client.yml"
+      - ".github/workflows/client-pull.yml"
 
 jobs:
   build_deploy:

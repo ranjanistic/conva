@@ -7,6 +7,7 @@ on:
       - "client/**"
       - "test/**"
       - ".github/workflows/client.yml"
+      - ".github/workflows/client-pull.yml"
       - "README.md"
 
 jobs:
