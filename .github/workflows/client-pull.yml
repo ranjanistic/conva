@@ -1,14 +1,13 @@
-name: Frontend CI & CD
+name: Frontend CI
 
 on:
-  push:
+  pull_request:
     branches: [ main ]
-    paths:
+    paths: 
       - "client/build/**"
       - ".github/workflows/client.yml"
-
 jobs:
-  build_deploy:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -24,11 +23,3 @@ jobs:
       run: |
         npm run client-ci
         npm run client-build
-    - name: Firebase Deploy
-    - uses: FirebaseExtended/action-hosting-deploy@v0
-      with:
-        repoToken: '${{ secrets.GITHUB_TOKEN }}'
-        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CONVAMEET }}'
-        projectId: convameet
-        entryPoint: "./client"
-        channelId: live
