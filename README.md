@@ -1,9 +1,10 @@
 # Conva
 
 ```bash
-npm install #server packages
-npm run client-install #client packages
-npm run dev #client & server localhost
+npm install # server packages
+npm run client-install # client packages
+
+npm run dev # client & server localhost
 ```
 
 Backend at port: 5000
@@ -22,14 +23,10 @@ To run only client
 npm run client
 ```
 
-Server Testing
+Server Local Unit Testing
 
 ```bash
 npm test
 ```
 
-Client Build
-
-```bash
-npm run client-build
-```
+Actions workflow is enabled for main branch, therefore tests, builds and deploys are automated from this branch.

@@ -7,6 +7,7 @@ on:
       - "client/**"
       - "test/**"
       - ".github/workflows/client.yml"
+      - "README.md"
 
 jobs:
   deploy:
