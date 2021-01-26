@@ -1,5 +1,8 @@
 # Conva
 
+![Backend CI & CD](https://github.com/ranjanistic/conva/workflows/Backend%20CI%20&%20CD/badge.svg)
+![Frontend CI & CD](https://github.com/ranjanistic/conva/workflows/Frontend%20CI%20&%20CD/badge.svg)
+
 ```bash
 npm install # server packages
 npm run client-install # client packages
