@@ -19,7 +19,7 @@ class Dashboard extends Component {
               <b>Hello</b> {user.name.split(" ")[0]}
             </h4>
 
-            <div id="room-selection-container" class="centered">
+            <div id="room-selection-container" className="centered">
               <label>Enter the room ID</label>
               <input id="room-input" type="text" />
             </div>
