@@ -18,6 +18,12 @@ class Dashboard extends Component {
             <h4>
               <b>Hello</b> {user.name.split(" ")[0]}
             </h4>
+
+            <div id="room-selection-container" className="centered">
+              <label>Enter the room ID</label>
+              <input id="room-input" type="text" />
+            </div>
+
             <div className="col s6">
             <Link
               to="/meeting"
@@ -27,7 +33,7 @@ class Dashboard extends Component {
                 fontFamily: "Questrial",
               }}
             >
-              Meeting
+              Join
             </Link>
           </div>
             <button
@@ -38,7 +44,7 @@ class Dashboard extends Component {
                 marginTop: "1rem",
               }}
               onClick={this.onLogoutClick}
-              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+              className="btn btn-large waves-effect waves-light hoverable redls accent-3"
             >
               Logout
             </button>

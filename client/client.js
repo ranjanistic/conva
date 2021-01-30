@@ -184,6 +184,3 @@ socket.on('start_call', async () => {
     }
   }
   
-  window.onunload=_=>{
-    
-  }

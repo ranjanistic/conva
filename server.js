@@ -8,6 +8,7 @@ const express = require('express'),
 
 app.use(helmet());
 app.use(bodyParser.json());
+app.use(cors());
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (roomId) => {
@@ -85,6 +86,10 @@ app.post("/auth/signup",(req,res)=>{
   res.json(data);
 });
 
+app.post("/meet/end",(req,res)=>{
+  console.log("here");
+  return res.json({success:true});
+})
 const server_port = process.env.PORT|| 5000 || 80;
 const server_host = '0.0.0.0' || 'localhost';
 

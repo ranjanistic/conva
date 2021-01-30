@@ -15,6 +15,7 @@ export const leaveMeeting = (userData) => dispatch => {
   axios
     .post("/meet/end", userData)
     .then(res => {
+      sessionStorage.clear();
       dispatch(setCurrentMeet({}))
     })
     .catch(err =>

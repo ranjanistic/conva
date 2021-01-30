@@ -8,5 +8,12 @@ module.exports = (app)=> {
       target: process.env.REACT_APP_PROXY_URL,
       changeOrigin: true,
     })
+  )
+  app.use(
+    '/meet',
+    createProxyMiddleware({
+      target: process.env.REACT_APP_PROXY_URL,
+      changeOrigin: true,
+    })
   );
 };
