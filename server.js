@@ -2,6 +2,7 @@ const express = require('express'),
   app = express(),
   server = require('http').createServer(app),
   bodyParser = require('body-parser'),
+  cors = require("cors"),
   // io = require('socket.io')(server),
   jwt = require("jsonwebtoken"),
   helmet = require("helmet");
