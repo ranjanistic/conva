@@ -8,6 +8,7 @@ const express = require('express'),
 
 app.use(helmet());
 app.use(bodyParser.json());
+app.use(cors());
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (roomId) => {
