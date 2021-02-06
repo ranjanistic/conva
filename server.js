@@ -1,10 +1,12 @@
+const { validateUser, validateLogin } = require('./re');
+
 const express = require('express'),
   app = express(),
   { connectToDB, Users } = require("./db"),
-  { ObjectId } = require("mongodb"),
-  server = require('http').createServer(app),
+  server = require('http').createServer(app)
   bodyParser = require('body-parser'),
   cors = require("cors"),
+  bcrypt = require('bcrypt'),
   // io = require('socket.io')(server),
   jwt = require("jsonwebtoken"),
   helmet = require("helmet");
@@ -12,6 +14,10 @@ const express = require('express'),
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(cors());
+
+const encrypt = async (password) => {
+  return await bcrypt.hash(password, 16);
+}
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (roomId) => {
@@ -74,18 +80,28 @@ connectToDB((err, dbname) => {
 
   app.post("/auth/login", async (req, res) => {
 
+    if (!validateLogin(req.body)) {
+      console.log("validation failed");
+      return res.json({ success: false });
+    }
+
     const { email, password } = req.body;
+
     let data = {};
 
+
     result = await Users().findOne({ email: email });
-    if (password == result.password) {
-      data = {
-        success: true,
-        token: jwt.sign({
-          id: result._id,
-          name: result.name,
-        }, 'secret'),
-      };
+    if (result) {
+      comparison = await bcrypt.compare(password, result.password);
+      if (comparison) {
+        data = {
+          success: true,
+          token: jwt.sign({
+            id: result._id,
+            name: result.name,
+          }, 'secret'),
+        };
+      }
     }
 
     else {
@@ -100,7 +116,10 @@ connectToDB((err, dbname) => {
   });
 
   app.post("/auth/signup", async (req, res) => {
-
+    if (!validateUser(req.body)) {
+      console.log("signup failed");
+      return res.json({ success: false });
+    }
     let { email, password, name } = req.body;
     let data = {};
     check = await Users().findOne({ email: email });
@@ -112,9 +131,11 @@ connectToDB((err, dbname) => {
 
     }
     else {
+
+      newpass = await encrypt(password);
       result = await Users().insertOne({
         email: email,
-        password: password,
+        password: newpass,
         name: name
       });
 
