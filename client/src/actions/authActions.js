@@ -11,7 +11,7 @@ import {Key} from "../keys";
 // Register User
 export const registerUser = (userData, history) => dispatch => {
   axios
-    .post("https://convameet.herokuapp.com/auth/signup", userData)
+    .post(`${process.env.REACT_APP_PROXY_URL}/auth/signup`, userData)
     .then(res => {
       if(res.data.success){
         const { token } = res.data;
@@ -35,8 +35,9 @@ export const registerUser = (userData, history) => dispatch => {
 
 // Login - get user token
 export const loginUser = userData => dispatch => {
+  console.log(process.env.REACT_APP_PROXY_URL);
   axios
-    .post("https://convameet.herokuapp.com/auth/login", userData)
+    .post(`${process.env.REACT_APP_PROXY_URL}/auth/login`, userData)
     .then(res => {
       if(res.data.success){
         const { token } = res.data;
