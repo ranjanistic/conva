@@ -4,6 +4,7 @@
 ![Frontend CI & CD](https://github.com/ranjanistic/conva/workflows/Frontend%20CI%20&%20CD/badge.svg)
 
 ```bash
+npm install -g create-react-app # global client initializer
 npm install # server packages
 npm run client-install # client packages
 
@@ -33,3 +34,5 @@ npm test
 ```
 
 Actions workflow is enabled for main branch, therefore tests, builds and deploys are automated from this branch.
+
+Actions workflow is enabled for pull requests for build and test.
