@@ -1,6 +1,6 @@
 module.exports = {
     apps : [{
-      name: "conva-meet",
+      name: "convameet",
       script: "./server.js",
       instances: "max",
       env: {
