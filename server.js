@@ -1,7 +1,7 @@
 const express = require('express'),
   app = express(),
-  {connectToDB, Users} = require("./db"),
-  {ObjectId} = require("mongodb"),
+  { connectToDB, Users } = require("./db"),
+  { ObjectId } = require("mongodb"),
   server = require('http').createServer(app),
   bodyParser = require('body-parser'),
   cors = require("cors"),
@@ -21,7 +21,7 @@ app.use(cors());
 //     console.log(roomClients);
 //     const numberOfClients = roomClients.length
 
-    // These events are emitted only to the sender socket.
+// These events are emitted only to the sender socket.
 //     if (numberOfClients === 0) {
 //       console.log(`Creating room ${roomId} and emitting room_created socket event`)
 //       socket.join(roomId)
@@ -32,13 +32,13 @@ app.use(cors());
 //       socket.join(roomId)
 //       socket.emit('room_joined', roomId)
 //     }
-    // } else {
-    //   console.log(`Can't join room ${roomId}, emitting full_room socket event`)
-    //   socket.emit('full_room', roomId)
-    // }
+// } else {
+//   console.log(`Can't join room ${roomId}, emitting full_room socket event`)
+//   socket.emit('full_room', roomId)
+// }
 //   })
 
-  // These events are emitted to all the sockets connected to the same room except the sender.
+// These events are emitted to all the sockets connected to the same room except the sender.
 //   socket.on('start_call', (roomId) => {
 //     console.log(`Broadcasting start_call event to peers in room ${roomId}`)
 //     socket.broadcast.to(roomId).emit('start_call')
@@ -60,53 +60,85 @@ app.use(cors());
 // app.use("/auth",require('routes/auth.js'))
 // app.use("/room",require('routes/room.js'))
 
-connectToDB((err,dbname) =>{
+connectToDB((err, dbname) => {
 
-  if(err){
+  if (err) {
     return console.log(err);
   }
 
   console.log(`Connected to ${dbname}`);
 
-app.get("/",(req,res)=>{
-  res.send("Conva Backend.");
-});
-app.post("/auth/login",(req,res)=>{
-  
-  console.log(req.body);
-  let data = {
-    success:true,
-    token:jwt.sign({
-      id: "23874923847",
-      name: "Developer"
-    },'secret'),
-  };
-  console.log(data);
-  res.json(data);
-});
+  app.get("/", (req, res) => {
+    res.send("Conva Backend.");
+  });
 
-app.post("/auth/signup",(req,res)=>{
-  console.log(req.body);
-  let data = {
-    success:true,
-    token:jwt.sign({
-      id: "23874923847",
-      name: "Priyanshu"
-    },'secret'),
-  };
-  console.log(data);
-  res.json(data);
-});
+  app.post("/auth/login", async (req, res) => {
 
-app.post("/meet/end",(req,res)=>{
-  console.log("here");
-  return res.json({success:true});
-})
-const server_port = process.env.PORT|| 5000 || 80;
-const server_host = '0.0.0.0' || 'localhost';
+    const { email, password } = req.body;
+    let data = {};
 
-server.listen(server_port, server_host, ()=>{ 
-  console.log(`Server on ${server_host}:${server_port}`);
-});
+    result = await Users().findOne({ email: email });
+    if (password == result.password) {
+      data = {
+        success: true,
+        token: jwt.sign({
+          id: result._id,
+          name: result.name,
+        }, 'secret'),
+      };
+    }
+
+    else {
+      data = {
+        success: false,
+        token: null,
+      }
+    }
+
+    console.log(data);
+    res.json(data);
+  });
+
+  app.post("/auth/signup", async (req, res) => {
+
+    let { email, password, name } = req.body;
+    let data = {};
+    check = await Users().findOne({ email: email });
+    if (check) {
+      data = {
+        success: false,
+        token: null,
+      }
+
+    }
+    else {
+      result = await Users().insertOne({
+        email: email,
+        password: password,
+        name: name
+      });
+
+      data = {
+        success: true,
+        token: jwt.sign({
+          id: result.ops[0]._id,
+          name: result.ops[0].name
+        }, 'secret'),
+      };
+    }
+    console.log(data);
+    res.json(data);
+  });
+
+  app.post("/meet/end", (req, res) => {
+    console.log("here");
+    return res.json({ success: true });
+  })
+  const server_port = process.env.PORT || 5000 || 80;
+  const server_host = '0.0.0.0' || 'localhost';
+
+  server.listen(server_port, server_host, () => {
+    console.log(`Server on ${server_host}:${server_port}`);
+  });
 
 });
