@@ -1,5 +1,7 @@
 const express = require('express'),
   app = express(),
+  {connectToDB, Users} = require("./db"),
+  {ObjectId} = require("mongodb"),
   server = require('http').createServer(app),
   bodyParser = require('body-parser'),
   cors = require("cors"),
@@ -58,10 +60,19 @@ app.use(cors());
 // app.use("/auth",require('routes/auth.js'))
 // app.use("/room",require('routes/room.js'))
 
+connectToDB((err,dbname) =>{
+
+  if(err){
+    return console.log(err);
+  }
+
+  console.log(`Connected to ${dbname}`);
+
 app.get("/",(req,res)=>{
   res.send("Conva Backend.");
 });
 app.post("/auth/login",(req,res)=>{
+  
   console.log(req.body);
   let data = {
     success:true,
@@ -98,3 +109,4 @@ server.listen(server_port, server_host, ()=>{
   console.log(`Server on ${server_host}:${server_port}`);
 });
 
+});
