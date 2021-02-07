@@ -12,7 +12,7 @@ import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 import Meeting from "./components/meeting/Meeting";
 import {Key} from "./keys";
-
+import "./App.css";
 const token = localStorage.getItem(Key.sessionToken);
 if (token) {
   setAuthToken(token);

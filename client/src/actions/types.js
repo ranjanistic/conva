@@ -1,4 +1,6 @@
-export const GET_ERRORS = "GET_ERRORS";
+export const AUTH_ERRORS = "AUTH_ERRORS";
+export const INPUT_ERRORS = "INPUT_ERRORS";
+export const REQ_ERRORS = "REQ_ERRORS";
 export const USER_LOADING = "USER_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const MEET_LOADING = "USER_LOADING";
