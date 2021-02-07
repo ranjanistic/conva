@@ -1,13 +1,14 @@
-const {MongoClient} = require('mongodb');
+
+const {MongoClient} = require('mongodb'), {DBURL,DBNAME} = require("./config");
 
 var dbobj;
 module.exports = {
   connectToDB: (callback )=>{
     MongoClient.connect(
-        `mongodb+srv://admin:mapple1205@user.dbmi7.mongodb.net/convaMeet?retryWrites=true&w=majority`,
+        DBURL,
         { useNewUrlParser: true , useUnifiedTopology: true}, ( err, client )=> {
-            if(!err) dbobj = client.db("convaMeet");
-            return callback( err,"convaMeet" );
+            if(!err) dbobj = client.db(DBNAME);
+            return callback( err,DBNAME );
         }
     );
   },
