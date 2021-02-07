@@ -101,13 +101,20 @@ connectToDB((err, dbname) => {
             name: result.name,
           }, 'secret'),
         };
+      } else {
+        data = {
+          success: false,
+          errors:{
+            password: "Wrong credentials"
+          }
+        }
       }
-    }
-
-    else {
+    } else {
       data = {
         success: false,
-        token: null,
+        errors:{
+          email: "Account not found"
+        }
       }
     }
 
@@ -120,25 +127,23 @@ connectToDB((err, dbname) => {
       console.log("signup failed");
       return res.json({ success: false });
     }
-    let { email, password, name } = req.body;
+    let { email, password, username } = req.body;
     let data = {};
     check = await Users().findOne({ email: email });
     if (check) {
       data = {
         success: false,
-        token: null,
+        errors: {
+          email:"Account already exists."
+        }
       }
-
-    }
-    else {
-
+    } else {
       newpass = await encrypt(password);
       result = await Users().insertOne({
         email: email,
         password: newpass,
-        name: name
+        name: username
       });
-
       data = {
         success: true,
         token: jwt.sign({

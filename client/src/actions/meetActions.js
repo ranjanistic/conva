@@ -3,7 +3,7 @@ import axios from "axios";
 // import jwt_decode from "jwt-decode";
 
 import {
-  GET_ERRORS,
+  REQ_ERRORS,
   SET_CURRENT_MEET,
   MEET_LOADING
 } from "./types";
@@ -20,7 +20,7 @@ export const leaveMeeting = (userData) => dispatch => {
     })
     .catch(err =>
       dispatch({
-        type: GET_ERRORS,
+        type: REQ_ERRORS,
         payload: err
       })
     );
@@ -36,7 +36,7 @@ export const joinMeeting = meetData => dispatch => {
     .catch(err =>{
       console.log(err);
       dispatch({
-        type: GET_ERRORS,
+        type: REQ_ERRORS,
         payload: err.response.data
       })
     });

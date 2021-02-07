@@ -4,106 +4,139 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { validNewUser } from "../../actions/validator";
+
 class Register extends Component {
   constructor() {
     super();
+    this.inputs = [
+      {
+        stateprop:"username",
+        caption:"Display name",
+        autocomp:"name",
+        type:"text",
+      },
+      {
+        stateprop:"email",
+        caption:"Email address",
+        autocomp:"email",
+        type:"email",
+      },
+      {
+        stateprop:"password",
+        caption:"New password",
+        autocomp:"password",
+        type:"password",
+      },
+    ]
     this.state = {
-      name: "",
-      email: "",
-      password: "",
+      [this.inputs[0].stateprop]: "",
+      [this.inputs[1].stateprop]: "",
+      [this.inputs[2].stateprop]: "",
       errors: {},
     };
   }
+
   componentDidMount() {
     // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
     }
   }
+
+  // componentDidUpdate(nextProps){
+  //   console.log(nextProps);
+  // }
+
   componentWillReceiveProps(nextProps) {
-    if (nextProps.errors) {
+    console.log(nextProps);
+    if (nextProps.auth.isAuthenticated) {
+      return this.props.history.push("/dashboard"); // push user to dashboard when they signup
+    }
+    if (Object.keys(nextProps.errors).length) {
+      Object.keys(nextProps.errors).forEach((key) => {
+        if (!nextProps.errors[key]) delete nextProps.errors[key];
+      });
       this.setState({
         errors: nextProps.errors,
       });
+    } else {
+      this.setState({errors:{}});
     }
   }
+
   onChange = (e) => {
-    this.setState({ [e.target.id]: e.target.value });
+    const result = validNewUser(this.state);
+    if (!result.isValid) {
+      const errors = result.err;
+      Object.keys(errors).forEach((key) => {
+        if (!errors[key]){
+          delete errors[key];
+        }
+      });
+      this.setState({ [e.target.id]: e.target.value, errors: { [e.target.id] : errors[e.target.id]} });
+    } else {
+      this.setState({ [e.target.id]: e.target.value });
+    }
   };
+
   onSubmit = (e) => {
     e.preventDefault();
-    const newUser = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-      password2: this.state.password2,
-    };
-    this.props.registerUser(newUser, this.props.history);
+    this.setState({errors:{}});
+    this.props.registerUser(this.state, this.props.history);
   };
+
+  getInputFields(errors) {
+    let inputs = [];
+    Object.keys(this.state).forEach((key, k) => {
+      if (k !== 3) {
+        inputs.push(
+          <div className="w3-col w3-third input-field w3-padding" key={key}>
+            <input
+              onChange={this.onChange}
+              value={this.state[key]}
+              error={errors[key]}
+              id={key}
+              type={this.inputs[k].type}
+              autoFocus={k===0}
+              autoComplete={this.inputs[k].autocomp}
+              className={classnames("", {
+                invalid: errors[key],
+              })}
+            />
+            <label htmlFor={key} className="w3-padding">{this.inputs[k].caption}</label>
+            <span className="red-text">{errors[key]}</span>
+          </div>
+        )
+      }
+    });
+    return inputs;
+  }
+
   render() {
     const { errors } = this.state;
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col s8 offset-s2">
-            <Link to="/" className="btn-flat waves-effect">
+      <div style={{ marginTop: "4rem" }} className="container">
+        <div className="w3-row w3-padding">
+            <Link to="/" className="btn-flat waves-effect w3-top">
               <i className="material-icons left">keyboard_backspace</i> Back
             </Link>
-            <div className="col s12">
+            <div className="w3-row w3-padding">
               <h4>
                 <b>The only step</b> you won't need again.
               </h4>
+              <br/>
               <p className="grey-text text-darken-1">
                 Already have an account? <Link to="/login">Log in</Link>
               </p>
             </div>
-            <form onSubmit={this.onSubmit}>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.name}
-                  error={errors.name}
-                  id="name"
-                  type="text"
-                  className={classnames("", {
-                    invalid: errors.name,
-                  })}
-                />
-                <label htmlFor="name">Display name</label>
-                <span className="red-text">{errors.name}</span>
-              </div>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.email}
-                  error={errors.email}
-                  id="email"
-                  type="email"
-                  className={classnames("", {
-                    invalid: errors.email,
-                  })}
-                />
-                <label htmlFor="email">Email Address</label>
-                <span className="red-text">{errors.email}</span>
-              </div>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.password}
-                  error={errors.password}
-                  id="password"
-                  type="password"
-                  className={classnames("", {
-                    invalid: errors.password,
-                  })}
-                />
-                <label htmlFor="password">Password</label>
-                <span className="red-text">{errors.password}</span>
-              </div>
-              <div className="col s12" style={{ paddingLeft: "11.250px" }}>
+            <br/>
+            <form className="w3-row" onSubmit={this.onSubmit}>
+              {this.getInputFields(errors)}
+              <br/>
+              <div className="w3-row w3-padding">
                 <button
                   style={{
-                    borderRadius: "12px",
                     marginTop: "1rem",
                   }}
                   type="submit"
@@ -113,7 +146,6 @@ class Register extends Component {
                 </button>
               </div>
             </form>
-          </div>
         </div>
       </div>
     );
