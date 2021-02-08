@@ -8,12 +8,15 @@ const express = require('express'),
   cors = require("cors"),
   bcrypt = require('bcrypt'),
   // io = require('socket.io')(server),
+  {CORSORIGIN} = require("./config"),
   jwt = require("jsonwebtoken"),
   helmet = require("helmet");
 
 app.use(helmet());
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin:CORSORIGIN
+}));
 
 const encrypt = async (password) => {
   return await bcrypt.hash(password, 16);
@@ -67,7 +70,7 @@ const encrypt = async (password) => {
 // app.use("/room",require('routes/room.js'))
 
 connectToDB((err, dbname) => {
-
+  console.log(CORSORIGIN);
   if (err) {
     return console.log(err);
   }

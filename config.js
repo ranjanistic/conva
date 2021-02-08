@@ -4,4 +4,5 @@ module.exports={
     ENV:env.NODE_ENV,
     DBURL:env.DBURL,
     DBNAME:env.DBNAME,
+    CORSORIGIN:env.CORSORIGIN
 }
