@@ -31,6 +31,7 @@ export const registerUser = (userData, history) => (dispatch) => {
           const decoded = jwt_decode(token);
           dispatch(setCurrentUser(decoded));
         } else {
+          dispatch(setCurrentUser({}));
           dispatch({
             type: AUTH_ERRORS,
             errors: res.data.errors,

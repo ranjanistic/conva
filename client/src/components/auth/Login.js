@@ -2,31 +2,38 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Loader from "react-loader-spinner";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { validLoginUser } from "../../actions/validator";
+import {
+  inputType,
+  validateTextField,
+  getErrorByType,
+} from "../../actions/validator";
 
 class Login extends Component {
   constructor() {
     super();
     this.inputs = [
       {
-        stateprop: "email",
+        stateprop: inputType.email,
         caption: "Email address",
         autocomp: "email",
-        type: "email",
+        type: inputType.email,
       },
       {
-        stateprop: "password",
+        stateprop: inputType.password,
         caption: "Password",
         autocomp: "password",
-        type: "password",
+        type: inputType.nonempty,
       },
     ];
+
     this.state = {
       [this.inputs[0].stateprop]: "",
       [this.inputs[1].stateprop]: "",
       errors: {},
+      loading: false,
     };
   }
 
@@ -41,71 +48,108 @@ class Login extends Component {
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push("/dashboard"); // push user to dashboard when they signup
     }
-    if (Object.keys(nextProps.errors).length) {
-      Object.keys(nextProps.errors).forEach((key) => {
-        if (!nextProps.errors[key]) delete nextProps.errors[key];
-      });
-      this.setState({
-        errors: nextProps.errors,
-      });
+    if(nextProps.auth.loading){
+      this.setState({errors:{},loading:true});
     } else {
-      this.setState({ errors: {} });
+      this.setState({errors:{},loading:false});
+      if (Object.keys(nextProps.errors).length) {
+        Object.keys(nextProps.errors).forEach((key) => {
+          if (!nextProps.errors[key]) delete nextProps.errors[key];
+        });
+        this.setState({
+          errors: nextProps.errors,
+          loading:false,
+        });
+      }
     }
+    //  else {
+    //   this.setState({ errors: {},loading:false});
+    // }
   }
 
   onChange = (e) => {
-    const result = validLoginUser(this.state);
-    if (!result.isValid) {
-      const errors = result.err;
-      Object.keys(errors).forEach((key) => {
-        if (!errors[key]) {
-          delete errors[key];
-        }
-      });
-      this.setState({
-        [e.target.id]: e.target.value,
-        errors: { [e.target.id]: errors[e.target.id] },
-      });
-    } else {
-      this.setState({ [e.target.id]: e.target.value });
-    }
+    this.setState({ [e.target.id]: e.target.value, errors: {} });
+    validateTextField(
+      e.target,
+      () => {
+        this.setState({
+          [e.target.id]: e.target.value,
+          errors: { [e.target.id]: getErrorByType(e.target.type) },
+        });
+      },
+      e.target.type,
+      () => {
+        this.setState({ errors: {} });
+      }
+    );
   };
 
   getInputFields(errors) {
-    let inputs = [];
+    let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
-      if (k !== 2) {
-        inputs.push(
+      if (k < 2) {
+        inputfields.push(
           <div className="w3-col w3-half w3-padding input-field" key={key}>
             <input
               onChange={this.onChange}
               value={this.state[key]}
-              error={errors[key]}
+              error={errors[this.inputs[k].type]}
               id={key}
-              type={this.inputs[k].type}
+              type={key}
               autoFocus={k === 0}
               autoComplete={this.inputs[k].autocomp}
               className={classnames("", {
                 invalid: errors[key],
               })}
             />
-            <label htmlFor={key} className="w3-padding">{this.inputs[k].caption}</label>
+            <label htmlFor={key} className="w3-padding">
+              {this.inputs[k].caption}
+            </label>
             <span className="red-text">{errors[key]}</span>
           </div>
         );
       }
     });
-    return inputs;
+    return inputfields;
   }
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({ errors: {} });
+    this.setState({ errors: {}, loading:true});
     this.props.loginUser(this.state); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
+  };
+
+  getAction = (isLoading = false) => {
+    if(isLoading){
+      return (
+        <Loader
+          type="Oval"
+          color="#216bf3"
+          height={100}
+          width={100}
+          timeout={0} //infinite
+        />
+      )
+    }
+    return (
+      <button
+        style={{
+          width: "150px",
+          borderRadius: "3px",
+          letterSpacing: "1.5px",
+          marginTop: "1rem",
+        }}
+        type="submit"
+        className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+      >
+        Login
+      </button>
+    );
   };
 
   render() {
     const { errors } = this.state;
+    const {loading} = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
@@ -116,26 +160,15 @@ class Login extends Component {
             <h4>
               <b>Login</b> below
             </h4>
-            <br/>
+            <br />
             <p className="grey-text text-darken-1">
               Don't have an account? <Link to="/register">Register</Link>
             </p>
           </div>
           <form className="w3-row" onSubmit={this.onSubmit}>
             {this.getInputFields(errors)}
-            <div className="w3-row w3-padding">
-              <button
-                style={{
-                  width: "150px",
-                  borderRadius: "3px",
-                  letterSpacing: "1.5px",
-                  marginTop: "1rem",
-                }}
-                type="submit"
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-              >
-                Login
-              </button>
+            <div className="w3-row w3-padding" id="actions">
+              {this.getAction(loading)}
             </div>
           </form>
         </div>

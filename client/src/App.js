@@ -13,6 +13,8 @@ import Dashboard from "./components/dashboard/Dashboard";
 import Meeting from "./components/meeting/Meeting";
 import {Key} from "./keys";
 import "./App.css";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+
 const token = localStorage.getItem(Key.sessionToken);
 if (token) {
   setAuthToken(token);

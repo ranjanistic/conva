@@ -2,31 +2,36 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import Loader from "react-loader-spinner";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { validNewUser } from "../../actions/validator";
+import {
+  inputType,
+  validateTextField,
+  getErrorByType,
+} from "../../actions/validator";
 
 class Register extends Component {
   constructor() {
     super();
     this.inputs = [
       {
-        stateprop:"username",
+        stateprop:inputType.username,
         caption:"Display name",
         autocomp:"name",
-        type:"text",
+        type:inputType.text,
       },
       {
-        stateprop:"email",
+        stateprop:inputType.email,
         caption:"Email address",
         autocomp:"email",
-        type:"email",
+        type:inputType.email,
       },
       {
-        stateprop:"password",
+        stateprop:inputType.password,
         caption:"New password",
         autocomp:"password",
-        type:"password",
+        type:inputType.password,
       },
     ]
     this.state = {
@@ -34,6 +39,7 @@ class Register extends Component {
       [this.inputs[1].stateprop]: "",
       [this.inputs[2].stateprop]: "",
       errors: {},
+      loading:false,
     };
   }
 
@@ -44,53 +50,59 @@ class Register extends Component {
     }
   }
 
-  // componentDidUpdate(nextProps){
-  //   console.log(nextProps);
-  // }
 
   componentWillReceiveProps(nextProps) {
     console.log(nextProps);
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push("/dashboard"); // push user to dashboard when they signup
     }
-    if (Object.keys(nextProps.errors).length) {
-      Object.keys(nextProps.errors).forEach((key) => {
-        if (!nextProps.errors[key]) delete nextProps.errors[key];
-      });
-      this.setState({
-        errors: nextProps.errors,
-      });
+    if(nextProps.auth.loading){
+      this.setState({errors:{},loading:true});
     } else {
-      this.setState({errors:{}});
+      this.setState({errors:{},loading:false});
+      if (Object.keys(nextProps.errors).length) {
+        Object.keys(nextProps.errors).forEach((key) => {
+          if (!nextProps.errors[key]) delete nextProps.errors[key];
+        });
+        this.setState({
+          errors: nextProps.errors,
+          loading:false,
+        });
+      }
     }
+    //  else {
+    //   this.setState({ errors: {},loading:false});
+    // }
   }
 
   onChange = (e) => {
-    const result = validNewUser(this.state);
-    if (!result.isValid) {
-      const errors = result.err;
-      Object.keys(errors).forEach((key) => {
-        if (!errors[key]){
-          delete errors[key];
-        }
-      });
-      this.setState({ [e.target.id]: e.target.value, errors: { [e.target.id] : errors[e.target.id]} });
-    } else {
-      this.setState({ [e.target.id]: e.target.value });
-    }
+    this.setState({ [e.target.id]: e.target.value, errors: {} });
+    validateTextField(
+      e.target,
+      () => {
+        this.setState({
+          [e.target.id]: e.target.value,
+          errors: { [e.target.id]: getErrorByType(e.target.type) },
+        });
+      },
+      e.target.type,
+      () => {
+        this.setState({ errors: {} });
+      }
+    );
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({errors:{}});
+    this.setState({errors:{},loading:true});
     this.props.registerUser(this.state, this.props.history);
   };
 
   getInputFields(errors) {
-    let inputs = [];
+    let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
-      if (k !== 3) {
-        inputs.push(
+      if (k < 3) {
+        inputfields.push(
           <div className="w3-col w3-third input-field w3-padding" key={key}>
             <input
               onChange={this.onChange}
@@ -110,11 +122,39 @@ class Register extends Component {
         )
       }
     });
-    return inputs;
+    return inputfields;
   }
 
+  getAction = (isLoading = false) => {
+    if(isLoading){
+      return (
+        <Loader
+          type="Oval"
+          color="#216bf3"
+          height={100}
+          width={100}
+          timeout={0} //infinite
+        />
+      )
+    }
+    return (
+      <button
+        style={{
+          width: "150px",
+          borderRadius: "3px",
+          letterSpacing: "1.5px",
+          marginTop: "1rem",
+        }}
+        type="submit"
+        className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+      >
+        Login
+      </button>
+    );
+  };
+
   render() {
-    const { errors } = this.state;
+    const { errors,loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
@@ -135,15 +175,7 @@ class Register extends Component {
               {this.getInputFields(errors)}
               <br/>
               <div className="w3-row w3-padding">
-                <button
-                  style={{
-                    marginTop: "1rem",
-                  }}
-                  type="submit"
-                  className="btn btn-large waves-effect waves-light blue"
-                >
-                  Sign up
-                </button>
+                {this.getAction(loading)}
               </div>
             </form>
         </div>
