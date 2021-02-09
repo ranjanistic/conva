@@ -1,2 +1,5 @@
-/test
-/client
+test/
+client/
+.github/
+*.md
+*.env
