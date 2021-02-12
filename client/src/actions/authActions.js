@@ -14,9 +14,7 @@ import { Key } from "../keys";
 
 // Register User
 export const registerUser = (userData) => (dispatch) => {
-  console.log(userData);
   const result = validNewUser(userData);
-  console.log(result);
   if (!result.isValid) {
     dispatch({
       type: INPUT_ERRORS,
@@ -50,7 +48,6 @@ export const registerUser = (userData) => (dispatch) => {
 
 // Login - get user token
 export const loginUser = (userData) => (dispatch) => {
-  console.log('loginuser',userData);
   const result = validLoginUser(userData);
   if (!result.isValid) {
     dispatch({
