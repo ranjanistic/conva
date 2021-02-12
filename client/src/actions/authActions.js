@@ -13,8 +13,10 @@ import {
 import { Key } from "../keys";
 
 // Register User
-export const registerUser = (userData, history) => (dispatch) => {
+export const registerUser = (userData) => (dispatch) => {
+  console.log(userData);
   const result = validNewUser(userData);
+  console.log(result);
   if (!result.isValid) {
     dispatch({
       type: INPUT_ERRORS,

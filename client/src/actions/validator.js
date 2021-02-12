@@ -13,43 +13,29 @@ export const constant = {
     "saturday",
   ]
 }
-const err = {
-  input: {
-    common: "This can't be empty.",
-    email: "Invalid email address.",
-    username: "Something's not quite right with your name.",
-    newpassword: "Password is too weak! Go for something stronger.",
-  },
-};
-export const validPass = (password) => isStringValid(password,inputType.password);
-
-export const validEmail = (email) => isStringValid(email,inputType.email);
-
-export const validUsername = (username) => isStringValid(username,inputType.name);
 
 export const validNewUser = (
   user = { email: String, password: String, username: String }
 ) => {
   return {
     isValid:
-      validEmail(user.email) &&
-      validUsername(user.name) &&
-      validPass(user.password),
+      isStringValid(user.username,inputType.name)
+      && isStringValid(user.email,inputType.email) 
+      && isStringValid(user.password,inputType.password),
     err: {
-      email: !validEmail(user.email) ? err.input.email : 0,
-      password: !validPass(user.password) ? err.input.newpassword : 0,
-      username: !validUsername(user.username) ? err.input.username : 0,
+      username: isStringValid(user.username,inputType.name)?0: getErrorByType(inputType.name),
+      email: isStringValid(user.email,inputType.email) ? 0:getErrorByType(inputType.email),
+      password: isStringValid(user.password,inputType.password)?0: getErrorByType(inputType.password),
     },
   };
 };
 
 export const validLoginUser = (user = { email: String, password: String }) => {
   return {
-    isValid:
-      validEmail(user.email) && user.password.length>0,
+    isValid: isStringValid(user.email,inputType.email) && isStringValid(user.password),
     err: {
-      email: !validEmail(user.email) ? err.input.email : 0,
-      password: user.password.length===0 ? err.input.common : 0,
+      email: isStringValid(user.email,inputType.email) ? 0:getErrorByType(inputType.email),
+      password: isStringValid(user.password)?0: getErrorByType(inputType.nonempty),
     },
   };
 };
@@ -101,7 +87,7 @@ export const inputType = {
 
 export const getErrorByType=(type = inputType.nonempty)=>{
   switch (type) {
-    case inputType.name: return "There has to be a name.";
+    case inputType.name: return "There has to be a proper name.";
     case inputType.email: return "Invalid email address.";
     case inputType.phone:return "Not a valid number";
     case inputType.number:return "Not a valid number";
@@ -197,7 +183,7 @@ export const isStringValid = (
       );
     case inputType.password:
       return String(value).length<=1000
-      // &&constant.passRegex.test(String(value))
+      &&constant.passRegex.test(String(value))
       &&String(value).length>=8;
     case inputType.username:
       return isStringValid(String(value).trim(),inputType.name); 

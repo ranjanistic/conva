@@ -6,7 +6,7 @@ import Loader from "react-loader-spinner";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
 import { get } from "../../paths/get";
-import { navBar } from "../navbar";
+
 import {
   inputType,
   validateTextField,
@@ -45,11 +45,9 @@ class Login extends Component {
     if (this.props.auth.isAuthenticated) {
       this.props.history.push(get.DASHBOARD);
     }
-    console.log("here");
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log("nextprops", nextProps);
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
     }
@@ -57,11 +55,8 @@ class Login extends Component {
     if (nextProps.errors.loading) {
       this.setState({ errors: {}, loading: true });
     } else {
-      console.log("filtering errs", errors);
       errors = filterKeys(errors);
-      console.log("filtered errs", errors);
       this.setState({ errors: errors, loading: false });
-      console.log("final state", this.state);
     }
   }
 
@@ -82,7 +77,7 @@ class Login extends Component {
     );
   };
 
-  getInputFields(errors) {
+  getInputFields(errors,disabled = false) {
     let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
       if (k < 2) {
@@ -94,6 +89,7 @@ class Login extends Component {
               error={errors[this.inputs[k].type]}
               id={key}
               type={key}
+              disabled={disabled}
               autoFocus={k === 0}
               autoComplete={this.inputs[k].autocomp}
               className={classnames("", {
@@ -149,8 +145,7 @@ class Login extends Component {
   };
 
   render() {
-    const { errors } = this.state;
-    const { loading } = this.state;
+    const { errors,loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
@@ -169,7 +164,7 @@ class Login extends Component {
             </p>
           </div>
           <form className="w3-row">
-            {this.getInputFields(errors)}
+            {this.getInputFields(errors,loading)}
             <div className="w3-row w3-padding" id="actions">
               {this.getAction(loading)}
             </div>

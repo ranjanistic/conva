@@ -5,10 +5,14 @@ import { connect } from "react-redux";
 import Loader from "react-loader-spinner";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { get } from "../../paths/get";
+
 import {
   inputType,
   validateTextField,
   getErrorByType,
+  filterSignupUser,
+  filterKeys,
 } from "../../actions/validator";
 
 class Register extends Component {
@@ -16,63 +20,50 @@ class Register extends Component {
     super();
     this.inputs = [
       {
-        stateprop:inputType.username,
-        caption:"Display name",
-        autocomp:"name",
-        type:inputType.text,
+        stateprop: inputType.username,
+        caption: "Display name",
+        autocomp: inputType.name,
+        type: inputType.text,
       },
       {
-        stateprop:inputType.email,
-        caption:"Email address",
-        autocomp:"email",
-        type:inputType.email,
+        stateprop: inputType.email,
+        caption: "Email address",
+        autocomp: inputType.email,
+        type: inputType.email,
       },
       {
-        stateprop:inputType.password,
-        caption:"New password",
-        autocomp:"password",
-        type:inputType.password,
+        stateprop: inputType.password,
+        caption: "New password",
+        autocomp: inputType.password,
+        type: inputType.password,
       },
-    ]
+    ];
     this.state = {
       [this.inputs[0].stateprop]: "",
       [this.inputs[1].stateprop]: "",
       [this.inputs[2].stateprop]: "",
       errors: {},
-      loading:false,
+      loading: false,
     };
   }
 
   componentDidMount() {
-    // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push(get.DASHBOARD);
     }
   }
 
-
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps.auth.isAuthenticated) {
-      return this.props.history.push("/dashboard"); // push user to dashboard when they signup
+      return this.props.history.push(get.DASHBOARD);
     }
-    if(nextProps.auth.loading){
-      this.setState({errors:{},loading:true});
+    let { errors } = nextProps.errors;
+    if (nextProps.errors.loading) {
+      this.setState({ errors: {}, loading: true });
     } else {
-      this.setState({errors:{},loading:false});
-      if (Object.keys(nextProps.errors).length) {
-        Object.keys(nextProps.errors).forEach((key) => {
-          if (!nextProps.errors[key]) delete nextProps.errors[key];
-        });
-        this.setState({
-          errors: nextProps.errors,
-          loading:false,
-        });
-      }
+      errors = filterKeys(errors);
+      this.setState({ errors: errors, loading: false });
     }
-    //  else {
-    //   this.setState({ errors: {},loading:false});
-    // }
   }
 
   onChange = (e) => {
@@ -82,23 +73,39 @@ class Register extends Component {
       () => {
         this.setState({
           [e.target.id]: e.target.value,
-          errors: { [e.target.id]: getErrorByType(e.target.type) },
+          errors: {
+            [e.target.id]: getErrorByType(
+              this.inputs.find((ip) => ip.stateprop === e.target.id).autocomp
+            ),
+          },
         });
       },
       e.target.type,
       () => {
-        this.setState({ errors: {} });
+        this.setState({ [e.target.id]: e.target.value, errors: {} });
       }
     );
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({errors:{},loading:true});
-    this.props.registerUser(this.state, this.props.history);
+    this.setState({
+      [this.inputs[0].stateprop]: document
+        .getElementById(this.inputs[0].stateprop)
+        .value.trim(),
+      [this.inputs[1].stateprop]: document
+        .getElementById(this.inputs[1].stateprop)
+        .value.trim(),
+      [this.inputs[2].stateprop]: document.getElementById(
+        this.inputs[2].stateprop
+      ).value,
+      loading: true,
+      errors: {},
+    });
+    this.props.registerUser(filterSignupUser(this.state));
   };
 
-  getInputFields(errors) {
+  getInputFields(errors,disabled = false) {
     let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
       if (k < 3) {
@@ -109,24 +116,27 @@ class Register extends Component {
               value={this.state[key]}
               error={errors[key]}
               id={key}
+              disabled={disabled}
               type={this.inputs[k].type}
-              autoFocus={k===0}
+              autoFocus={k === 0}
               autoComplete={this.inputs[k].autocomp}
               className={classnames("", {
                 invalid: errors[key],
               })}
             />
-            <label htmlFor={key} className="w3-padding">{this.inputs[k].caption}</label>
+            <label htmlFor={key} className="w3-padding">
+              {this.inputs[k].caption}
+            </label>
             <span className="red-text">{errors[key]}</span>
           </div>
-        )
+        );
       }
     });
     return inputfields;
   }
 
   getAction = (isLoading = false) => {
-    if(isLoading){
+    if (isLoading) {
       return (
         <Loader
           type="Oval"
@@ -135,17 +145,15 @@ class Register extends Component {
           width={100}
           timeout={0} //infinite
         />
-      )
+      );
     }
     return (
       <button
         style={{
-          width: "150px",
           borderRadius: "3px",
-          letterSpacing: "1.5px",
           marginTop: "1rem",
         }}
-        type="submit"
+        onClick={this.onSubmit}
         className="btn btn-large waves-effect waves-light hoverable blue accent-3"
       >
         Register
@@ -154,30 +162,30 @@ class Register extends Component {
   };
 
   render() {
-    const { errors,loading } = this.state;
+    const { errors, loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
-            <Link to="/" className="btn-flat waves-effect w3-top">
+          <Link to={get.ROOT}>
+            <span className="btn-flat waves-effect">
               <i className="material-icons left">keyboard_backspace</i> Back
-            </Link>
-            <div className="w3-row w3-padding">
-              <h4>
-                <b>The only step</b> you won't need again.
-              </h4>
-              <br/>
-              <p className="grey-text text-darken-1">
-                Already have an account? <Link to="/login">Log in</Link>
-              </p>
-            </div>
-            <br/>
-            <form className="w3-row" onSubmit={this.onSubmit}>
-              {this.getInputFields(errors)}
-              <br/>
-              <div className="w3-row w3-padding">
-                {this.getAction(loading)}
-              </div>
-            </form>
+            </span>
+          </Link>
+          <div className="w3-row w3-padding">
+            <h4>
+              <b>The only step</b> you won't need again.
+            </h4>
+            <br />
+            <p className="grey-text text-darken-1">
+              Already have an account? <Link to={get.LOGIN}>Log in</Link>
+            </p>
+          </div>
+          <br />
+          <form className="w3-row">
+            {this.getInputFields(errors,loading)}
+            <br />
+            <div className="w3-row w3-padding">{this.getAction(loading)}</div>
+          </form>
         </div>
       </div>
     );
