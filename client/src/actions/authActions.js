@@ -8,7 +8,7 @@ import {
   INPUT_ERRORS,
   REQ_ERRORS,
   SET_CURRENT_USER,
-  USER_LOADING,
+  LOADING,
 } from "./types";
 import { Key } from "../keys";
 
@@ -21,7 +21,7 @@ export const registerUser = (userData, history) => (dispatch) => {
       errors: result.err,
     });
   } else {
-    dispatch(setUserLoading());
+    dispatch(setLoading());
     postData(post.SIGNUP, userData)
       .then((res) => {
         if (res.data.success) {
@@ -31,7 +31,6 @@ export const registerUser = (userData, history) => (dispatch) => {
           const decoded = jwt_decode(token);
           dispatch(setCurrentUser(decoded));
         } else {
-          dispatch(setCurrentUser({}));
           dispatch({
             type: AUTH_ERRORS,
             errors: res.data.errors,
@@ -57,7 +56,7 @@ export const loginUser = (userData) => (dispatch) => {
       errors: result.err,
     });
   } else {
-    dispatch(setUserLoading());
+    dispatch(setLoading());
     postData(post.LOGIN,userData).then((res)=>{
       if (res.data.success) {
         const { token } = res.data;
@@ -89,9 +88,9 @@ export const setCurrentUser = (decoded) => {
 };
 
 // User loading
-export const setUserLoading = () => {
+export const setLoading = () => {
   return {
-    type: USER_LOADING,
+    type: LOADING,
   };
 };
 

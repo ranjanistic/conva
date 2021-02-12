@@ -6,4 +6,7 @@ export const Key = {
     chatboxvisible:"chatboxvisible",
     cameraon:"cameraon",
     micon:"micon",
+    theme:"theme",
+    light:"light",
+    dark:"dark"
 }

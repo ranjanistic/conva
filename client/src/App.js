@@ -9,16 +9,18 @@ import store from "./store";
 import Landing from "./components/layout/Landing";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
-// import Oauth from "./components/auth/Oauth";
 import { useParams } from "react-router";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import Dashboard from "./components/dashboard/Dashboard";
 import Meeting from "./components/meeting/Meeting";
 import {Key} from "./keys";
 import "./App.css";
+import "./Switch.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { refer } from "./actions/requests";
 
+// import {setCurrentTheme} from "./components/navbar"
+// setCurrentTheme();
 const token = localStorage.getItem(Key.sessionToken);
 if (token) {
   let decoded;
@@ -36,6 +38,7 @@ if (token) {
     refer(get.LOGIN);
   }
 }
+
 
 const Oauth=()=>{
   let { token } = useParams();

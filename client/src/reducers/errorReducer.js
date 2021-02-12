@@ -1,4 +1,4 @@
-import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS} from "../actions/types";
+import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING} from "../actions/types";
 const initialState = {
   loading:true,
   errors:{}
@@ -17,6 +17,11 @@ export default function errorReducer(state = initialState, action) {
         ...state,
         loading: false,
         errors:action.errors,
+      };
+    case LOADING:
+      return {
+        ...state,
+        loading:true
       };
     default:
       return state;

@@ -6,7 +6,7 @@
     --negative:#be0e0e;
     --negative-text:#ffffff;
 }
-[data-theme='dark']{
+[data-theme="dark"]{
     --primary:#10101b;
     --primary-text:#e4e4e4;
     --positive:#1b3075;
@@ -19,4 +19,8 @@ body{
     font-family: 'Questrial',sans-serif;
     background-color: var(--primary);
     color: var(--primary-text);
+}
+
+h4,button{
+    font-family: 'Questrial',sans-serif;
 }

@@ -5,15 +5,14 @@ import { connect } from "react-redux";
 import Loader from "react-loader-spinner";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
-import {get} from "../../paths/get";
+import { get } from "../../paths/get";
+import { navBar } from "../navbar";
 import {
   inputType,
   validateTextField,
   getErrorByType,
   filterLoginUser,
   filterKeys,
-  constant,
-  isStringValid
 } from "../../actions/validator";
 
 class Login extends Component {
@@ -46,35 +45,34 @@ class Login extends Component {
     if (this.props.auth.isAuthenticated) {
       this.props.history.push(get.DASHBOARD);
     }
+    console.log("here");
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log('nextprops',nextProps);
-    let {errors} = nextProps.errors;
+    console.log("nextprops", nextProps);
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
     }
-    if(nextProps.errors.loading){
-      this.setState({errors:{},loading:true});
+    let { errors } = nextProps.errors;
+    if (nextProps.errors.loading) {
+      this.setState({ errors: {}, loading: true });
     } else {
-      console.log('filtering errs',errors);
+      console.log("filtering errs", errors);
       errors = filterKeys(errors);
-      console.log('filtered errs',errors);
-      this.setState({ errors: errors,loading:false});
-      this.state.errors = errors;
-      console.log('final state',this.state);
+      console.log("filtered errs", errors);
+      this.setState({ errors: errors, loading: false });
+      console.log("final state", this.state);
     }
   }
 
   onChange = (e) => {
-    this.setState({ [e.target.id]: e.target.value, errors:{}});
+    this.setState({ [e.target.id]: e.target.value, errors: {} });
     validateTextField(
       e.target,
       () => {
-        console.log(e.target.type);
         this.setState({
           [e.target.id]: e.target.value,
-          errors: { [e.target.id]: getErrorByType(e.target.type) },
+          errors: { [e.target.id]: getErrorByType(this.inputs.find((ip)=>ip.stateprop===e.target.id).type) },
         });
       },
       e.target.type,
@@ -118,19 +116,14 @@ class Login extends Component {
     this.setState({
       [this.inputs[0].stateprop]: document.getElementById(this.inputs[0].stateprop).value.trim(),
       [this.inputs[1].stateprop]: document.getElementById(this.inputs[1].stateprop).value,
-      errors:{
-        email:0,
-        password:0
-      },
-      loading:true,
+      loading: true,
+      errors:{}
     });
-    this.state.errors = {};
-    console.log(this.state);
     this.props.loginUser(filterLoginUser(this.state));
   };
 
   getAction = (isLoading = false) => {
-    if(isLoading){
+    if (isLoading) {
       return (
         <Loader
           type="Oval"
@@ -139,18 +132,16 @@ class Login extends Component {
           width={100}
           timeout={0} //infinite
         />
-      )
+      );
     }
     return (
       <button
         style={{
-          width: "150px",
           borderRadius: "3px",
-          letterSpacing: "1.5px",
           marginTop: "1rem",
         }}
-        type="submit"
-        className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+        onClick={this.onSubmit}
+        className="btn btn-large waves-effect waves-blue blue accent-3"
       >
         Login
       </button>
@@ -159,12 +150,14 @@ class Login extends Component {
 
   render() {
     const { errors } = this.state;
-    const {loading} = this.state;
+    const { loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
-          <Link to={get.ROOT} className="btn-flat waves-effect w3-top">
-            <i className="material-icons left">keyboard_backspace</i> Back
+          <Link to={get.ROOT}>
+            <span className="btn-flat waves-effect">
+              <i className="material-icons left">keyboard_backspace</i> Back
+            </span>
           </Link>
           <div className="w3-row w3-padding">
             <h4>
@@ -175,7 +168,7 @@ class Login extends Component {
               Don't have an account? <Link to={get.SIGNUP}>Register</Link>
             </p>
           </div>
-          <form className="w3-row" onSubmit={this.onSubmit}>
+          <form className="w3-row">
             {this.getInputFields(errors)}
             <div className="w3-row w3-padding" id="actions">
               {this.getAction(loading)}
