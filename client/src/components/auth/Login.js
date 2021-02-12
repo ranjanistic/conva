@@ -5,10 +5,15 @@ import { connect } from "react-redux";
 import Loader from "react-loader-spinner";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
+import {get} from "../../paths/get";
 import {
   inputType,
   validateTextField,
   getErrorByType,
+  filterLoginUser,
+  filterKeys,
+  constant,
+  isStringValid
 } from "../../actions/validator";
 
 class Login extends Component {
@@ -18,13 +23,13 @@ class Login extends Component {
       {
         stateprop: inputType.email,
         caption: "Email address",
-        autocomp: "email",
+        autocomp: inputType.email,
         type: inputType.email,
       },
       {
         stateprop: inputType.password,
         caption: "Password",
-        autocomp: "password",
+        autocomp: inputType.password,
         type: inputType.nonempty,
       },
     ];
@@ -39,39 +44,34 @@ class Login extends Component {
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push(get.DASHBOARD);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
+    console.log('nextprops',nextProps);
+    let {errors} = nextProps.errors;
     if (nextProps.auth.isAuthenticated) {
-      return this.props.history.push("/dashboard"); // push user to dashboard when they signup
+      return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
     }
-    if(nextProps.auth.loading){
+    if(nextProps.errors.loading){
       this.setState({errors:{},loading:true});
     } else {
-      this.setState({errors:{},loading:false});
-      if (Object.keys(nextProps.errors).length) {
-        Object.keys(nextProps.errors).forEach((key) => {
-          if (!nextProps.errors[key]) delete nextProps.errors[key];
-        });
-        this.setState({
-          errors: nextProps.errors,
-          loading:false,
-        });
-      }
+      console.log('filtering errs',errors);
+      errors = filterKeys(errors);
+      console.log('filtered errs',errors);
+      this.setState({ errors: errors,loading:false});
+      this.state.errors = errors;
+      console.log('final state',this.state);
     }
-    //  else {
-    //   this.setState({ errors: {},loading:false});
-    // }
   }
 
   onChange = (e) => {
-    this.setState({ [e.target.id]: e.target.value, errors: {} });
+    this.setState({ [e.target.id]: e.target.value, errors:{}});
     validateTextField(
       e.target,
       () => {
+        console.log(e.target.type);
         this.setState({
           [e.target.id]: e.target.value,
           errors: { [e.target.id]: getErrorByType(e.target.type) },
@@ -79,7 +79,7 @@ class Login extends Component {
       },
       e.target.type,
       () => {
-        this.setState({ errors: {} });
+        this.setState({ [e.target.id]: e.target.value, errors: {} });
       }
     );
   };
@@ -115,8 +115,18 @@ class Login extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({ errors: {}, loading:true});
-    this.props.loginUser(this.state); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
+    this.setState({
+      [this.inputs[0].stateprop]: document.getElementById(this.inputs[0].stateprop).value.trim(),
+      [this.inputs[1].stateprop]: document.getElementById(this.inputs[1].stateprop).value,
+      errors:{
+        email:0,
+        password:0
+      },
+      loading:true,
+    });
+    this.state.errors = {};
+    console.log(this.state);
+    this.props.loginUser(filterLoginUser(this.state));
   };
 
   getAction = (isLoading = false) => {
@@ -153,7 +163,7 @@ class Login extends Component {
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
-          <Link to="/" className="btn-flat waves-effect w3-top">
+          <Link to={get.ROOT} className="btn-flat waves-effect w3-top">
             <i className="material-icons left">keyboard_backspace</i> Back
           </Link>
           <div className="w3-row w3-padding">
@@ -162,7 +172,7 @@ class Login extends Component {
             </h4>
             <br />
             <p className="grey-text text-darken-1">
-              Don't have an account? <Link to="/register">Register</Link>
+              Don't have an account? <Link to={get.SIGNUP}>Register</Link>
             </p>
           </div>
           <form className="w3-row" onSubmit={this.onSubmit}>

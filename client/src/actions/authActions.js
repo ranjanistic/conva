@@ -1,6 +1,7 @@
-import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
+import {postData} from './requests'
+import {post} from '../paths/post';
 import { validNewUser,validLoginUser } from "./validator";
 import {
   AUTH_ERRORS,
@@ -21,8 +22,7 @@ export const registerUser = (userData, history) => (dispatch) => {
     });
   } else {
     dispatch(setUserLoading());
-    axios
-      .post(`${process.env.REACT_APP_PROXY_URL}/auth/signup`, userData)
+    postData(post.SIGNUP, userData)
       .then((res) => {
         if (res.data.success) {
           const { token } = res.data;
@@ -49,6 +49,7 @@ export const registerUser = (userData, history) => (dispatch) => {
 
 // Login - get user token
 export const loginUser = (userData) => (dispatch) => {
+  console.log('loginuser',userData);
   const result = validLoginUser(userData);
   if (!result.isValid) {
     dispatch({
@@ -57,28 +58,25 @@ export const loginUser = (userData) => (dispatch) => {
     });
   } else {
     dispatch(setUserLoading());
-    axios
-      .post(`${process.env.REACT_APP_PROXY_URL}/auth/login`, userData)
-      .then((res) => {
-        if (res.data.success) {
-          const { token } = res.data;
-          localStorage.setItem(Key.sessionToken, token);
-          setAuthToken(token);
-          const decoded = jwt_decode(token);
-          dispatch(setCurrentUser(decoded));
-        } else {
-          dispatch({
-            type: AUTH_ERRORS,
-            errors: res.data.errors,
-          });
-        }
-      })
-      .catch((err) => {
+    postData(post.LOGIN,userData).then((res)=>{
+      if (res.data.success) {
+        const { token } = res.data;
+        localStorage.setItem(Key.sessionToken, token);
+        setAuthToken(token);
+        const decoded = jwt_decode(token);
+        dispatch(setCurrentUser(decoded));
+      } else {
         dispatch({
-          type: REQ_ERRORS,
-          exceptions: err,
+          type: AUTH_ERRORS,
+          errors: res.data.errors,
         });
+      }
+    }).catch((err)=>{
+      dispatch({
+        type: REQ_ERRORS,
+        exceptions: err,
       });
+    });
   }
 };
 

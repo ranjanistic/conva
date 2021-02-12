@@ -101,7 +101,7 @@ connectToDB((err, dbname) => {
           success: true,
           token: jwt.sign({
             id: result._id,
-            name: result.name,
+            username: result.name,
           }, 'secret'),
         };
       } else {
@@ -151,7 +151,7 @@ connectToDB((err, dbname) => {
         success: true,
         token: jwt.sign({
           id: result.ops[0]._id,
-          name: result.ops[0].name
+          username: result.ops[0].name
         }, 'secret'),
       };
     }

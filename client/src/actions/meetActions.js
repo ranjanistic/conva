@@ -1,7 +1,5 @@
-import axios from "axios";
-// import setAuthToken from "../utils/setAuthToken";
-// import jwt_decode from "jwt-decode";
-
+import {postData} from './requests';
+import {post} from '../paths/post';
 import {
   REQ_ERRORS,
   SET_CURRENT_MEET,
@@ -12,8 +10,7 @@ import {
 
 // Register User
 export const leaveMeeting = (userData) => dispatch => {
-  axios
-    .post("/meet/end", userData)
+  postData(post.ENDMEET, userData)
     .then(res => {
       sessionStorage.clear();
       dispatch(setCurrentMeet({}))
@@ -28,8 +25,7 @@ export const leaveMeeting = (userData) => dispatch => {
 
 // Login - get user token
 export const joinMeeting = meetData => dispatch => {
-  axios
-    .post("/meet/join", meetData)
+  postData(post.JOINMEET, meetData)
     .then(res => {
       dispatch(setCurrentMeet(res.data))
     })
