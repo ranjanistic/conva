@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Loader from "react-loader-spinner";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { actions } from "./Elements";
 import { get } from "../../paths/get";
 
 import {
@@ -67,7 +67,11 @@ class Login extends Component {
       () => {
         this.setState({
           [e.target.id]: e.target.value,
-          errors: { [e.target.id]: getErrorByType(this.inputs.find((ip)=>ip.stateprop===e.target.id).type) },
+          errors: {
+            [e.target.id]: getErrorByType(
+              this.inputs.find((ip) => ip.stateprop === e.target.id).type
+            ),
+          },
         });
       },
       e.target.type,
@@ -77,7 +81,7 @@ class Login extends Component {
     );
   };
 
-  getInputFields(errors,disabled = false) {
+  getInputFields(errors, disabled = false) {
     let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
       if (k < 2) {
@@ -110,42 +114,20 @@ class Login extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     this.setState({
-      [this.inputs[0].stateprop]: document.getElementById(this.inputs[0].stateprop).value.trim(),
-      [this.inputs[1].stateprop]: document.getElementById(this.inputs[1].stateprop).value,
+      [this.inputs[0].stateprop]: document
+        .getElementById(this.inputs[0].stateprop)
+        .value.trim(),
+      [this.inputs[1].stateprop]: document.getElementById(
+        this.inputs[1].stateprop
+      ).value,
       loading: true,
-      errors:{}
+      errors: {},
     });
     this.props.loginUser(filterLoginUser(this.state));
   };
 
-  getAction = (isLoading = false) => {
-    if (isLoading) {
-      return (
-        <Loader
-          type="Oval"
-          color="#216bf3"
-          height={100}
-          width={100}
-          timeout={0} //infinite
-        />
-      );
-    }
-    return (
-      <button
-        style={{
-          borderRadius: "3px",
-          marginTop: "1rem",
-        }}
-        onClick={this.onSubmit}
-        className="btn btn-large waves-effect waves-blue blue accent-3"
-      >
-        Login
-      </button>
-    );
-  };
-
   render() {
-    const { errors,loading } = this.state;
+    const { errors, loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
@@ -164,9 +146,19 @@ class Login extends Component {
             </p>
           </div>
           <form className="w3-row">
-            {this.getInputFields(errors,loading)}
+            {this.getInputFields(errors, loading)}
             <div className="w3-row w3-padding" id="actions">
-              {this.getAction(loading)}
+              {actions(
+                loading,
+                {
+                  name: "Login",
+                  onclick: this.onSubmit,
+                },
+                {
+                  name: "Need help",
+                  color: "t",
+                }
+              )}
             </div>
           </form>
         </div>

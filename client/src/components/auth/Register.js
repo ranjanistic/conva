@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Loader from "react-loader-spinner";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
+import { actions } from "./Elements";
 import { get } from "../../paths/get";
 
 import {
@@ -105,7 +105,7 @@ class Register extends Component {
     this.props.registerUser(filterSignupUser(this.state));
   };
 
-  getInputFields(errors,disabled = false) {
+  getInputFields(errors, disabled = false) {
     let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
       if (k < 3) {
@@ -135,32 +135,6 @@ class Register extends Component {
     return inputfields;
   }
 
-  getAction = (isLoading = false) => {
-    if (isLoading) {
-      return (
-        <Loader
-          type="Oval"
-          color="#216bf3"
-          height={100}
-          width={100}
-          timeout={0} //infinite
-        />
-      );
-    }
-    return (
-      <button
-        style={{
-          borderRadius: "3px",
-          marginTop: "1rem",
-        }}
-        onClick={this.onSubmit}
-        className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-      >
-        Register
-      </button>
-    );
-  };
-
   render() {
     const { errors, loading } = this.state;
     return (
@@ -182,9 +156,14 @@ class Register extends Component {
           </div>
           <br />
           <form className="w3-row">
-            {this.getInputFields(errors,loading)}
+            {this.getInputFields(errors, loading)}
             <br />
-            <div className="w3-row w3-padding">{this.getAction(loading)}</div>
+            <div className="w3-row w3-padding">
+              {actions(loading, {
+                name: "Register",
+                onclick: this.onSubmit,
+              })}
+            </div>
           </form>
         </div>
       </div>
