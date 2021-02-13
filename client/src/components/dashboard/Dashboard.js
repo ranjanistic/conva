@@ -16,7 +16,7 @@ class Dashboard extends Component {
         <div className="row">
           <div className="col s12 center-align">
             <h4>
-              <b>Hello</b> {user.name.split(" ")[0]}
+              <b>Hello</b> {user.username.split(" ")[0]}
             </h4>
 
             <div id="room-selection-container" className="centered">

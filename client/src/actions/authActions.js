@@ -1,18 +1,19 @@
-import axios from "axios";
 import setAuthToken from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
+import {postData} from './requests'
+import {post} from '../paths/post';
 import { validNewUser,validLoginUser } from "./validator";
 import {
   AUTH_ERRORS,
   INPUT_ERRORS,
   REQ_ERRORS,
   SET_CURRENT_USER,
-  USER_LOADING,
+  LOADING,
 } from "./types";
 import { Key } from "../keys";
 
 // Register User
-export const registerUser = (userData, history) => (dispatch) => {
+export const registerUser = (userData) => (dispatch) => {
   const result = validNewUser(userData);
   if (!result.isValid) {
     dispatch({
@@ -20,9 +21,8 @@ export const registerUser = (userData, history) => (dispatch) => {
       errors: result.err,
     });
   } else {
-    dispatch(setUserLoading());
-    axios
-      .post(`${process.env.REACT_APP_PROXY_URL}/auth/signup`, userData)
+    dispatch(setLoading());
+    postData(post.SIGNUP, userData)
       .then((res) => {
         if (res.data.success) {
           const { token } = res.data;
@@ -55,29 +55,26 @@ export const loginUser = (userData) => (dispatch) => {
       errors: result.err,
     });
   } else {
-    dispatch(setUserLoading());
-    axios
-      .post(`${process.env.REACT_APP_PROXY_URL}/auth/login`, userData)
-      .then((res) => {
-        if (res.data.success) {
-          const { token } = res.data;
-          localStorage.setItem(Key.sessionToken, token);
-          setAuthToken(token);
-          const decoded = jwt_decode(token);
-          dispatch(setCurrentUser(decoded));
-        } else {
-          dispatch({
-            type: AUTH_ERRORS,
-            errors: res.data.errors,
-          });
-        }
-      })
-      .catch((err) => {
+    dispatch(setLoading());
+    postData(post.LOGIN,userData).then((res)=>{
+      if (res.data.success) {
+        const { token } = res.data;
+        localStorage.setItem(Key.sessionToken, token);
+        setAuthToken(token);
+        const decoded = jwt_decode(token);
+        dispatch(setCurrentUser(decoded));
+      } else {
         dispatch({
-          type: REQ_ERRORS,
-          exceptions: err,
+          type: AUTH_ERRORS,
+          errors: res.data.errors,
         });
+      }
+    }).catch((err)=>{
+      dispatch({
+        type: REQ_ERRORS,
+        exceptions: err,
       });
+    });
   }
 };
 
@@ -90,9 +87,9 @@ export const setCurrentUser = (decoded) => {
 };
 
 // User loading
-export const setUserLoading = () => {
+export const setLoading = () => {
   return {
-    type: USER_LOADING,
+    type: LOADING,
   };
 };
 

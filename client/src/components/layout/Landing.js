@@ -9,7 +9,7 @@ class Landing extends Component {
         <div>
           <h4>
             <b className="blue-text ">
-            Hey {this.props.auth.user.name}
+            Hey {this.props.auth.user.username}
             </b>
           </h4>
           <p className="flow-text grey-text text-darken-1">

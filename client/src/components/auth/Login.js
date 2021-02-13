@@ -4,138 +4,161 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { validLoginUser } from "../../actions/validator";
+import { actions } from "./Elements";
+import { get } from "../../paths/get";
+
+import {
+  inputType,
+  validateTextField,
+  getErrorByType,
+  filterLoginUser,
+  filterKeys,
+} from "../../actions/validator";
 
 class Login extends Component {
   constructor() {
     super();
     this.inputs = [
       {
-        stateprop: "email",
+        stateprop: inputType.email,
         caption: "Email address",
-        autocomp: "email",
-        type: "email",
+        autocomp: inputType.email,
+        type: inputType.email,
       },
       {
-        stateprop: "password",
+        stateprop: inputType.password,
         caption: "Password",
-        autocomp: "password",
-        type: "password",
+        autocomp: inputType.password,
+        type: inputType.nonempty,
       },
     ];
+
     this.state = {
       [this.inputs[0].stateprop]: "",
       [this.inputs[1].stateprop]: "",
       errors: {},
+      loading: false,
     };
   }
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push(get.DASHBOARD);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps.auth.isAuthenticated) {
-      return this.props.history.push("/dashboard"); // push user to dashboard when they signup
+      return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
     }
-    if (Object.keys(nextProps.errors).length) {
-      Object.keys(nextProps.errors).forEach((key) => {
-        if (!nextProps.errors[key]) delete nextProps.errors[key];
-      });
-      this.setState({
-        errors: nextProps.errors,
-      });
+    let { errors } = nextProps.errors;
+    if (nextProps.errors.loading) {
+      this.setState({ errors: {}, loading: true });
     } else {
-      this.setState({ errors: {} });
+      errors = filterKeys(errors);
+      this.setState({ errors: errors, loading: false });
     }
   }
 
   onChange = (e) => {
-    const result = validLoginUser(this.state);
-    if (!result.isValid) {
-      const errors = result.err;
-      Object.keys(errors).forEach((key) => {
-        if (!errors[key]) {
-          delete errors[key];
-        }
-      });
-      this.setState({
-        [e.target.id]: e.target.value,
-        errors: { [e.target.id]: errors[e.target.id] },
-      });
-    } else {
-      this.setState({ [e.target.id]: e.target.value });
-    }
+    this.setState({ [e.target.id]: e.target.value, errors: {} });
+    validateTextField(
+      e.target,
+      () => {
+        this.setState({
+          [e.target.id]: e.target.value,
+          errors: {
+            [e.target.id]: getErrorByType(
+              this.inputs.find((ip) => ip.stateprop === e.target.id).type
+            ),
+          },
+        });
+      },
+      e.target.type,
+      () => {
+        this.setState({ [e.target.id]: e.target.value, errors: {} });
+      }
+    );
   };
 
-  getInputFields(errors) {
-    let inputs = [];
+  getInputFields(errors, disabled = false) {
+    let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
-      if (k !== 2) {
-        inputs.push(
+      if (k < 2) {
+        inputfields.push(
           <div className="w3-col w3-half w3-padding input-field" key={key}>
             <input
               onChange={this.onChange}
               value={this.state[key]}
-              error={errors[key]}
+              error={errors[this.inputs[k].type]}
               id={key}
-              type={this.inputs[k].type}
+              type={key}
+              disabled={disabled}
               autoFocus={k === 0}
               autoComplete={this.inputs[k].autocomp}
               className={classnames("", {
                 invalid: errors[key],
               })}
             />
-            <label htmlFor={key} className="w3-padding">{this.inputs[k].caption}</label>
+            <label htmlFor={key} className="w3-padding">
+              {this.inputs[k].caption}
+            </label>
             <span className="red-text">{errors[key]}</span>
           </div>
         );
       }
     });
-    return inputs;
+    return inputfields;
   }
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({ errors: {} });
-    this.props.loginUser(this.state); // since we handle the redirect within our component, we don't need to pass in this.props.history as a parameter
+    this.setState({
+      [this.inputs[0].stateprop]: document
+        .getElementById(this.inputs[0].stateprop)
+        .value.trim(),
+      [this.inputs[1].stateprop]: document.getElementById(
+        this.inputs[1].stateprop
+      ).value,
+      loading: true,
+      errors: {},
+    });
+    this.props.loginUser(filterLoginUser(this.state));
   };
 
   render() {
-    const { errors } = this.state;
+    const { errors, loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
-          <Link to="/" className="btn-flat waves-effect w3-top">
-            <i className="material-icons left">keyboard_backspace</i> Back
+          <Link to={get.ROOT}>
+            <span className="btn-flat waves-effect">
+              <i className="material-icons left">keyboard_backspace</i> Back
+            </span>
           </Link>
           <div className="w3-row w3-padding">
             <h4>
               <b>Login</b> below
             </h4>
-            <br/>
+            <br />
             <p className="grey-text text-darken-1">
-              Don't have an account? <Link to="/register">Register</Link>
+              Don't have an account? <Link to={get.SIGNUP}>Register</Link>
             </p>
           </div>
-          <form className="w3-row" onSubmit={this.onSubmit}>
-            {this.getInputFields(errors)}
-            <div className="w3-row w3-padding">
-              <button
-                style={{
-                  width: "150px",
-                  borderRadius: "3px",
-                  letterSpacing: "1.5px",
-                  marginTop: "1rem",
-                }}
-                type="submit"
-                className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-              >
-                Login
-              </button>
+          <form className="w3-row">
+            {this.getInputFields(errors, loading)}
+            <div className="w3-row w3-padding" id="actions">
+              {actions(
+                loading,
+                {
+                  name: "Login",
+                  onclick: this.onSubmit,
+                },
+                {
+                  name: "Need help",
+                  color: "t",
+                }
+              )}
             </div>
           </form>
         </div>

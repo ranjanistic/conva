@@ -4,148 +4,167 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { validNewUser } from "../../actions/validator";
+import { actions } from "./Elements";
+import { get } from "../../paths/get";
+
+import {
+  inputType,
+  validateTextField,
+  getErrorByType,
+  filterSignupUser,
+  filterKeys,
+} from "../../actions/validator";
 
 class Register extends Component {
   constructor() {
     super();
     this.inputs = [
       {
-        stateprop:"username",
-        caption:"Display name",
-        autocomp:"name",
-        type:"text",
+        stateprop: inputType.username,
+        caption: "Display name",
+        autocomp: inputType.name,
+        type: inputType.text,
       },
       {
-        stateprop:"email",
-        caption:"Email address",
-        autocomp:"email",
-        type:"email",
+        stateprop: inputType.email,
+        caption: "Email address",
+        autocomp: inputType.email,
+        type: inputType.email,
       },
       {
-        stateprop:"password",
-        caption:"New password",
-        autocomp:"password",
-        type:"password",
+        stateprop: inputType.password,
+        caption: "New password",
+        autocomp: inputType.password,
+        type: inputType.password,
       },
-    ]
+    ];
     this.state = {
       [this.inputs[0].stateprop]: "",
       [this.inputs[1].stateprop]: "",
       [this.inputs[2].stateprop]: "",
       errors: {},
+      loading: false,
     };
   }
 
   componentDidMount() {
-    // If logged in and user navigates to Register page, should redirect them to dashboard
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/dashboard");
+      this.props.history.push(get.DASHBOARD);
     }
   }
 
-  // componentDidUpdate(nextProps){
-  //   console.log(nextProps);
-  // }
-
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps.auth.isAuthenticated) {
-      return this.props.history.push("/dashboard"); // push user to dashboard when they signup
+      return this.props.history.push(get.DASHBOARD);
     }
-    if (Object.keys(nextProps.errors).length) {
-      Object.keys(nextProps.errors).forEach((key) => {
-        if (!nextProps.errors[key]) delete nextProps.errors[key];
-      });
-      this.setState({
-        errors: nextProps.errors,
-      });
+    let { errors } = nextProps.errors;
+    if (nextProps.errors.loading) {
+      this.setState({ errors: {}, loading: true });
     } else {
-      this.setState({errors:{}});
+      errors = filterKeys(errors);
+      this.setState({ errors: errors, loading: false });
     }
   }
 
   onChange = (e) => {
-    const result = validNewUser(this.state);
-    if (!result.isValid) {
-      const errors = result.err;
-      Object.keys(errors).forEach((key) => {
-        if (!errors[key]){
-          delete errors[key];
-        }
-      });
-      this.setState({ [e.target.id]: e.target.value, errors: { [e.target.id] : errors[e.target.id]} });
-    } else {
-      this.setState({ [e.target.id]: e.target.value });
-    }
+    this.setState({ [e.target.id]: e.target.value, errors: {} });
+    validateTextField(
+      e.target,
+      () => {
+        this.setState({
+          [e.target.id]: e.target.value,
+          errors: {
+            [e.target.id]: getErrorByType(
+              this.inputs.find((ip) => ip.stateprop === e.target.id).autocomp
+            ),
+          },
+        });
+      },
+      e.target.type,
+      () => {
+        this.setState({ [e.target.id]: e.target.value, errors: {} });
+      }
+    );
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.setState({errors:{}});
-    this.props.registerUser(this.state, this.props.history);
+    this.setState({
+      [this.inputs[0].stateprop]: document
+        .getElementById(this.inputs[0].stateprop)
+        .value.trim(),
+      [this.inputs[1].stateprop]: document
+        .getElementById(this.inputs[1].stateprop)
+        .value.trim(),
+      [this.inputs[2].stateprop]: document.getElementById(
+        this.inputs[2].stateprop
+      ).value,
+      loading: true,
+      errors: {},
+    });
+    this.props.registerUser(filterSignupUser(this.state));
   };
 
-  getInputFields(errors) {
-    let inputs = [];
+  getInputFields(errors, disabled = false) {
+    let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
-      if (k !== 3) {
-        inputs.push(
+      if (k < 3) {
+        inputfields.push(
           <div className="w3-col w3-third input-field w3-padding" key={key}>
             <input
               onChange={this.onChange}
               value={this.state[key]}
               error={errors[key]}
               id={key}
+              disabled={disabled}
               type={this.inputs[k].type}
-              autoFocus={k===0}
+              autoFocus={k === 0}
               autoComplete={this.inputs[k].autocomp}
               className={classnames("", {
                 invalid: errors[key],
               })}
             />
-            <label htmlFor={key} className="w3-padding">{this.inputs[k].caption}</label>
+            <label htmlFor={key} className="w3-padding">
+              {this.inputs[k].caption}
+            </label>
             <span className="red-text">{errors[key]}</span>
           </div>
-        )
+        );
       }
     });
-    return inputs;
+    return inputfields;
   }
 
   render() {
-    const { errors } = this.state;
+    const { errors, loading } = this.state;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
-            <Link to="/" className="btn-flat waves-effect w3-top">
+          <Link to={get.ROOT}>
+            <span className="btn-flat waves-effect">
               <i className="material-icons left">keyboard_backspace</i> Back
-            </Link>
+            </span>
+          </Link>
+          <div className="w3-row w3-padding">
+            <h4>
+              <b>The only step</b> you won't need again.
+            </h4>
+            <br />
+            <p className="grey-text text-darken-1">
+              Already have an account? <Link to={get.LOGIN}>Log in</Link>
+            </p>
+          </div>
+          <br />
+          <form className="w3-row">
+            {this.getInputFields(errors, loading)}
+            <br />
             <div className="w3-row w3-padding">
-              <h4>
-                <b>The only step</b> you won't need again.
-              </h4>
-              <br/>
-              <p className="grey-text text-darken-1">
-                Already have an account? <Link to="/login">Log in</Link>
-              </p>
+              {actions(loading, {
+                name: "Register",
+                onclick: this.onSubmit,
+              })}
             </div>
-            <br/>
-            <form className="w3-row" onSubmit={this.onSubmit}>
-              {this.getInputFields(errors)}
-              <br/>
-              <div className="w3-row w3-padding">
-                <button
-                  style={{
-                    marginTop: "1rem",
-                  }}
-                  type="submit"
-                  className="btn btn-large waves-effect waves-light blue"
-                >
-                  Sign up
-                </button>
-              </div>
-            </form>
+          </form>
         </div>
       </div>
     );
