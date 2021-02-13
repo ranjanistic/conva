@@ -128,7 +128,7 @@ class Dashboard extends Component {
     if (!rooms.length) return <div className="w3-center w3-jumbo w3-padding w3-text-gray" style={{ marginTop:"30vh"}}>No rooms yet.</div>;
     rooms.forEach((room, r) => {
       <div className="btn waves-effect w3-row w3-margin" key={r}>
-        <div className="w3-row">room.title</div>
+        <div className="w3-row">{room.title}</div>
       </div>;
     });
   }
