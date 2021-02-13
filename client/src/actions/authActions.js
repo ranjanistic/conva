@@ -95,7 +95,7 @@ export const setLoading = () => {
 
 // Log user out
 export const logoutUser = (_) => (dispatch) => {
-  localStorage.removeItem(Key.sessionToken);
   setAuthToken(false);
+  localStorage.removeItem(Key.sessionToken);
   dispatch(setCurrentUser({}));
 };

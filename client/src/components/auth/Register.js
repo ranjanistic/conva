@@ -57,13 +57,8 @@ class Register extends Component {
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push(get.DASHBOARD);
     }
-    let { errors } = nextProps.errors;
-    if (nextProps.errors.loading) {
-      this.setState({ errors: {}, loading: true });
-    } else {
-      errors = filterKeys(errors);
-      this.setState({ errors: errors, loading: false });
-    }
+    const { event } = nextProps;
+    this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
   }
 
   onChange = (e) => {
@@ -173,10 +168,10 @@ class Register extends Component {
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired,
+  event: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  errors: state.errors,
+  event: state.event,
 });
 export default connect(mapStateToProps, { registerUser })(withRouter(Register));

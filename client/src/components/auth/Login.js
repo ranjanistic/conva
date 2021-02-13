@@ -48,16 +48,12 @@ class Login extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
     }
-    let { errors } = nextProps.errors;
-    if (nextProps.errors.loading) {
-      this.setState({ errors: {}, loading: true });
-    } else {
-      errors = filterKeys(errors);
-      this.setState({ errors: errors, loading: false });
-    }
+    const { event } = nextProps;
+    this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
   }
 
   onChange = (e) => {
@@ -170,10 +166,10 @@ class Login extends Component {
 Login.propTypes = {
   loginUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired,
+  event: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  errors: state.errors,
+  event: state.event,
 });
 export default connect(mapStateToProps, { loginUser })(withRouter(Login));

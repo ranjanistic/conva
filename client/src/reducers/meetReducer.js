@@ -1,5 +1,5 @@
-import { SET_CURRENT_MEET, MEET_LOADING } from "../actions/types";
-const isEmpty = require("is-empty");
+import { MEET_JOINED, MEET_LEAVED } from "../actions/types";
+
 const initialState = {
   isActive: false,
   roomid:"",
@@ -10,19 +10,18 @@ const initialState = {
 
 export default function meetReducer(state = initialState, action) {
   switch (action.type) {
-    case SET_CURRENT_MEET:
+    case MEET_JOINED:
       return {
         ...state,
-        isActive:!isEmpty(action.payload),
+        isActive:true,
         roomid:action.payload.roomid,
         people:action.payload.people,
         chats:action.payload.chats
       };
-    case MEET_LOADING:
-      return {
-        ...state,
-        loading: true,
-      };
+    case MEET_LEAVED: return {
+      ...state,
+      loading:true
+    }
     default:
       return state;
   }

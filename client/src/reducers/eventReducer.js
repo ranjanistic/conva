@@ -3,7 +3,7 @@ const initialState = {
   loading:true,
   errors:{}
 };
-export default function errorReducer(state = initialState, action) {
+export default function eventReducer(state = initialState, action) {
   switch (action.type) {
     case REQ_ERRORS:
       return {

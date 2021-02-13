@@ -1,26 +1,63 @@
-:root{
-    --primary:#ececec;
-    --primary-text:#000;
-    --positive:#2a53da;
-    --positive-text:#ffffff;
-    --negative:#be0e0e;
-    --negative-text:#ffffff;
+:root {
+  --primary: #ececec;
+  --primary-text: #161616;
+  --secondary: #ffffff;
+  --secondary-text: #000000;
+  --positive: #2a53da;
+  --positive-text: #ffffff;
+  --negative: #be0e0e;
+  --negative-text: #ffffff;
 }
-[data-theme="dark"]{
-    --primary:#10101b;
-    --primary-text:#e4e4e4;
-    --positive:#1b3075;
-    --positive-text:#dfdfdf;
-    --negative:#7a2929;
-    --negative-text:#e2e2e2;
-}
-
-body{
-    font-family: 'Questrial',sans-serif;
-    background-color: var(--primary);
-    color: var(--primary-text);
+[data-theme="dark"] {
+  --primary: #12121f;
+  --primary-text: #e4e4e4;
+  --secondary: #13131b;
+  --secondary-text: #f7f7f7;
+  --positive: #6581dd;
+  --positive-text: #0e0e0e;
+  --negative: #e76363;
+  --negative-text: #111111;
 }
 
-h4,button{
-    font-family: 'Questrial',sans-serif;
+/* Custom scrollbar*/
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+  border-radius: 8px;
+  transition: 0.4s ease;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+  transition: 0.4s ease;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--positive);
+  transition: 0.4s ease;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-text);
+  transition: 0.4s ease;
+}
+::-webkit-scrollbar-thumb:focus {
+  background: var(--positive);
+  transition: 0.4s ease;
+}
+
+body {
+  font-family: "Questrial", sans-serif;
+  background-color: var(--primary);
+  color: var(--primary-text);
+}
+
+h4,
+button {
+  font-family: "Questrial", sans-serif;
 }
