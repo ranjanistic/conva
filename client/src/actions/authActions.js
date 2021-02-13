@@ -21,7 +21,7 @@ export const registerUser = (userData) => (dispatch) => {
       errors: result.err,
     });
   } else {
-    dispatch(setLoading());
+    dispatch(loading());
     postData(post.SIGNUP, userData)
       .then((res) => {
         if (res.data.success) {
@@ -29,7 +29,7 @@ export const registerUser = (userData) => (dispatch) => {
           localStorage.setItem(Key.sessionToken, token);
           setAuthToken(token);
           const decoded = jwt_decode(token);
-          dispatch(setCurrentUser(decoded));
+          dispatch(setUser(decoded));
         } else {
           dispatch({
             type: AUTH_ERRORS,
@@ -55,14 +55,14 @@ export const loginUser = (userData) => (dispatch) => {
       errors: result.err,
     });
   } else {
-    dispatch(setLoading());
+    dispatch(loading());
     postData(post.LOGIN,userData).then((res)=>{
       if (res.data.success) {
         const { token } = res.data;
         localStorage.setItem(Key.sessionToken, token);
         setAuthToken(token);
         const decoded = jwt_decode(token);
-        dispatch(setCurrentUser(decoded));
+        dispatch(setUser(decoded));
       } else {
         dispatch({
           type: AUTH_ERRORS,
@@ -78,8 +78,15 @@ export const loginUser = (userData) => (dispatch) => {
   }
 };
 
+// Log user out
+export const logoutUser = (_) => (dispatch) => {
+  setAuthToken(false);
+  localStorage.removeItem(Key.sessionToken);
+  dispatch(setUser({}));
+};
+
 // Set logged in user
-export const setCurrentUser = (decoded) => {
+export const setUser = (decoded) => {
   return {
     type: SET_CURRENT_USER,
     payload: decoded,
@@ -87,15 +94,8 @@ export const setCurrentUser = (decoded) => {
 };
 
 // User loading
-export const setLoading = () => {
+const loading = () => {
   return {
     type: LOADING,
   };
-};
-
-// Log user out
-export const logoutUser = (_) => (dispatch) => {
-  setAuthToken(false);
-  localStorage.removeItem(Key.sessionToken);
-  dispatch(setCurrentUser({}));
 };

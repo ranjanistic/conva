@@ -2,10 +2,7 @@ import { MEET_JOINED, MEET_LEAVED } from "../actions/types";
 
 const initialState = {
   isActive: false,
-  roomid:"",
-  people:[],
-  chats:[],
-  loading:false
+  room:{},
 };
 
 export default function meetReducer(state = initialState, action) {
@@ -14,13 +11,12 @@ export default function meetReducer(state = initialState, action) {
       return {
         ...state,
         isActive:true,
-        roomid:action.payload.roomid,
-        people:action.payload.people,
-        chats:action.payload.chats
+        room:action.payload,
       };
     case MEET_LEAVED: return {
       ...state,
-      loading:true
+      isActive:false,
+      room:{}
     }
     default:
       return state;

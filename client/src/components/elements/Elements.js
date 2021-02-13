@@ -1,4 +1,4 @@
-import { Loading } from "../elements/Loader";
+import { Loading } from "./Loader";
 
 export const actions = (isLoading = false, ...actions) => {
   if (isLoading) {

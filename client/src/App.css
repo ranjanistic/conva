@@ -51,6 +51,15 @@
   transition: 0.4s ease;
 }
 
+.primary{
+    background-color: var(--primary);
+    color: var(--primary-text);
+}
+.secondary{
+    background-color: var(--secondary);
+    color: var(--secondary-text);
+}
+
 body {
   font-family: "Questrial", sans-serif;
   background-color: var(--primary);

@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { actions } from "./Elements";
+import { actions } from "../elements/Elements";
 import { get } from "../../paths/get";
 
 import {
@@ -80,7 +80,7 @@ class Login extends Component {
   getInputFields(errors, disabled = false) {
     let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
-      if (k < 2) {
+      if (k < this.inputs.length) {
         inputfields.push(
           <div className="w3-col w3-half w3-padding input-field" key={key}>
             <input

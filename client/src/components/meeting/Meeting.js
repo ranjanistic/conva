@@ -4,66 +4,51 @@ import { connect } from "react-redux";
 import { leaveMeeting } from "../../actions/meetActions";
 import { Key } from "../../keys";
 import "./../../meeting.css"
+import { get } from "../../paths/get";
 
 class Meeting extends Component {
 
   constructor(){
     super();
     this.state = {
-      actions:{
-        cam:false,
-        mic:false,
-        chat:false,
-        end:false,
-      }
+      actions:{cam:false,
+      mic:false,
+      chatbox:false,
+      active:true,
     }
-
-    this.actions = [];
-
-    Object.keys(this.state.actions).forEach((act)=>{
-      this.actions.push({
-        id:act,
-        html:(on = false)=>{return (
-          <button className="btn-floating btn-large waves-effect white w3-right" onClick={this.toggle}>
-          <i className="material-icons blue-text" id={act}>{this.getToggleViewByAction(act,on)}</i>
-          </button>
-        )}
-      })
-    });
-    console.log(this.actions);
-  }
-
-  getToggleViewByAction(action,on = false){
-    switch(action){
-      case this.state.actions.cam:return on?'videocam':'videocam_off';
-      case this.state.actions.mic:return on?'mic':'mic_off';
-      case this.state.actions.chat:return 'chat';
-      case this.state.actions.end:return 'call_end';
-      default: return on;
     }
   }
 
-  componentDidUpdate(nextProps) {
+  onLeaveClick = (e) => {
+    e.preventDefault();
+    this.props.leaveMeeting();
+  };
+
+
+  componentDidMount() {
+    console.log(this.props);
+    if (!this.props.meet.isActive) {
+      this.props.history.push(get.DASHBOARD);
+    }
+  }
+
+  componentWillReceiveProps(nextProps){
     console.log(nextProps);
-    // if (!nextProps.meet.isActive) {
-    //   this.props.history.push("/dashboard"); // push user to dashboard when they login
-    // }
-    
-    if (nextProps.errors) {
-      this.setState({
-        errors: nextProps.errors,
-      });
+    if(!nextProps.meet.isActive){
+      this.props.history.push(get.DASHBOARD);
     }
-
   }
+
 
   getChildernFrames(){
     let children = [];
     [1,2,3,4].forEach((e)=>{
       children.push(
-        <div className="w3-row black white-text w3-margin btn waves-effect waves-light" style={{ height: "30vh" }} key={e}>
-          Child Frame {e}
-          <video src=""></video>
+        <div className="w3-padding w3-row shadow" key={e}>
+          <div style={{ height: "30vh", width:"100%", padding:"0",borderRadius:"8px" }} className="btn black waves-effect waves-light">
+            <video height="100%" width="100%">
+            </video>
+          </div>
         </div>
       )
     })
@@ -82,27 +67,22 @@ class Meeting extends Component {
   }
 
   render() {
-    // let {mic,cam} = this.state;
+    let {mic,cam} = this.state.actions;
     return (
       <div className="w3-row">
-          <div className="w3-col w3-twothird black white-text" style={{ height: "100vh" }} id="parent">
-            Parent Frame
-            <video></video>
-          </div>
+
+          <video className="w3-col w3-twothird black white-text" style={{ height: "100vh" }} id="parent">
+            {/* Parent Frame */}
+          </video>
 
           <div className="w3-col w3-third" style={{height: "100vh"}}>
             <div className="w3-row w3-center" id="actions" style={{height: "10vh"}}>
-              {(_=>{
-                let childactions = [];
-                this.actions.forEach((action,a)=>{
-                  childactions.push(
-                    <div className="w3-col w3-padding-small w3-center" style={{ width: `${100/Object.keys(this.actions).length}%`}} key={a}>
-                      {action.html(this.state.actions[action])}
-                    </div>
-                  )
-                });
-                return childactions;
-              })()}
+            <span>
+              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button className="btn-floating btn-large waves-effect white w3-right" onClick={this.toggle}><i className="material-icons blue-text" id="cam">{this.getToggleViewById('cam',cam)}</i></button></div>
+              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button id="toggleAudio" className="btn-floating btn-large waves-effect white w3-center" onClick={this.toggle}><i className="material-icons blue-text" id="mic">{this.getToggleViewById('mic',mic)}</i></button></div>
+              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button id="togglechatbox" className="btn-floating btn-large waves-effect waves-light blue w3-center" onClick={this.toggleChatBox} ><i className="material-icons" id="chat">chat</i></button></div>
+              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button id="endcall" className="btn-floating btn-large waves-effect waves-light red w3-left" onClick={this.onLeaveClick} ><i className="material-icons" id="end">call_end</i></button></div>
+            </span>
             </div>
             <div className="w3-row white" id="children"  style={{ overflowY: "scroll", height: "90vh"}}>
               {this.getChildernFrames()}
@@ -129,20 +109,31 @@ class Meeting extends Component {
                   <label htmlFor="newmsg">Message</label>
                 </div>
               </div>
-              <div className="col s2" style={{ width: "49px"}} ><button id="sendmsg" className="btn-floating waves-effect green w3-right"><i className="material-icons white-text">send</i></button></div>
+              <div className="col s2" style={{ width: "49px"}} ><button id="sendmsg" onClick={this.sendMessage} className="btn-floating waves-effect green w3-right"><i className="material-icons white-text">send</i></button></div>
             </div>
           </div>
       </div>
     );
   }
 
+  sendMessage(){
+
+  }
+
   toggle=(e)=>{
     console.log(e.target.id);
     this.setState({
-      [e.target.id]:!this.state[e.target.id]
+      actions:{[e.target.id]:!this.state.actions[e.target.id]}
     });
   }
 
+  getToggleViewById(id,on = false){
+    switch(id){
+      case 'cam':return on?'videocam':'videocam_off';
+      case 'mic':return on?'mic':'mic_off';
+      default: return on;
+    }
+  }
 }
 
 Meeting.propTypes = {

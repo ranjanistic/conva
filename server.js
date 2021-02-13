@@ -159,9 +159,19 @@ connectToDB((err, dbname) => {
     res.json(data);
   });
 
+  app.post("/meet/join", (req, res) => {
+    console.log(req.body);
+    return res.json({ success: true, room :{
+      id:"123456",
+      title:req.body.title,
+      people:[],
+      chats:[]
+    }});
+  })
+
   app.post("/meet/end", (req, res) => {
     console.log("here");
-    return res.json({ success: true });
+    return res.json({ success: true});
   })
   const server_port = process.env.PORT || 5000 || 80;
   const server_host = '0.0.0.0' || 'localhost';
