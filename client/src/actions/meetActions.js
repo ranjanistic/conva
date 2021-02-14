@@ -1,54 +1,64 @@
-import {postData} from './requests';
-import {post} from '../paths/post';
-import {
-  REQ_ERRORS,
-  SET_CURRENT_MEET,
-  MEET_LOADING
-} from "./types";
+import { postData } from "./requests";
+import { post } from "../paths/post";
+import { validJoinMeetingData } from "./validator";
+import { REQ_ERRORS, MEET_JOINED, MEET_LEAVED, LOADING,INPUT_ERRORS } from "./types";
 
-// import {Key} from "../keys";
+export const joinMeeting = (meetData) => (dispatch) => {
+  const result = validJoinMeetingData(meetData);
+  if (!result.isValid) {
+    dispatch({
+      type: INPUT_ERRORS,
+      errors: result.err,
+    });
+  } else {
+    dispatch(loading());
+    postData(post.JOINMEET, meetData)
+      .then((res) => {
+        dispatch(joinedMeet(res.data.room));
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch({
+          type: REQ_ERRORS,
+          payload: err.response.data,
+        });
+      });
+  }
+};
 
-// Register User
-export const leaveMeeting = (userData) => dispatch => {
+export const leaveMeeting = (userData) => (dispatch) => {
+  dispatch(loading());
   postData(post.ENDMEET, userData)
-    .then(res => {
+    .then((res) => {
       sessionStorage.clear();
-      dispatch(setCurrentMeet({}))
+      dispatch(leftMeet());
     })
-    .catch(err =>
+    .catch((err) =>
       dispatch({
         type: REQ_ERRORS,
-        payload: err
+        payload: err,
       })
     );
 };
 
-// Login - get user token
-export const joinMeeting = meetData => dispatch => {
-  postData(post.JOINMEET, meetData)
-    .then(res => {
-      dispatch(setCurrentMeet(res.data))
-    })
-    .catch(err =>{
-      console.log(err);
-      dispatch({
-        type: REQ_ERRORS,
-        payload: err.response.data
-      })
-    });
+// Set logged in user
+const joinedMeet = (meetData) => {
+  return {
+    type: MEET_JOINED,
+    payload: meetData,
+  };
 };
 
 // Set logged in user
-export const setCurrentMeet = meetInfo => {
-    return {
-      type: SET_CURRENT_MEET,
-      payload: meetInfo
-    };
+const leftMeet = (_) => {
+  return {
+    type: MEET_LEAVED,
   };
-  
-  // User loading
-  export const setMeetLoading = () => {
-    return {
-      type: MEET_LOADING
-    };
+};
+
+// loading
+const loading = () => {
+  return {
+    type: LOADING,
   };
+};

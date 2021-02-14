@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { actions } from "./Elements";
+import { actions } from "../elements/Elements";
 import { get } from "../../paths/get";
 
 import {
@@ -57,13 +57,8 @@ class Register extends Component {
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push(get.DASHBOARD);
     }
-    let { errors } = nextProps.errors;
-    if (nextProps.errors.loading) {
-      this.setState({ errors: {}, loading: true });
-    } else {
-      errors = filterKeys(errors);
-      this.setState({ errors: errors, loading: false });
-    }
+    const { event } = nextProps;
+    this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
   }
 
   onChange = (e) => {
@@ -108,7 +103,7 @@ class Register extends Component {
   getInputFields(errors, disabled = false) {
     let inputfields = [];
     Object.keys(this.state).forEach((key, k) => {
-      if (k < 3) {
+      if (k < this.inputs.length) {
         inputfields.push(
           <div className="w3-col w3-third input-field w3-padding" key={key}>
             <input
@@ -173,10 +168,10 @@ class Register extends Component {
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired,
+  event: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  errors: state.errors,
+  event: state.event,
 });
 export default connect(mapStateToProps, { registerUser })(withRouter(Register));

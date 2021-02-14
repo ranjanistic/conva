@@ -1,8 +1,11 @@
 export const constant = {
   nothing:'',
-  nameRegex: /[A-Za-z]{2,100}/,
-  emailRegex : /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  passRegex : /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,50}$/,
+  regex : {
+    name: /[A-Za-z]{2,100}/,
+    email : /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    pass : /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,50}$/,
+    link: /[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+  },
   weekdays:[
     "sunday",
     "monday",
@@ -40,6 +43,15 @@ export const validLoginUser = (user = { email: String, password: String }) => {
   };
 };
 
+export const validJoinMeetingData=(data={title: String})=>{
+  return {
+    isValid: isStringValid(data.title,inputType.title),
+    err:{
+      title:isStringValid(data.title,inputType.title)?0:getErrorByType(inputType.title)
+    }
+  }
+}
+
 export const filterLoginUser=(data = {})=>{
   return {
     email:String(data.email)||'',
@@ -54,6 +66,13 @@ export const filterSignupUser=(data = {})=>{
     password:String(data.password)||''
   }
 }
+
+export const filterMeetJoinData=(data={})=>{
+  return {
+    title:String(data.title)
+  }
+}
+
 
 /**
  * Checks if any key's value in given data param is empty or null or 0, and removes that key.
@@ -75,6 +94,8 @@ export const inputType = {
   name : "name",
   text : "text",
   email : "email",
+  title: "title",
+  link: "link",
   password : "password",
   nonempty : "nonempty",
   username : "username",
@@ -88,6 +109,8 @@ export const inputType = {
 export const getErrorByType=(type = inputType.nonempty)=>{
   switch (type) {
     case inputType.name: return "There has to be a proper name.";
+    case inputType.title: return "There has to be a proper title.";
+    case inputType.link: return "Invalid meeting link.";
     case inputType.email: return "Invalid email address.";
     case inputType.phone:return "Not a valid number";
     case inputType.number:return "Not a valid number";
@@ -164,9 +187,9 @@ export const isStringValid = (
 ) => {
   switch (type) {
     case inputType.name:
-      return isStringValid(String(value).trim()) && constant.nameRegex.test(String(value));
+      return isStringValid(String(value).trim()) && constant.regex.name.test(String(value));
     case inputType.email:
-      return String(value).length<=320&&constant.emailRegex.test(String(value).toLowerCase());
+      return String(value).length<=320&&constant.regex.email.test(String(value).toLowerCase());
     case inputType.phone:
       return !isNaN(value) && isStringValid(String(value).trim());
     case inputType.number:
@@ -183,8 +206,11 @@ export const isStringValid = (
       );
     case inputType.password:
       return String(value).length<=1000
-      &&constant.passRegex.test(String(value))
+      &&constant.regex.pass.test(String(value))
       &&String(value).length>=8;
+    case inputType.link:
+      return 
+    case inputType.title:
     case inputType.username:
       return isStringValid(String(value).trim(),inputType.name); 
     case inputType.weekday:

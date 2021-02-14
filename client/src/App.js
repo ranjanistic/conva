@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import {get} from "./paths/get";
 import setAuthToken from "./utils/setAuthToken";
-import { setCurrentUser, logoutUser } from "./actions/authActions";
+import { setUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
 import Landing from "./components/layout/Landing";
@@ -27,7 +27,7 @@ if (token) {
   try{
     decoded = jwt_decode(token);
     setAuthToken(token);
-    store.dispatch(setCurrentUser(decoded));
+    store.dispatch(setUser(decoded));
     const currentTime = Date.now() / 1000; // to get in milliseconds
     if (decoded.exp < currentTime) {
       store.dispatch(logoutUser());
@@ -50,7 +50,7 @@ const Oauth=()=>{
     if(decoded.exp>currentTime){
       localStorage.setItem(Key.sessionToken, token);
       setAuthToken(token);
-      return oauthSuccessView(decoded);
+      oauthSuccessView(decoded);
     } else throw Error("invalid");
   }catch(e){
     return <h1>Invalid token {e}</h1>
@@ -75,7 +75,7 @@ class App extends Component {
             <Route exact path={get.LOGIN} component={Login} />
             <Switch>
               <PrivateRoute exact path={get.DASHBOARD} component={Dashboard} />
-              <PrivateRoute exact path={get.MEETING} component={Meeting} />
+              <PrivateRoute path={get.MEETING} component={Meeting} />
               <Route path={get.OAUTH.LOGIN} children={<Oauth />} />
             </Switch>
           </div>
