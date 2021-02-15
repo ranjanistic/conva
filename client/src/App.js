@@ -11,8 +11,11 @@ import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import { useParams } from "react-router";
 import PrivateRoute from "./components/private-route/PrivateRoute";
-import Dashboard from "./components/dashboard/Dashboard";
-import Meeting from "./components/meeting/Meeting";
+import Dashboard from "./components/session/Dashboard";
+import Account from "./components/session/Account";
+import Room from "./components/session/Room";
+import Meeting from "./components/session/Meeting";
+import {isSessionValid} from "./actions/validator";
 import {Key} from "./keys";
 import "./App.css";
 import "./Switch.css";
@@ -21,22 +24,12 @@ import { refer } from "./actions/requests";
 
 // import {setCurrentTheme} from "./components/navbar"
 // setCurrentTheme();
-const token = localStorage.getItem(Key.sessionToken);
-if (token) {
-  let decoded;
-  try{
-    decoded = jwt_decode(token);
-    setAuthToken(token);
-    store.dispatch(setUser(decoded));
-    const currentTime = Date.now() / 1000; // to get in milliseconds
-    if (decoded.exp < currentTime) {
-      store.dispatch(logoutUser());
-      refer(get.LOGIN);
-    }
-  }catch{
-    store.dispatch(logoutUser());
-    refer(get.LOGIN);
-  }
+const sessionData = isSessionValid();
+if(!sessionData){
+  store.dispatch(logoutUser());
+} else {
+  setAuthToken(localStorage.getItem(Key.sessionToken));
+  store.dispatch(setUser(sessionData));
 }
 
 
@@ -75,7 +68,9 @@ class App extends Component {
             <Route exact path={get.LOGIN} component={Login} />
             <Switch>
               <PrivateRoute exact path={get.DASHBOARD} component={Dashboard} />
-              <PrivateRoute path={get.MEETING} component={Meeting} />
+              <PrivateRoute exact path={get.ACCOUNT} component={Account} />
+              <PrivateRoute path={get.MEETING.LIVE} component={Meeting} />
+              <PrivateRoute path={get.MEETING.ROOM} component={Room} />
               <Route path={get.OAUTH.LOGIN} children={<Oauth />} />
             </Switch>
           </div>

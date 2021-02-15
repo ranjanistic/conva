@@ -5,8 +5,13 @@ export const get ={
     LOGIN:'/login',
     SIGNUP:'/register',
     DASHBOARD:'/dashboard',
-    MEETING:'/meet',
-    MEETROOM:`${MEET}/:roomid`,
+    ACCOUNT : '/account',
+    MEETING:{
+        ROOM: `${MEET}/room/:roomid`,
+        LIVE: `${MEET}/live/:roomid`,
+        room:(roomid)=>`${MEET}/room/${roomid}`,
+        live:(roomid)=>`${MEET}/live/${roomid}`,
+    },
     OAUTH:{
         LOGIN:`${OAUTH}/login/:token`
     }

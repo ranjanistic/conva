@@ -41,7 +41,7 @@ class Dashboard extends Component {
   componentDidMount(){
     const {meet} = this.props;
     if (meet.isActive) {
-      return this.props.history.push(`${get.MEETING}/${meet.roomid}`);
+      return this.props.history.push(`${get.MEETING.room(meet.roomid)}`);
     }
     console.log("here");
   }
@@ -50,7 +50,7 @@ class Dashboard extends Component {
     console.log(nextProps);
     const {meet} = nextProps;
     if (meet.isActive) {
-      return this.props.history.push(`${get.MEETING}/${meet.roomid}`);
+      return this.props.history.push(`${get.MEETING.room(meet.roomid)}`);
     }
     const { event } = nextProps;
     this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
@@ -138,7 +138,7 @@ class Dashboard extends Component {
       { loading, rooms, errors} = this.state;
     return (
       <div className="w3-row">
-        <div className="w3-col w3-twothird secondary shadow" style={{ marginTop: "4rem", padding: "4em" }}>
+        <div className="w3-col w3-twothird secondary z-depth-4" style={{ padding:"8rem 4rem" }}>
           <div className="w3-row w3-padding" id="navbar">
             <Link to={get.ROOT}>
               <span className="btn-flat waves-effect">
@@ -157,14 +157,14 @@ class Dashboard extends Component {
             </h4>
             <br/>
             <p className="grey-text text-darken-1">
-              Create a new room by setting a title below. Or join in any of your existing rooms from the list.
+              Create a new room by setting a title below. Or view any of your existing rooms from the list.
             </p>
           </div>
           <form className="w3-row">
             {this.getInputFields(errors,loading)}
             <div className="w3-row w3-padding" id="actions">
               {actions(loading, {
-                name: "Create & Join",
+                name: "Create Room",
                 onclick:this.onJoinClick,
               })}
             </div>

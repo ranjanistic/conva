@@ -1,3 +1,6 @@
+import {Key} from "./../keys";
+import jwt_decode from "jwt-decode";
+
 export const constant = {
   nothing:'',
   regex : {
@@ -15,6 +18,22 @@ export const constant = {
     "friday",
     "saturday",
   ]
+}
+
+export const isSessionValid=()=>{
+  const token = localStorage.getItem(Key.sessionToken);
+  if(!token) return false;
+  let decoded;
+  try{
+    decoded = jwt_decode(token);
+    const currentTime = Date.now() / 1000; // to get in milliseconds
+    if (decoded.exp < currentTime) {
+      return false;
+    }
+    return decoded;
+  }catch{
+    return false;
+  }
 }
 
 export const validNewUser = (
