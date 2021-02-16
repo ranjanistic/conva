@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { get } from "../../paths/get";
 import { Key } from "../../keys";
 import "./../../meeting.css"
 
@@ -11,27 +13,19 @@ class Account extends Component {
     this.state = {}
   }
 
-  toggleChatBox(){
-    document.getElementById("chatbox").style.display = (_=>{
-      if(!sessionStorage.getItem(Key.chatboxvisible)){
-        sessionStorage.setItem(Key.chatboxvisible,1);
-        return true;
-      }
-      sessionStorage.setItem(Key.chatboxvisible,sessionStorage.getItem(Key.chatboxvisible)==='1'?0:1);
-      return sessionStorage.getItem(Key.chatboxvisible)==='1'
-    })()?'block':'none';
-  }
-
   render() {
     return (
       <div className="w3-row">
-        Account
+        <h4 className="w3-padding">
+        <Link to={get.DASHBOARD}>
+            <span className="btn-flat waves-effect">
+              <i className="material-icons left">keyboard_backspace</i>
+            </span>
+        </Link>
+        <span className="w3-padding">Account</span>
+        </h4>
       </div>
     );
-  }
-
-  sendMessage(){
-
   }
 }
 

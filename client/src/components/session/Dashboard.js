@@ -16,6 +16,7 @@ import {
 } from "../../actions/validator";
 
 import { get } from "../../paths/get";
+import { refer } from "../../actions/requests";
 
 class Dashboard extends Component {
   constructor() {
@@ -41,7 +42,7 @@ class Dashboard extends Component {
   componentDidMount(){
     const {meet} = this.props;
     if (meet.isActive) {
-      return this.props.history.push(`${get.MEETING.room(meet.roomid)}`);
+      return refer(`${get.MEETING.room(meet.roomid)}`);
     }
     console.log("here");
   }
@@ -146,14 +147,19 @@ class Dashboard extends Component {
               </span>
             </Link>
             <span className="w3-right">
+              <Link to={get.ACCOUNT}>
+                <span className="btn-flat blue white-text waves-effect waves-light">
+                  <i className="material-icons">manage_accounts</i>
+                </span>
+              </Link>
               <span className="btn-flat red white-text waves-effect waves-light" onClick={this.onLogoutClick}>
-                Logout
+                <i className="material-icons">logout</i>
               </span>
             </span>
           </div>
           <div className="w3-row w3-padding">
             <h4>
-              Welcome, {user.username.split(" ")[0]}
+              Welcome, {user.username.split(" ")[0]}.
             </h4>
             <br/>
             <p className="grey-text text-darken-1">
@@ -178,7 +184,6 @@ class Dashboard extends Component {
       </div>
     );
   }
-
 }
 
 Dashboard.propTypes = {
