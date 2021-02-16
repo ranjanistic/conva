@@ -5,6 +5,7 @@ import { leaveMeeting } from "../../actions/meetActions";
 import { Key } from "../../keys";
 import "./../../meeting.css"
 import { get } from "../../paths/get";
+import { refer } from "../../actions/requests";
 
 class Meeting extends Component {
 
@@ -78,10 +79,11 @@ class Meeting extends Component {
           <div className="w3-col w3-third" style={{height: "100vh"}}>
             <div className="w3-row w3-center" id="actions" style={{height: "10vh"}}>
             <span>
-              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button className="btn-floating btn-large waves-effect white w3-right" onClick={this.toggle}><i className="material-icons blue-text" id="cam">{this.getToggleViewById('cam',cam)}</i></button></div>
-              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button id="toggleAudio" className="btn-floating btn-large waves-effect white w3-center" onClick={this.toggle}><i className="material-icons blue-text" id="mic">{this.getToggleViewById('mic',mic)}</i></button></div>
-              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button id="togglechatbox" className="btn-floating btn-large waves-effect waves-light blue w3-center" onClick={this.toggleChatBox} ><i className="material-icons" id="chat">chat</i></button></div>
-              <div style={{ width: "25%"}} className="w3-col w3-padding-small w3-center"><button id="endcall" className="btn-floating btn-large waves-effect waves-light red w3-left" onClick={this.onLeaveClick} ><i className="material-icons" id="end">call_end</i></button></div>
+              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button className="btn-floating btn-large waves-effect white w3-right" onClick={this.toggle}><i className="material-icons blue-text" id="cam">{this.getToggleViewById('cam',cam)}</i></button></div>
+              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="toggleAudio" className="btn-floating btn-large waves-effect white w3-center" onClick={this.toggle}><i className="material-icons blue-text" id="mic">{this.getToggleViewById('mic',mic)}</i></button></div>
+              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="togglechatbox" className="btn-floating btn-large waves-effect waves-light blue w3-center" onClick={this.toggleChatBox} ><i className="material-icons" id="chat">chat</i></button></div>
+              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="aboutroom" className="btn-floating btn-large waves-effect waves-light w3-center" onClick={_=>refer(get.MEETING.room())} ><i className="material-icons">more_horiz</i></button></div>
+              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="endcall" className="btn-floating btn-large waves-effect waves-light red w3-left" onClick={this.onLeaveClick} ><i className="material-icons" id="end">call_end</i></button></div>
             </span>
             </div>
             <div className="w3-row white" id="children"  style={{ overflowY: "scroll", height: "90vh"}}>

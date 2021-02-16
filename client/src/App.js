@@ -69,8 +69,8 @@ class App extends Component {
             <Switch>
               <PrivateRoute exact path={get.DASHBOARD} component={Dashboard} />
               <PrivateRoute exact path={get.ACCOUNT} component={Account} />
-              <PrivateRoute path={get.MEETING.LIVE} component={Meeting} />
-              <PrivateRoute path={get.MEETING.ROOM} component={Room} />
+              <PrivateRoute path={get.MEETING.live()} component={Meeting} />
+              <PrivateRoute path={get.MEETING.room()} component={Room} />
               <Route path={get.OAUTH.LOGIN} children={<Oauth />} />
             </Switch>
           </div>

@@ -148,11 +148,11 @@ class Dashboard extends Component {
             </Link>
             <span className="w3-right">
               <Link to={get.ACCOUNT}>
-                <span className="btn-flat blue white-text waves-effect waves-light">
+                <span title="Account" className="btn-flat blue white-text waves-effect waves-light">
                   <i className="material-icons">manage_accounts</i>
                 </span>
               </Link>
-              <span className="btn-flat red white-text waves-effect waves-light" onClick={this.onLogoutClick}>
+              <span title="Logout" className="btn-flat red white-text waves-effect waves-light" onClick={this.onLogoutClick}>
                 <i className="material-icons">logout</i>
               </span>
             </span>
