@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Key } from "../../keys";
-import { withRouter } from "react-router";
 import { Link } from "react-router-dom";
+import { joinMeeting } from "../../actions/meetActions";
 import { get } from "../../paths/get";
+import { filterMeetJoinData } from "../../actions/validator";
 
 class Room extends Component {
   constructor() {
@@ -12,7 +12,7 @@ class Room extends Component {
     this.vstream = "";
     this.astream = "";
     this.state = {
-      roomid: "",
+      room: {},
       audio: true,
       video: true,
       stream: {},
@@ -20,9 +20,22 @@ class Room extends Component {
   }
 
   componentDidMount() {
-    const { roomid } = this.props.match.params;
-    console.log(roomid);
-    this.setState({ roomid: roomid, audio: false, video: false, stream: {} });
+    console.log(this.props);
+    const {room} = this.props;
+    // if(!room.id){
+
+    // }
+    this.setState({ room: room, audio: false, video: false, stream: {} });
+    
+  }
+  
+  componentWillReceiveProps(nextProps){
+    console.log(nextProps);
+    const {room,meet} = nextProps;
+    if(meet.active){
+      return this.props.history.push(`${get.meet.live(room.id)}`);
+    }
+    this.setState({ room: room, audio: false, video: false, stream: {} });
   }
 
   toggleCam = (e) => {
@@ -108,13 +121,13 @@ class Room extends Component {
     console.log(audioStream);
     console.log(analyser);
     console.log(frequencyArray);
-    console.log(analyser.getByteFrequencyData(frequencyArray))
+    console.log(analyser.getByteFrequencyData(frequencyArray));
     // //Through the frequencyArray has a length longer than 255, there seems to be no
     // //significant data after this point. Not worth visualizing.
     // var doDraw = () => {
     //   requestAnimationFrame(doDraw);
     //   analyser.getByteFrequencyData(frequencyArray);
-      
+
     //   for (var i = 0; i < 255; i++) {
     //     context.rect(0,this.canvas.height,Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5),Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5))
     //   // var adjustedLength;
@@ -125,8 +138,11 @@ class Room extends Component {
     // doDraw();
   };
 
+  onJoinClick=(e)=>{
+    this.props.joinMeeting(filterMeetJoinData(this.state.room));
+  }
   render() {
-    let { roomid, video: cam, audio: mic, stream } = this.state;
+    let { room, video: cam, audio: mic, stream } = this.state;
     return (
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>
@@ -136,17 +152,16 @@ class Room extends Component {
                 <i className="material-icons">keyboard_backspace</i>
               </span>
             </Link>
-            <span className="w3-padding-small">{roomid}</span>
+            <span className="w3-padding-small">{room.title}</span>
           </h4>
           <div className="w3-col w3-half w3-padding">
             <span className="w3-right w3-padding-small">
-            <button
+              <button
                 title="Join meeting"
                 className="btn-floating waves-effect blue"
+                onClick={this.onJoinClick}
               >
-                <i className="material-icons">
-                  video_call
-                </i>
+                <i className="material-icons">video_call</i>
               </button>
             </span>
             <span className="w3-right w3-padding-small">
@@ -229,7 +244,6 @@ class Room extends Component {
     );
   }
 
-  
   checkMediaDevices() {
     // check for mediaDevices.enumerateDevices() support
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -258,10 +272,14 @@ class Room extends Component {
 }
 
 Room.propTypes = {
+  joinMeeting:PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  room: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  room: state.room,
+  meet: state.meet
 });
-export default connect(mapStateToProps)(Room);
+export default connect(mapStateToProps, {joinMeeting})(Room);

@@ -29,9 +29,7 @@ class Account extends Component {
             <span className="w3-padding-small">Your Account</span>
           </h4>
           <div className="w3-col w3-half">
-            <span className="w3-right w3-padding-small">
-              <button title="Logout" className="btn-floating red white-text waves-effect waves-light" onClick={this.onLogoutClick}><i className="material-icons">logout</i></button>
-            </span>
+            
           </div>
         </div>
         <div className="w3-row">

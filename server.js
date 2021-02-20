@@ -1,26 +1,28 @@
-const { validateUser, validateLogin } = require('./re');
+const { validateUser, validateLogin } = require("./re");
 
-const express = require('express'),
+const express = require("express"),
   app = express(),
   { connectToDB, Users } = require("./db"),
-  server = require('http').createServer(app)
-  bodyParser = require('body-parser'),
-  cors = require("cors"),
-  bcrypt = require('bcrypt'),
+  server = require("http").createServer(app);
+(bodyParser = require("body-parser")),
+  (cors = require("cors")),
+  (bcrypt = require("bcrypt")),
   // io = require('socket.io')(server),
-  {CORSORIGIN} = require("./config"),
-  jwt = require("jsonwebtoken"),
-  helmet = require("helmet");
+  ({ CORSORIGIN } = require("./config")),
+  (jwt = require("jsonwebtoken")),
+  (helmet = require("helmet"));
 
 app.use(helmet());
 app.use(bodyParser.json());
-app.use(cors({
-  origin:CORSORIGIN
-}));
+app.use(
+  cors({
+    origin: CORSORIGIN,
+  })
+);
 
 const encrypt = async (password) => {
   return await bcrypt.hash(password, 16);
-}
+};
 
 // io.on('connection', (socket) => {
 //   socket.on('join', (roomId) => {
@@ -82,7 +84,6 @@ connectToDB((err, dbname) => {
   });
 
   app.post("/auth/login", async (req, res) => {
-
     if (!validateLogin(req.body)) {
       console.log("validation failed");
       return res.json({ success: false });
@@ -92,33 +93,35 @@ connectToDB((err, dbname) => {
 
     let data = {};
 
-
     result = await Users().findOne({ email: email });
     if (result) {
       comparison = await bcrypt.compare(password, result.password);
       if (comparison) {
         data = {
           success: true,
-          token: jwt.sign({
-            id: result._id,
-            username: result.name,
-          }, 'secret'),
+          token: jwt.sign(
+            {
+              id: result._id,
+              username: result.name,
+            },
+            "secret"
+          ),
         };
       } else {
         data = {
           success: false,
-          errors:{
-            password: "Wrong credentials"
-          }
-        }
+          errors: {
+            password: "Wrong credentials",
+          },
+        };
       }
     } else {
       data = {
         success: false,
-        errors:{
-          email: "Account not found"
-        }
-      }
+        errors: {
+          email: "Account not found",
+        },
+      };
     }
 
     console.log(data);
@@ -137,47 +140,63 @@ connectToDB((err, dbname) => {
       data = {
         success: false,
         errors: {
-          email:"Account already exists."
-        }
-      }
+          email: "Account already exists.",
+        },
+      };
     } else {
       newpass = await encrypt(password);
       result = await Users().insertOne({
         email: email,
         password: newpass,
-        name: username
+        name: username,
       });
       data = {
         success: true,
-        token: jwt.sign({
-          id: result.ops[0]._id,
-          username: result.ops[0].name
-        }, 'secret'),
+        token: jwt.sign(
+          {
+            id: result.ops[0]._id,
+            username: result.ops[0].name,
+          },
+          "secret"
+        ),
       };
     }
     console.log(data);
     res.json(data);
   });
 
+  app.post("/room/create", (req, res) => {
+    return res.json({
+      success: true,
+      room: {
+        id: "123456",
+        title: req.body.title,
+        people: [],
+        chats: [],
+      },
+    });
+  });
+
   app.post("/meet/join", (req, res) => {
     console.log(req.body);
-    return res.json({ success: true, room :{
-      id:"123456",
-      title:req.body.title,
-      people:[],
-      chats:[]
-    }});
-  })
+    return res.json({
+      success: true,
+      meet: {
+        active:true,
+        people: [],
+        chats: [],
+      },
+    });
+  });
 
   app.post("/meet/end", (req, res) => {
     console.log("here");
-    return res.json({ success: true});
-  })
+    return res.json({ success: true });
+  });
   const server_port = process.env.PORT || 5000 || 80;
-  const server_host = '0.0.0.0' || 'localhost';
+  const server_host = "0.0.0.0" || "localhost";
 
   server.listen(server_port, server_host, () => {
     console.log(`Server on ${server_host}:${server_port}`);
   });
-
 });

@@ -62,23 +62,41 @@ export const validLoginUser = (user = { email: String, password: String }) => {
   };
 };
 
-export const validJoinMeetingData=(data={title: String})=>{
+export const validJoinMeetingData=(data={roomID: String})=>{
   return {
-    isValid: isStringValid(data.title,inputType.title),
+    isValid: isStringValid(data.roomID,inputType.nonempty),
     err:{
-      title:isStringValid(data.title,inputType.title)?0:getErrorByType(inputType.title)
+      title:isStringValid(data.roomID,inputType.nonempty)?0:getErrorByType(inputType.nonempty)
     }
   }
 }
 
-export const filterLoginUser=(data = {})=>{
+export const validRoomCreateData=(data={title: String})=>{
+  return {
+    isValid: isStringValid(data.title,inputType.title),
+    err:{
+      title:isStringValid(data.title,inputType.title)?0:getErrorByType(inputType.title),
+    }
+  }
+}
+
+export const validRoomEntryData=(data={id: String})=>{
+  return {
+    isValid: isStringValid(data.id,inputType.nonempty),
+    err:{
+      id:isStringValid(data.id,inputType.nonempty)?0:getErrorByType(),
+    }
+  }
+}
+
+export const filterLoginUser=(data = {email:String,password:String})=>{
   return {
     email:String(data.email)||'',
     password:String(data.password)||''
   }
 }
 
-export const filterSignupUser=(data = {})=>{
+export const filterSignupUser=(data = {username:String,email:String,password:String})=>{
   return {
     username:String(data.username)||'',
     email:String(data.email)||'',
@@ -86,7 +104,13 @@ export const filterSignupUser=(data = {})=>{
   }
 }
 
-export const filterMeetJoinData=(data={})=>{
+export const filterMeetJoinData=(data={id:String})=>{
+  return {
+    roomID:String(data.id)
+  }
+}
+
+export const filterRoomCreateData=(data={})=>{
   return {
     title:String(data.title)
   }

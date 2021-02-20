@@ -8,15 +8,16 @@ import { get } from "../../paths/get";
 import { refer } from "../../actions/requests";
 
 class Meeting extends Component {
-
   constructor(){
     super();
     this.state = {
-      actions:{cam:false,
-      mic:false,
-      chatbox:false,
-      active:true,
-    }
+      room:{},
+      actions:{
+        cam:false,
+        mic:false,
+        chatbox:false,
+        active:true,
+      }
     }
   }
 
@@ -28,16 +29,21 @@ class Meeting extends Component {
 
   componentDidMount() {
     console.log(this.props);
-    if (!this.props.meet.isActive) {
-      this.props.history.push(get.DASHBOARD);
-    }
+    // if (!this.props.meet.isActive) {
+    //   this.props.history.push(get.DASHBOARD);
+    // }
+    this.setState({room:this.props.room})
   }
 
   componentWillReceiveProps(nextProps){
     console.log(nextProps);
-    if(!nextProps.meet.isActive){
-      this.props.history.push(get.DASHBOARD);
+    const {room,meet} = nextProps;
+    if(!meet.active){
+      this.props.history.push(get.room.self(room.id));
     }
+    // if(!nextProps.meet.isActive){
+    //   this.props.history.push(get.DASHBOARD);
+    // }
   }
 
 
@@ -68,21 +74,32 @@ class Meeting extends Component {
   }
 
   render() {
-    let {mic,cam} = this.state.actions;
+    const {mic,cam} = this.state.actions,
+      {room} = this.state;
     return (
-      <div className="w3-row">
+      <div className="w3-row" style={{height:"100vh"}}>
 
-          <video className="w3-col w3-twothird black white-text" style={{ height: "100vh" }} id="parent">
-            {/* Parent Frame */}
-          </video>
+          <div className="w3-col w3-twothird" style={{height:"100vh"}}>
+            <div className="w3-row" style={{ height: "85vh"}}>
+            <video className="black white-text" style={{ width:"100%",height:"100%" }} id="parent"></video>
+            </div>
+            <div className="w3-row" style={{ height: "15vh"}}>
+              <div className="w3-col w3-half" style={{ height: "15vh",overflowY: "scroll"}}>
+                <h3 style={{paddingLeft:"1rem"}}>{room.title}</h3>
+              </div>
+              <div className="w3-col w3-half" style={{ height: "15vh"}}>
+
+              </div>
+            </div>
+          </div>
 
           <div className="w3-col w3-third" style={{height: "100vh"}}>
-            <div className="w3-row w3-center" id="actions" style={{height: "10vh"}}>
+            <div className="w3-row w3-center w3-padding-small" id="actions" style={{height: "10vh"}}>
             <span>
               <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button className="btn-floating btn-large waves-effect white w3-right" onClick={this.toggle}><i className="material-icons blue-text" id="cam">{this.getToggleViewById('cam',cam)}</i></button></div>
               <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="toggleAudio" className="btn-floating btn-large waves-effect white w3-center" onClick={this.toggle}><i className="material-icons blue-text" id="mic">{this.getToggleViewById('mic',mic)}</i></button></div>
               <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="togglechatbox" className="btn-floating btn-large waves-effect waves-light blue w3-center" onClick={this.toggleChatBox} ><i className="material-icons" id="chat">chat</i></button></div>
-              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="aboutroom" className="btn-floating btn-large waves-effect waves-light w3-center" onClick={_=>refer(get.MEETING.room())} ><i className="material-icons">more_horiz</i></button></div>
+              <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="aboutroom" className="btn-floating btn-large waves-effect waves-light w3-center" onClick={_=>refer(get.room.self(room.id))} ><i className="material-icons">more_horiz</i></button></div>
               <div style={{ width: "20%"}} className="w3-col w3-padding-small w3-center"><button id="endcall" className="btn-floating btn-large waves-effect waves-light red w3-left" onClick={this.onLeaveClick} ><i className="material-icons" id="end">call_end</i></button></div>
             </span>
             </div>
@@ -141,11 +158,13 @@ class Meeting extends Component {
 Meeting.propTypes = {
   leaveMeeting: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  room: PropTypes.object.isRequired,
   meet: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
+  room: state.room,
   meet: state.meet,
 });
 export default connect(mapStateToProps, { leaveMeeting })(Meeting);
