@@ -1,6 +1,7 @@
-const { validateUser, validateLogin } = require("./re");
 
 const express = require("express"),
+  { CORSORIGIN, CORSBETA } = require("./config"),
+  { validateUser, validateLogin } = require("./re"),
   app = express(),
   { connectToDB, Users } = require("./db"),
   server = require("http").createServer(app);
@@ -8,15 +9,21 @@ const express = require("express"),
   (cors = require("cors")),
   (bcrypt = require("bcrypt")),
   // io = require('socket.io')(server),
-  ({ CORSORIGIN } = require("./config")),
   (jwt = require("jsonwebtoken")),
   (helmet = require("helmet"));
 
 app.use(helmet());
 app.use(bodyParser.json());
+
 app.use(
   cors({
-    origin: CORSORIGIN,
+    origin: (origin, callback) => {
+      if ([CORSORIGIN, CORSBETA].indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
 );
 
@@ -72,7 +79,7 @@ const encrypt = async (password) => {
 // app.use("/room",require('routes/room.js'))
 
 connectToDB((err, dbname) => {
-  console.log(CORSORIGIN);
+  console.log(CORSORIGIN,CORSBETA);
   if (err) {
     return console.log(err);
   }
@@ -182,7 +189,7 @@ connectToDB((err, dbname) => {
     return res.json({
       success: true,
       meet: {
-        active:true,
+        active: true,
         people: [],
         chats: [],
       },
