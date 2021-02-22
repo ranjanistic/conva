@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       console.log("request from: ", origin);
-      if (CORSORIGINS.indexOf(origin) !== -1 || !CORSBETA.test(origin) || !origin) {
+      if (CORSORIGINS.indexOf(origin) !== -1 || CORSBETA.test(origin) || !origin) {
         console.log("Allowed.")
         callback(null, true);
       } else {
