@@ -1,6 +1,6 @@
 
 const express = require("express"),
-  { CORSORIGIN, CORSBETA } = require("./config"),
+  { CORSORIGINS, CORSBETA } = require("./config"),
   { validateUser, validateLogin } = require("./re"),
   app = express(),
   { connectToDB, Users } = require("./db"),
@@ -18,7 +18,9 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if ([CORSORIGIN, CORSBETA].indexOf(origin) !== -1 || !origin) {
+      console.log("request from: ", origin);
+      if (CORSORIGINS.indexOf(origin) !== -1 || !CORSBETA.test(origin) || !origin) {
+        console.log("Allowed.")
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -79,7 +81,6 @@ const encrypt = async (password) => {
 // app.use("/room",require('routes/room.js'))
 
 connectToDB((err, dbname) => {
-  console.log(CORSORIGIN,CORSBETA);
   if (err) {
     return console.log(err);
   }
