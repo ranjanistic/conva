@@ -1,0 +1,38 @@
+name: Frontend Beta CI & CD
+
+on:
+  push:
+    branches: [ beta ]
+    paths:
+      - "client/**"
+      - ".github/workflows/client.yml"
+      - ".github/workflows/client-beta.yml"
+      - ".github/workflows/client-pull.yml"
+
+jobs:
+  beta-preview:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build
+      run: |
+        npm run client-ci
+        npm run client-build
+    - name: Firebase Beta Preview Deploy
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CONVAMEET }}'
+        projectId: convameet
+        entryPoint: "./client"
+        channelId: "beta"
+        expires: 15d
+
