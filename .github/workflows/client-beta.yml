@@ -1,8 +1,8 @@
-name: Frontend CI & CD
+name: Frontend Beta CI & CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [ beta ]
     paths:
       - "client/**"
       - ".github/workflows/client.yml"
@@ -10,10 +10,8 @@ on:
       - ".github/workflows/client-pull.yml"
 
 jobs:
-  deploy:
-
+  beta-preview:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [14.x]
@@ -31,11 +29,13 @@ jobs:
     - name: Test
       run: |
         npm run client-test:auto
-    - name: Firebase Deploy
+    - name: Firebase Beta Preview Deploy
       uses: FirebaseExtended/action-hosting-deploy@v0
       with:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_CONVAMEET }}'
         projectId: convameet
         entryPoint: "./client"
-        channelId: live
+        channelId: "beta"
+        expires: 15d
+

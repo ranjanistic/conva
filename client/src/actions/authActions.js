@@ -22,7 +22,7 @@ export const registerUser = (userData) => (dispatch) => {
     });
   } else {
     dispatch(loading());
-    postData(post.SIGNUP, userData)
+    postData(post.auth.SIGNUP, userData)
       .then((res) => {
         if (res.data.success) {
           const { token } = res.data;
@@ -56,7 +56,7 @@ export const loginUser = (userData) => (dispatch) => {
     });
   } else {
     dispatch(loading());
-    postData(post.LOGIN,userData).then((res)=>{
+    postData(post.auth.LOGIN,userData).then((res)=>{
       if (res.data.success) {
         const { token } = res.data;
         localStorage.setItem(Key.sessionToken, token);

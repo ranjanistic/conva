@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import {get} from "./../../paths/get";
 
 class Landing extends Component {
   getAuthHtml() {
@@ -18,7 +19,7 @@ class Landing extends Component {
           <br />
           <div className="col s6">
             <Link
-              to="/dashboard"
+              to={get.DASHBOARD}
               className="btn btn-large waves-effect waves-light blue accent-3"
               style={{
                 borderRadius: "3px",
@@ -42,7 +43,7 @@ class Landing extends Component {
           <br />
           <div className="col s6">
             <Link
-              to="/register"
+              to={get.auth.SIGNUP}
               className="btn btn-large waves-effect waves-light blue accent-3"
               style={{
                 borderRadius: "3px",
@@ -54,7 +55,7 @@ class Landing extends Component {
           </div>
           <div className="col s6">
             <Link
-              to="/login"
+              to={get.auth.LOGIN}
               className="btn btn-large waves-effect white-text"
               style={{
                 borderRadius: "3px",

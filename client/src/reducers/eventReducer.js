@@ -20,7 +20,7 @@ export default function eventReducer(state = initialState, action) {
       };
     case LOADING:
       return {
-        ...state,
+        errors:{},
         loading:true
       };
     default:

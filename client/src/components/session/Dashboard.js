@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import { joinMeeting } from "../../actions/meetActions";
+import { createRoom,enterRoom } from "../../actions/roomActions";
 import { actions } from "../elements/Elements";
 import classnames from "classnames";
 
@@ -11,7 +11,7 @@ import {
   inputType,
   validateTextField,
   getErrorByType,
-  filterMeetJoinData,
+  filterRoomCreateData,
   filterKeys,
 } from "../../actions/validator";
 
@@ -39,21 +39,22 @@ class Dashboard extends Component {
   }
 
   componentDidMount(){
-    const {meet} = this.props;
-    if (meet.isActive) {
-      return this.props.history.push(`${get.MEETING.room(meet.roomid)}`);
-    }
-    console.log("here");
+    console.log(this.props);
+    // const {meet} = this.props;
+    // if (meet.isActive) {
+    //   return refer(`${get.MEET.room(meet.roomid)}`);
+    // }
+    this.setState({rooms:{}})
+    // console.log("here");
   }
 
   componentWillReceiveProps(nextProps) {
     console.log(nextProps);
-    const {meet} = nextProps;
-    if (meet.isActive) {
-      return this.props.history.push(`${get.MEETING.room(meet.roomid)}`);
-    }
-    const { event } = nextProps;
+    const { event,room } = nextProps;
     this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
+    if (event.loading&&room.id) {
+      return this.props.history.push(`${get.room.self(room.id)}`);
+    }
   }
 
   getInputFields(errors, disabled = false) {
@@ -121,7 +122,8 @@ class Dashboard extends Component {
       loading: true,
       errors: {},
     });
-    this.props.joinMeeting(filterMeetJoinData(this.state));
+    console.log(this.state);
+    this.props.createRoom(filterRoomCreateData(this.state));
   }
 
   getRoomsList(rooms=[]){
@@ -146,14 +148,19 @@ class Dashboard extends Component {
               </span>
             </Link>
             <span className="w3-right">
-              <span className="btn-flat red white-text waves-effect waves-light" onClick={this.onLogoutClick}>
-                Logout
+              <Link to={get.ACCOUNT}>
+                <span title="Account" className="btn-flat blue white-text waves-effect waves-light">
+                  <i className="material-icons">manage_accounts</i>
+                </span>
+              </Link>
+              <span title="Logout" className="btn-flat red white-text waves-effect waves-light" onClick={this.onLogoutClick}>
+                <i className="material-icons">logout</i>
               </span>
             </span>
           </div>
           <div className="w3-row w3-padding">
             <h4>
-              Welcome, {user.username.split(" ")[0]}
+              Welcome, {user.username.split(" ")[0]}.
             </h4>
             <br/>
             <p className="grey-text text-darken-1">
@@ -178,19 +185,18 @@ class Dashboard extends Component {
       </div>
     );
   }
-
 }
 
 Dashboard.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
-  meet: PropTypes.object.isRequired,
   event: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,
   event: state.event,
+  room: state.room,
   meet: state.meet
 });
 
-export default connect(mapStateToProps, { logoutUser, joinMeeting })(Dashboard);
+export default connect(mapStateToProps, { logoutUser, createRoom, enterRoom})(Dashboard);

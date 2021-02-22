@@ -1,9 +1,10 @@
 import { postData } from "./requests";
 import { post } from "../paths/post";
 import { validJoinMeetingData } from "./validator";
-import { REQ_ERRORS, MEET_JOINED, MEET_LEAVED, LOADING,INPUT_ERRORS } from "./types";
+import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, LOADING,INPUT_ERRORS } from "./types";
 
 export const joinMeeting = (meetData) => (dispatch) => {
+  console.log(meetData);
   const result = validJoinMeetingData(meetData);
   if (!result.isValid) {
     dispatch({
@@ -12,9 +13,10 @@ export const joinMeeting = (meetData) => (dispatch) => {
     });
   } else {
     dispatch(loading());
-    postData(post.JOINMEET, meetData)
+    postData(post.meet.JOIN, meetData)
       .then((res) => {
-        dispatch(joinedMeet(res.data.room));
+        console.log(res);
+        dispatch(joinedMeet(res.data.meet));
       })
       .catch((err) => {
         console.log(err);
@@ -28,10 +30,13 @@ export const joinMeeting = (meetData) => (dispatch) => {
 
 export const leaveMeeting = (userData) => (dispatch) => {
   dispatch(loading());
-  postData(post.ENDMEET, userData)
+  postData(post.meet.END, userData)
     .then((res) => {
-      sessionStorage.clear();
-      dispatch(leftMeet());
+      console.log(res);
+      if(res.data.success){
+        sessionStorage.clear();
+        dispatch(leftMeet());
+      }
     })
     .catch((err) =>
       dispatch({
@@ -51,8 +56,9 @@ const joinedMeet = (meetData) => {
 
 // Set logged in user
 const leftMeet = (_) => {
+  console.log("leaving...")
   return {
-    type: MEET_LEAVED,
+    type: MEET_LEFT,
   };
 };
 

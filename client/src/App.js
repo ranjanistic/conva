@@ -10,7 +10,9 @@ import Landing from "./components/layout/Landing";
 import Register from "./components/auth/Register";
 import Login from "./components/auth/Login";
 import { useParams } from "react-router";
-import PrivateRoute from "./components/private-route/PrivateRoute";
+import AuthRoute from "./components/secure-route/AuthRoute";
+import RoomRoute from "./components/secure-route/RoomRoute";
+import MeetRoute from "./components/secure-route/MeetRoute";
 import Dashboard from "./components/session/Dashboard";
 import Account from "./components/session/Account";
 import Room from "./components/session/Room";
@@ -51,7 +53,7 @@ const Oauth=()=>{
 }
 
 const oauthSuccessView=(user)=>{
-  refer(get.LOGIN);
+  refer(get.auth.LOGIN);
   return (
     <h1>Logging in as {user.username}, {user.email}</h1>
   );
@@ -64,13 +66,13 @@ class App extends Component {
         <Router>
           <div className="App">
             <Route exact path={get.ROOT} component={Landing} />
-            <Route exact path={get.SIGNUP} component={Register} />
-            <Route exact path={get.LOGIN} component={Login} />
+            <Route exact path={get.auth.SIGNUP} component={Register} />
+            <Route exact path={get.auth.LOGIN} component={Login} />
             <Switch>
-              <PrivateRoute exact path={get.DASHBOARD} component={Dashboard} />
-              <PrivateRoute exact path={get.ACCOUNT} component={Account} />
-              <PrivateRoute path={get.MEETING.LIVE} component={Meeting} />
-              <PrivateRoute path={get.MEETING.ROOM} component={Room} />
+              <AuthRoute exact path={get.DASHBOARD} component={Dashboard} />
+              <AuthRoute exact path={get.ACCOUNT} component={Account} />
+              <RoomRoute path={get.room.self()} component={Room} />
+              <MeetRoute path={get.meet.live()} component={Meeting} />
               <Route path={get.OAUTH.LOGIN} children={<Oauth />} />
             </Switch>
           </div>

@@ -4,5 +4,6 @@ module.exports={
     ENV:env.NODE_ENV,
     DBURL:env.DBURL,
     DBNAME:env.DBNAME,
-    CORSORIGIN:env.CORSORIGIN
+    CORSORIGINS:[env.CORSORIGIN],
+    CORSBETA:/^((https):\/\/)(convameet--beta)+\-[a-z0-9A-Z\-]+\.(web.app)/
 }

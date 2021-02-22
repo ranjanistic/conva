@@ -138,7 +138,7 @@ class Login extends Component {
             </h4>
             <br />
             <p className="grey-text text-darken-1">
-              Don't have an account? <Link to={get.SIGNUP}>Register</Link>
+              Don't have an account? <Link to={get.auth.SIGNUP}>Register</Link>
             </p>
           </div>
           <form className="w3-row">

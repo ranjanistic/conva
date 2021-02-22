@@ -6,6 +6,7 @@ on:
     paths: 
       - "client/**"
       - ".github/workflows/client.yml"
+      - ".github/workflows/client-beta.yml"
       - ".github/workflows/client-pull.yml"
 jobs:
   build:
@@ -24,3 +25,6 @@ jobs:
       run: |
         npm run client-ci
         npm run client-build
+    - name: Test
+      run: |
+        npm run client-test:auto

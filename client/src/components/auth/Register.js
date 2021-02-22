@@ -146,7 +146,7 @@ class Register extends Component {
             </h4>
             <br />
             <p className="grey-text text-darken-1">
-              Already have an account? <Link to={get.LOGIN}>Log in</Link>
+              Already have an account? <Link to={get.auth.LOGIN}>Log in</Link>
             </p>
           </div>
           <br />

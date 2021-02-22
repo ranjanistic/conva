@@ -1,16 +1,18 @@
-import {OAUTH,MEET} from './routes';
+import {OAUTH,MEET, AUTH, ROOM} from './routes';
 
 export const get ={
     ROOT:'/',
-    LOGIN:'/login',
-    SIGNUP:'/register',
     DASHBOARD:'/dashboard',
     ACCOUNT : '/account',
-    MEETING:{
-        ROOM: `${MEET}/room/:roomid`,
-        LIVE: `${MEET}/live/:roomid`,
-        room:(roomid)=>`${MEET}/room/${roomid}`,
-        live:(roomid)=>`${MEET}/live/${roomid}`,
+    auth:{
+        LOGIN:`${AUTH}/login`,
+        SIGNUP:`${AUTH}/register`,  
+    },
+    room: {
+        self:(roomid=":roomid")=>`${ROOM}/${roomid}`,
+    },
+    meet:{
+        live:(roomid=":roomid")=>`${MEET}/${roomid}`,
     },
     OAUTH:{
         LOGIN:`${OAUTH}/login/:token`
