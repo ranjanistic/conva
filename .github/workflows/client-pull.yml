@@ -25,3 +25,6 @@ jobs:
       run: |
         npm run client-ci
         npm run client-build
+    - name: Test
+      run: |
+        npm run client-test:auto

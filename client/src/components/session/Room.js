@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { joinMeeting } from "../../actions/meetActions";
 import { get } from "../../paths/get";
-import { filterMeetJoinData } from "../../actions/validator";
+import { filterMeetJoinData} from "../../actions/validator";
 
 class Room extends Component {
   constructor() {
@@ -109,7 +109,7 @@ class Room extends Component {
   }
 
   visualizeAudio = () => {
-    const context = this.canvas.getContext("2d");
+    // const context = this.canvas.getContext("2d");
     var audioContent = new AudioContext();
     var audioStream = audioContent.createMediaStreamSource(this.astream);
     var analyser = audioContent.createAnalyser();
@@ -142,7 +142,7 @@ class Room extends Component {
     this.props.joinMeeting(filterMeetJoinData(this.state.room));
   }
   render() {
-    let { room, video: cam, audio: mic, stream } = this.state;
+    let { room, video: cam, audio: mic } = this.state;
     return (
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>

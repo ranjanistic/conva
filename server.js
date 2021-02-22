@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if ([CORSORIGIN, CORSBETA].indexOf(origin) !== -1) {
+      if ([CORSORIGIN, CORSBETA].indexOf(origin) !== -1 || !origin) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
