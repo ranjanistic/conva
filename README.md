@@ -43,15 +43,13 @@ npm run server
 npm run client
 ```
 
-## Contributing
+## Testing
+
+### Full application auto testing
 
 ```bash
-npm run commit
+npm run full-test
 ```
-
-Use the above command to locally run unit tests, build linting & committing changes. By doing so, you'll save the time spent by remote action workflow to run tests & builds, and you won't have to revert your commit if tests fail, as this will raise any warnings or errors that occur, before commiting your changes.
-
-## Testing
 
 ### Backend Unit Testing
 
@@ -64,14 +62,22 @@ npm test
 For automatic testing
 
 ```bash
-npm run client-test
+npm run client-test:auto
 ```
 
 For interactive testing
 
 ```bash
-npm run client-test:auto
+npm run client-test
 ```
+
+## Contributing
+
+```bash
+npm run commit
+```
+
+Use the above command to locally run unit tests, build linting & committing changes. By doing so, you'll save the time spent by remote action workflow to run tests & builds, and you won't have to revert your commit if tests fail, as this will raise any warnings or errors that occur, before commiting your changes.
 
 ## CI & CD
 

@@ -16,7 +16,8 @@
     "server": "nodemon server",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "commit": "set CI=true && npm test && npm run client-build && npm run unbuild --prefix client && npm run client-test:auto && git add . && git cz"
+    "full-test": "set CI=true && npm test && npm run client-build && npm run unbuild --prefix client && npm run client-test:auto",
+    "commit": "npm run full-test && git add . && git cz"
   },
   "repository": {
     "type": "git",
