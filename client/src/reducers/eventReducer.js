@@ -1,9 +1,9 @@
 import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING} from "../actions/types";
 const initialState = {
-  loading:true,
+  loading:false,
   errors:{}
 };
-export default function eventReducer(state = initialState, action) {
+export const eventReducer=(state = initialState, action) => {
   switch (action.type) {
     case REQ_ERRORS:
       return {

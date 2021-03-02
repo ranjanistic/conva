@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { exitRoom } from "../../actions/roomActions";
 import { joinMeeting } from "../../actions/meetActions";
 import { get } from "../../paths/get";
 import { filterMeetJoinData} from "../../actions/validator";
@@ -19,6 +19,12 @@ class Room extends Component {
     };
   }
 
+  componentDidUpdate(props){
+    console.log(props)
+    if(!this.props.room.id){
+      this.props.history.push(get.DASHBOARD);
+    }
+  }
   componentDidMount() {
     console.log(this.props);
     const {room} = this.props;
@@ -138,6 +144,11 @@ class Room extends Component {
     // doDraw();
   };
 
+  exit=(e)=>{
+    e.preventDefault();
+    this.props.exitRoom();
+  }
+
   onJoinClick=(e)=>{
     this.props.joinMeeting(filterMeetJoinData(this.state.room));
   }
@@ -147,11 +158,9 @@ class Room extends Component {
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>
           <h4 className="w3-col w3-half">
-            <Link to={get.DASHBOARD}>
-              <span className="btn-flat waves-effect" title="Back to dashboard">
+              <button className="btn-flat waves-effect" title="Back to dashboard" onClick={this.exit}>
                 <i className="material-icons">keyboard_backspace</i>
-              </span>
-            </Link>
+              </button>
             <span className="w3-padding-small">{room.title}</span>
           </h4>
           <div className="w3-col w3-half w3-padding">
@@ -273,6 +282,7 @@ class Room extends Component {
 
 Room.propTypes = {
   joinMeeting:PropTypes.func.isRequired,
+  exitRoom:PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
 };
@@ -282,4 +292,4 @@ const mapStateToProps = (state) => ({
   room: state.room,
   meet: state.meet
 });
-export default connect(mapStateToProps, {joinMeeting})(Room);
+export default connect(mapStateToProps, {joinMeeting, exitRoom})(Room);

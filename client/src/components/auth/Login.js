@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { actions } from "../elements/Elements";
+import { Actions } from "../elements/Actions";
 import { get } from "../../paths/get";
 
 import {
@@ -144,7 +144,7 @@ class Login extends Component {
           <form className="w3-row">
             {this.getInputFields(errors, loading)}
             <div className="w3-row w3-padding" id="actions">
-              {actions(
+              {Actions(
                 loading,
                 {
                   name: "Login",

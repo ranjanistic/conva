@@ -185,6 +185,13 @@ connectToDB((err, dbname) => {
     });
   });
 
+  app.post("/room/receive", (req, res) => {
+    return res.json({
+      success: true,
+      rooms: [1,2,3,4,5,6],
+    });
+  });
+
   app.post("/meet/join", (req, res) => {
     console.log(req.body);
     return res.json({

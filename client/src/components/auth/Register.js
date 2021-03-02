@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import classnames from "classnames";
-import { actions } from "../elements/Elements";
+import { Actions } from "../elements/Actions";
 import { get } from "../../paths/get";
 
 import {
@@ -154,7 +154,7 @@ class Register extends Component {
             {this.getInputFields(errors, loading)}
             <br />
             <div className="w3-row w3-padding">
-              {actions(loading, {
+              {Actions(loading, {
                 name: "Register",
                 onclick: this.onSubmit,
               })}

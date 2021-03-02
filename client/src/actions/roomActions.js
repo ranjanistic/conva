@@ -1,7 +1,16 @@
 import { postData } from "./requests";
 import { post } from "../paths/post";
-import { validRoomCreateData} from "./validator";
-import { REQ_ERRORS,LOADING,INPUT_ERRORS,ROOM_CREATED, ROOM_EXISTS } from "./types";
+import { validRoomCreateData } from "./validator";
+import {
+  REQ_ERRORS,
+  LOADING,
+  INPUT_ERRORS,
+  ROOM_CREATED,
+  ROOM_EXISTS,
+  ROOM_EXIT,
+  ROOMS_LIST,
+  CHAT_LIST,
+} from "./types";
 
 export const createRoom = (roomData) => (dispatch) => {
   const result = validRoomCreateData(roomData);
@@ -49,25 +58,65 @@ export const enterRoom = (roomData) => (dispatch) => {
   }
 };
 
-// Set logged in user
-export const roomCreated = (roomData) => {
-  return {
-    type: ROOM_CREATED,
-    payload: roomData,
-  };
-};
-
-export const enteredRoom = (roomData) => {
-  return {
-    type: ROOM_EXISTS,
-    payload: roomData,
-  };
+export const exitRoom = () => (dispatch)=>{
+  dispatch({
+    type:ROOM_EXIT
+  });
 }
 
+export const getRooms = (_) => (dispatch) => {
+  console.log("getting rooms")
+  postData(post.room.RECEIVE)
+    .then((res) => {
+      console.log(res);
+      dispatch(roomsList(res.data.rooms));
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch({
+        type: REQ_ERRORS,
+        payload: err.response.data,
+      });
+    });
+};
+
+export const getChats = (roomID) => (dispatch) => {
+  postData(post.room.CHATS,{roomID:roomID})
+    .then((res) => {
+      console.log(res);
+      dispatch(chatList(res.data.chats));
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch({
+        type: REQ_ERRORS,
+        payload: err.response.data,
+      });
+    });
+}
+
+// Set logged in user
+export const roomCreated = (roomData) => ({
+  type: ROOM_CREATED,
+  payload: roomData,
+});
+
+export const enteredRoom = (roomData) => ({
+  type: ROOM_EXISTS,
+  payload: roomData,
+});
+
+export const roomsList = (rooms) => ({
+  type: ROOMS_LIST,
+  data: rooms,
+});
+
+export const chatList = (chats) => ({
+  type: CHAT_LIST,
+  data: chats,
+});
 
 // loading
-const loading = () => {
-  return {
-    type: LOADING,
-  };
-};
+const loading = () => ({
+  type: LOADING,
+});

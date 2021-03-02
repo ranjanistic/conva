@@ -1,8 +1,8 @@
 import { Loading } from "./Loader";
 
-export const actions = (isLoading = false, ...actions) => {
+export const Actions = (isLoading = false, ...actions) => {
   if (isLoading) {
-    return Loading;
+    return Loading();
   }
   let buttons = [];
   actions.forEach((act, a) => {
