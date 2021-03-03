@@ -185,6 +185,18 @@ connectToDB((err, dbname) => {
     });
   });
 
+  app.post("/room/enter", (req, res) => {
+    return res.json({
+      success: true,
+      room: {
+        id: req.body.roomID,
+        title: req.body.roomID,
+        people: [],
+        chats: [],
+      },
+    });
+  });
+
   app.post("/room/receive", (req, res) => {
     return res.json({
       success: true,

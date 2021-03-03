@@ -3,7 +3,6 @@ import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/authActions";
-import classnames from "classnames";
 import { Actions } from "../elements/Actions";
 import { get } from "../../paths/get";
 
@@ -14,6 +13,7 @@ import {
   filterLoginUser,
   filterKeys,
 } from "../../actions/validator";
+import { Input } from "../elements/Input";
 
 class Login extends Component {
   constructor() {
@@ -53,7 +53,10 @@ class Login extends Component {
       return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
     }
     const { event } = nextProps;
-    this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
+    this.setState({
+      errors: event.loading ? {} : filterKeys(event.errors),
+      loading: event.loading,
+    });
   }
 
   onChange = (e) => {
@@ -82,25 +85,17 @@ class Login extends Component {
     Object.keys(this.state).forEach((key, k) => {
       if (k < this.inputs.length) {
         inputfields.push(
-          <div className="w3-col w3-half w3-padding input-field" key={key}>
-            <input
-              onChange={this.onChange}
-              value={this.state[key]}
-              error={errors[this.inputs[k].type]}
-              id={key}
-              type={key}
-              disabled={disabled}
-              autoFocus={k === 0}
-              autoComplete={this.inputs[k].autocomp}
-              className={classnames("", {
-                invalid: errors[key],
-              })}
-            />
-            <label htmlFor={key} className="w3-padding">
-              {this.inputs[k].caption}
-            </label>
-            <span className="red-text">{errors[key]}</span>
-          </div>
+          Input({
+            id:key,
+            value:this.state[key],
+            type:key,
+            caption:this.inputs[k].caption,
+            error:errors[key],
+            disabled:disabled,
+            onChange:this.onChange,
+            autocomp:this.inputs[k].autocomp,
+            autoFocus:k === 0
+          })
         );
       }
     });

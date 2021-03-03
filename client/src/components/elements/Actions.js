@@ -15,7 +15,7 @@ export const Actions = (isLoading = false, ...actions) => {
           marginRight: "12px",
         }}
         onClick={act.onclick || ((_) => {})}
-        className={`btn btn-large waves-effect waves-blue ${
+        className={`btn btn-${act.size||'large'} waves-effect waves-blue ${
           act.color || "blue"
         } accent-3`}
       >

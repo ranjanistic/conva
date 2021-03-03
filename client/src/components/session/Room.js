@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 import { exitRoom } from "../../actions/roomActions";
 import { joinMeeting } from "../../actions/meetActions";
 import { get } from "../../paths/get";
-import { filterMeetJoinData} from "../../actions/validator";
+import { filterMeetJoinData } from "../../actions/validator";
+import People from "./People";
+import Chat from "./Chat";
 
 class Room extends Component {
   constructor() {
@@ -19,29 +21,24 @@ class Room extends Component {
     };
   }
 
-  componentDidUpdate(props){
-    console.log(props)
-    if(!this.props.room.id){
+  componentDidUpdate(props) {
+    console.log(props);
+    if (!this.props.room.id) {
       this.props.history.push(get.DASHBOARD);
     }
   }
   componentDidMount() {
     console.log(this.props);
-    const {room} = this.props;
-    // if(!room.id){
-
-    // }
+    const { room } = this.props;
     this.setState({ room: room, audio: false, video: false, stream: {} });
-    
   }
-  
-  componentWillReceiveProps(nextProps){
-    console.log(nextProps);
-    const {room,meet} = nextProps;
-    if(meet.active){
-      return this.props.history.push(`${get.meet.live(room.id)}`);
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { room, meet } = nextProps;
+    if (meet.active) {
+      return nextProps.history.push(`${get.meet.live(room.id)}`);
     }
-    this.setState({ room: room, audio: false, video: false, stream: {} });
+    return { room: room, audio: false, video: false, stream: {} };
   }
 
   toggleCam = (e) => {
@@ -144,23 +141,27 @@ class Room extends Component {
     // doDraw();
   };
 
-  exit=(e)=>{
+  exit = (e) => {
     e.preventDefault();
     this.props.exitRoom();
-  }
+  };
 
-  onJoinClick=(e)=>{
+  onJoinClick = (e) => {
     this.props.joinMeeting(filterMeetJoinData(this.state.room));
-  }
+  };
   render() {
     let { room, video: cam, audio: mic } = this.state;
     return (
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>
           <h4 className="w3-col w3-half">
-              <button className="btn-flat waves-effect" title="Back to dashboard" onClick={this.exit}>
-                <i className="material-icons">keyboard_backspace</i>
-              </button>
+            <button
+              className="btn-flat waves-effect"
+              title="Back to dashboard"
+              onClick={this.exit}
+            >
+              <i className="material-icons">keyboard_backspace</i>
+            </button>
             <span className="w3-padding-small">{room.title}</span>
           </h4>
           <div className="w3-col w3-half w3-padding">
@@ -198,17 +199,11 @@ class Room extends Component {
           </div>
         </div>
         <div className="w3-row " style={{ height: "85vh" }}>
-          <div
-            className="w3-col w3-third "
-            style={{ overflowY: "scroll", height: "100%" }}
-          >
-            All Members + Online
+          <div className="w3-col w3-third" style={{ padding: "0 18px" }}>
+            <People></People>
           </div>
-          <div
-            className="w3-col w3-third z-depth-4 secondary"
-            style={{ overflowY: "scroll", height: "100%" }}
-          >
-            Live Chat
+          <div className="w3-col w3-third" style={{ padding: "0 18px" }}>
+            <Chat></Chat>
           </div>
           <div className="w3-col w3-third " style={{ height: "100%" }}>
             <div className="w3-row" style={{ height: "25%" }}>
@@ -281,8 +276,8 @@ class Room extends Component {
 }
 
 Room.propTypes = {
-  joinMeeting:PropTypes.func.isRequired,
-  exitRoom:PropTypes.func.isRequired,
+  joinMeeting: PropTypes.func.isRequired,
+  exitRoom: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
 };
@@ -290,6 +285,6 @@ Room.propTypes = {
 const mapStateToProps = (state) => ({
   auth: state.auth,
   room: state.room,
-  meet: state.meet
+  meet: state.meet,
 });
-export default connect(mapStateToProps, {joinMeeting, exitRoom})(Room);
+export default connect(mapStateToProps, { joinMeeting, exitRoom })(Room);

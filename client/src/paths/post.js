@@ -7,6 +7,7 @@ export const post = {
     },
     room:{
         CREATE:`${ROOM}/create`,
+        ENTER:`${ROOM}/enter`,
         RECEIVE:`${ROOM}/receive`,
         CHATS:`${ROOM}/chats`,
     },

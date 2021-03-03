@@ -35,37 +35,29 @@ export const createRoom = (roomData) => (dispatch) => {
   }
 };
 
-export const enterRoom = (roomData) => (dispatch) => {
-  const result = validRoomCreateData(roomData);
-  if (!result.isValid) {
-    dispatch({
-      type: INPUT_ERRORS,
-      errors: result.err,
-    });
-  } else {
-    dispatch(loading());
-    postData(post.room.CREATE, roomData)
-      .then((res) => {
-        dispatch(enteredRoom(res.data.room));
-      })
-      .catch((err) => {
-        console.log(err);
-        dispatch({
-          type: REQ_ERRORS,
-          payload: err.response.data,
-        });
+export const enterRoom = (roomID) => (dispatch) => {
+  dispatch(loading());
+  postData(post.room.ENTER, {roomID:roomID})
+    .then((res) => {
+      dispatch(enteredRoom(res.data.room));
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch({
+        type: REQ_ERRORS,
+        payload: err.response.data,
       });
-  }
+    });
 };
 
-export const exitRoom = () => (dispatch)=>{
+export const exitRoom = () => (dispatch) => {
   dispatch({
-    type:ROOM_EXIT
+    type: ROOM_EXIT,
   });
-}
+};
 
 export const getRooms = (_) => (dispatch) => {
-  console.log("getting rooms")
+  console.log("getting rooms");
   postData(post.room.RECEIVE)
     .then((res) => {
       console.log(res);
@@ -81,7 +73,7 @@ export const getRooms = (_) => (dispatch) => {
 };
 
 export const getChats = (roomID) => (dispatch) => {
-  postData(post.room.CHATS,{roomID:roomID})
+  postData(post.room.CHATS, { roomID: roomID })
     .then((res) => {
       console.log(res);
       dispatch(chatList(res.data.chats));
@@ -93,7 +85,7 @@ export const getChats = (roomID) => (dispatch) => {
         payload: err.response.data,
       });
     });
-}
+};
 
 // Set logged in user
 export const roomCreated = (roomData) => ({
