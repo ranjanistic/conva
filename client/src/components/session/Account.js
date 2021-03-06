@@ -9,14 +9,15 @@ class Account extends Component {
 
   constructor(){
     super();
-    this.state = {}
+    
+    this.state = {
+      errors:{}
+    }
   }
 
-  onLogoutClick=(e)=>{
-    e.preventDefault();
-    this.props.logoutUser();
-  }
   render() {
+    const {user} = this.props.auth;
+    console.log(user)
     return (
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>
@@ -33,14 +34,15 @@ class Account extends Component {
           </div>
         </div>
         <div className="w3-row">
-          <div className="w3-col w3-third">
-            Account info
+          <div className="w3-col w3-half w3-padding-small">
+            <div className="w3-row slate w3-padding">
+
+            </div>
           </div>
-          <div className="w3-col w3-third">
-            Account preferences
-          </div>
-          <div className="w3-col w3-third">
-            Account history or something
+          <div className="w3-col w3-half w3-padding-small">
+            <div className="w3-row slate w3-padding">
+              
+            </div>
           </div>
         </div>
       </div>
@@ -50,11 +52,9 @@ class Account extends Component {
 
 Account.propTypes = {
   auth: PropTypes.object.isRequired,
-  room: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  room: state.room,
 });
 export default connect(mapStateToProps,{logoutUser})(Account);

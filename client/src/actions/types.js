@@ -1,6 +1,7 @@
 export const AUTH_ERRORS = "AUTH_ERRORS";
 export const INPUT_ERRORS = "INPUT_ERRORS";
 export const REQ_ERRORS = "REQ_ERRORS";
+export const HW_ERRORS = "HW_ERRORS";
 export const LOADING = "LOADING";
 export const STOP_LOADING = "STOP_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
@@ -11,3 +12,7 @@ export const MEET_JOINED = "MEET_JOINED";
 export const MEET_LEFT = "MEET_LEFT";
 export const ROOMS_LIST = "ROOMS_LIST";
 export const CHAT_LIST = "CHAT_LIST";
+export const CAM_ON = "CAM_ON";
+export const CAM_OFF = "CAM_OFF";
+export const MIC_ON = "MIC_ON";
+export const MIC_OFF = "MIC_OFF";

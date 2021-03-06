@@ -25,7 +25,7 @@ export const Input = (
   } = attrs;
   return (
     <div
-      className="w3-col input-field"
+      className="w3-col w3-half input-field"
       key={id}
       style={{ padding: "0 0 0 20px" }}
     >

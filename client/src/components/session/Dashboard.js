@@ -63,7 +63,8 @@ class Dashboard extends Component {
       };
     }
     if (event.loading && room.id) {
-      return nextProps.history.push(`${get.room.self(room.id)}`);
+      nextProps.history.push(`${get.room.self(room.id)}`);
+      return null;
     }
     return { ...prevState, roomsloading: false, errors: {}, rooms: data.rooms };
   }
