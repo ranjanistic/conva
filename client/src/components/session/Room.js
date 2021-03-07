@@ -14,13 +14,14 @@ import { Button } from "../elements/Button";
 class Room extends Component {
   constructor() {
     super();
-    this.state = {
+    this.initialState = {
       room: {},
       audio: true,
       video: true,
       astream: null,
       vstream: null,
-    };
+    }
+    this.state = this.initialState;
   }
 
   componentDidUpdate(props) {
@@ -78,11 +79,11 @@ class Room extends Component {
     return (
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>
-          <h4 className="w3-col w3-half">
+          <h4 className="w3-col w3-twothird">
             {Button.flat(Icon("keyboard_backspace"),this.exit)}
             <span className="w3-padding-small">{room.title}</span>
           </h4>
-          <div className="w3-col w3-half w3-padding">
+          <div className="w3-col w3-third w3-padding">
             <span className="w3-right w3-padding-small">
               <button
                 title="Join meeting"
@@ -113,10 +114,10 @@ class Room extends Component {
           </div>
         </div>
         <div className="w3-row " style={{ height: "85vh" }}>
-          <div className="w3-col w3-third" style={{ padding: "0 18px" }}>
+          <div className="w3-col w3-third" style={{ padding: "0 18px", height: "85vh", }}>
             <People></People>
           </div>
-          <div className="w3-col w3-third" style={{ padding: "0 18px" }}>
+          <div className="w3-col w3-third" style={{ padding: "0 18px", height:"85vh" }}>
             <Chat></Chat>
           </div>
           <div className="w3-col w3-third " style={{ height: "85vh" }}>
@@ -152,7 +153,7 @@ class Room extends Component {
                 className="slate"
                 style={{ height: "100%" }}
               >
-                Settingssfsf
+                Room settings (disabled if not admin)
               </div>
             </div>
           </div>

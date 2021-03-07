@@ -1,20 +1,18 @@
-import { CAM_ON, CAM_OFF, MIC_ON, MIC_OFF, HW_ERRORS } from "./types";
+import { CAM_ON, CAM_OFF, MIC_ON, MIC_OFF } from "./types";
 
 const checkMediaDevices = () => (navigator.mediaDevices || navigator.mediaDevices.enumerateDevices)
 
 export const toggleCamera = (turnOn,stream) => (dispatch) => {
-  console.log('ayes',checkMediaDevices());
   if (turnOn && checkMediaDevices()) {
-    console.log('yes')
     navigator.mediaDevices.getUserMedia({ video: true }).then(async (res) => {
-      let stream;
+      let newstream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        newstream = await navigator.mediaDevices.getUserMedia({ video: true });
         dispatch({
           type: CAM_ON,
           data: {
             active:true,
-            stream: stream,
+            stream: newstream,
           },
         });
       } catch (error) {
@@ -44,14 +42,14 @@ export const toggleCamera = (turnOn,stream) => (dispatch) => {
 export const toggleMic = (turnOn,stream) => (dispatch) => {
   if (turnOn && checkMediaDevices()) {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(async (res) => {
-      let stream;
+      let newstream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        newstream = await navigator.mediaDevices.getUserMedia({ audio: true });
         dispatch({
           type: MIC_ON,
           data: {
             active:true,
-            stream: stream,
+            stream: newstream,
           },
         });
       } catch (error) {

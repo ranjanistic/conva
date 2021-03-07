@@ -111,6 +111,7 @@ connectToDB((err, dbname) => {
             {
               id: result._id,
               username: result.name,
+              email:result.email,
             },
             "secret"
           ),
@@ -164,6 +165,7 @@ connectToDB((err, dbname) => {
           {
             id: result.ops[0]._id,
             username: result.ops[0].name,
+            email:result.ops[0].email,
           },
           "secret"
         ),

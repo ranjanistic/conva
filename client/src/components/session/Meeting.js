@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { leaveMeeting } from "../../actions/meetActions";
 import { get } from "../../paths/get";
 import { Icon } from "../elements/Icon";
+import Chat from "./Chat";
 
 class Meeting extends Component {
   constructor(){
@@ -90,7 +91,7 @@ class Meeting extends Component {
       children.push(
         <div className="w3-padding w3-row shadow" key={e}>
           <div style={{ height: "30vh", width:"100%", padding:"0",borderRadius:"8px" }} className="btn black waves-effect waves-light">
-            <video height="100%" width="100%">
+            <video height="100%" width="100%" >
             </video>
           </div>
         </div>
@@ -100,7 +101,8 @@ class Meeting extends Component {
   }
 
   toggleChatBox=(e)=>{
-    
+   document.getElementById("children").hidden = document.getElementById("chat").hidden;
+   document.getElementById("chat").hidden = !document.getElementById("chat").hidden 
   }
 
   toggleAbout=(e)=>{
@@ -110,7 +112,6 @@ class Meeting extends Component {
     const {room} = this.state;
     return (
       <div className="w3-row" style={{height:"100vh"}}>
-
           <div className="w3-col w3-twothird" style={{height:"100vh"}}>
             <div className="w3-row" style={{ height: "85vh"}}>
               <video className="black white-text" style={{ width:"100%",height:"100%" }} id="parent"></video>
@@ -129,8 +130,11 @@ class Meeting extends Component {
             <div className="w3-row w3-center w3-padding-small" id="actions" style={{height: "10vh"}}>
               {this.meetActions()}
             </div>
-            <div className="w3-row secondary" id="children"  style={{ overflowY: "scroll", height: "90vh"}}>
+            <div className="w3-row secondary" id="children"  style={{ overflowY: "scroll", height: "90vh"}} hidden={false}>
               {this.getChildernFrames()}
+            </div>
+            <div className="w3-row secondary" id="chat"  style={{ overflowY: "scroll", height: "90vh"}} hidden={true}>
+              <Chat></Chat>
             </div>
           </div>
       </div>
@@ -158,11 +162,14 @@ Meeting.propTypes = {
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
   meet: PropTypes.object.isRequired,
+  hw: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
   room: state.room,
   meet: state.meet,
+  hw: state.hw
 });
+
 export default connect(mapStateToProps, { leaveMeeting })(Meeting);

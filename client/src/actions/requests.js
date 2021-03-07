@@ -1,8 +1,12 @@
 import axios from 'axios';
 import {constant} from "./validator"
+import {Toast} from "./../components/elements/Toast"
 
 export const postData =async(path,data={})=>{
-    return await axios.post(`${process.env.REACT_APP_PROXY_URL}${path}`, data)
+  if(!navigator.onLine){
+    Toast.show('Internet error');
+    return null;
+  } else return await axios.post(`${process.env.REACT_APP_PROXY_URL}${path}`, data)
 }
 
 export const refer =(href,queryData = {})=> window.location.href = href + arrangeAsGetQuery(queryData);

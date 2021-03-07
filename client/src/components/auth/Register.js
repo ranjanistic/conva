@@ -117,7 +117,8 @@ class Register extends Component {
             disabled:disabled,
             onChange:this.onChange,
             autocomp:this.inputs[k].autocomp,
-            autoFocus:k === 0
+            autoFocus:k === 0,
+            classnames:"w3-third"
           })
         );
       }

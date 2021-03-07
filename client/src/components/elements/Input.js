@@ -10,6 +10,7 @@ export const Input = (
     onChange: () => {},
     autocomp: String,
     autoFocus: Boolean,
+    classnames:String
   }
 ) => {
   const {
@@ -22,12 +23,13 @@ export const Input = (
     onChange,
     autocomp,
     autoFocus,
+    classnames:classes
   } = attrs;
   return (
     <div
-      className="w3-col w3-half input-field"
+      className={`w3-col input-field ${classes}`}
       key={id}
-      style={{ padding: "0 0 0 20px" }}
+      style={{ padding: "0 20px" }}
     >
       <input
         id={id}

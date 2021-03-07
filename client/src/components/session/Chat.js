@@ -42,7 +42,8 @@ class Chat extends Component {
           className="w3-col z-depth-4 secondary"
           style={{
             overflowY: "scroll",
-            height: "85vh",
+            height: "100%",
+            width:"100%",
             borderRadius: "12px",
             padding: "8px 0",
           }}
