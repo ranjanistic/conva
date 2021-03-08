@@ -38,19 +38,31 @@ class Login extends Component {
       [this.inputs[1].stateprop]: "",
       errors: {},
       loading: false,
+      nextUrl: get.DASHBOARD,
     };
   }
 
   componentDidMount() {
+    let qString = this.props.location.search;
+    qString = qString.replace("?","");
+    let queries = qString.split("&");
+    let nexturl = this.state.nextUrl;
+    queries.some((query) => {
+      if (query.split("=")[0] === "next") {
+        nexturl = query.split("=")[1];
+        this.setState({nextUrl:nexturl})
+        return true;
+      }
+      return false;
+    });
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push(get.DASHBOARD);
+      return this.props.history.push(nexturl);
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps.auth.isAuthenticated) {
-      return this.props.history.push(get.DASHBOARD); // push user to dashboard when they signup
+      return this.props.history.push(this.state.nextUrl);
     }
     const { event } = nextProps;
     this.setState({
@@ -86,16 +98,16 @@ class Login extends Component {
       if (k < this.inputs.length) {
         inputfields.push(
           Input({
-            id:key,
-            value:this.state[key],
-            type:key,
-            caption:this.inputs[k].caption,
-            error:errors[key],
-            disabled:disabled,
-            onChange:this.onChange,
-            autocomp:this.inputs[k].autocomp,
-            autoFocus:k === 0,
-            classnames:"w3-half"
+            id: key,
+            value: this.state[key],
+            type: key,
+            caption: this.inputs[k].caption,
+            error: errors[key],
+            disabled: disabled,
+            onChange: this.onChange,
+            autocomp: this.inputs[k].autocomp,
+            autoFocus: k === 0,
+            classnames: "w3-half",
           })
         );
       }
