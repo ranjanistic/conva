@@ -3,6 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Input } from "../elements/Input";
 import { inputType } from "../../actions/validator";
+import { connectToPeople } from "./Socket";
+import { Button } from "../elements/Button";
+import { Toast } from "../elements/Toast";
+import { navigatorShare } from "../../actions/requests";
 
 class People extends Component {
   constructor() {
@@ -15,27 +19,50 @@ class People extends Component {
     };
     this.state = {
       [this.input.stateprop]: "",
-      activeMembers: [],
+      activepeople: [],
       members: [],
     };
   }
 
-  getMembers = () => {
-    let members = [];
-    [1, 2, 4].forEach((member, m) => {
-      members.push(
-        <div className="w3-padding-small" key={m}>
-          {member}
+  componentDidMount(){
+    connectToPeople(this.props.room.id,(err,activeperson)=>{
+      let activepeople = this.state.activepeople;
+      activepeople.push(activeperson);
+      this.setState({activepeople:activepeople})
+    })
+  }
+
+  getAllMembers=_=>this.setState({members:this.props.room.people});
+
+  showMembers = (activepeople,allmembers) => {
+    let peopleview = [];
+    if(allmembers.length){
+      //todo: check if allmembers contain any activepeople & prevent duplicacy.
+      activepeople = activepeople.concat(allmembers)
+    } else {
+      peopleview.push(
+        <div className="w3-padding-small w3-center" key={null}>
+          {Button.flat("Show all members",this.getAllMembers,"blue-text")}
+        </div>
+      )
+    }
+    console.log(activepeople)
+    activepeople.forEach((person, p) => {
+      peopleview.push(
+        <div className="w3-padding-small" key={p}>
+          {person}
         </div>
       );
     });
-    return members;
+    return peopleview;
   };
+
   onInputChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
 
   render() {
+    const {activepeople, members} = this.state;
     return (
       <Fragment>
         <div
@@ -60,13 +87,17 @@ class People extends Component {
               })}
             </div>
             <div className="w3-col w3-third w3-padding">
-              <button className="btn-flat waves-effect">Invite</button>
+              <button className="btn-flat waves-effect" onClick={this.getInviteLink}>Invite</button>
             </div>
           </div>
-          <div className="w3-row w3-padding-small">{this.getMembers()}</div>
+          <div className="w3-row w3-padding-small">{this.showMembers(activepeople,members)}</div>
         </div>
       </Fragment>
     );
+  }
+  getInviteLink=(e)=>{
+    document.execCommand('copy',true,'url')
+    Toast.action('Invite link copied to clipboard! Click here to share.',_=>navigatorShare('Conva Room Invitation','url'));
   }
 }
 

@@ -1,32 +1,33 @@
+const { CORSORIGINS, CORSBETA } = require("./config");
 
 class AuthUser {
+  constructor() {
+    this.passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,50}$/;
+    this.emailRegex = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
+    this.nameRegex = /[A-Za-z]{2,100}/;
+  }
 
-    checkPass =  (password)=>{
-        console.log("checking password");
-        let passRe = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,50}$/;
-        return passRe.test(password);
-    };
+  checkPass = (password) => this.passRegex.test(password);
 
-    checkEmail = (email)=>{
-        console.log("checking email");
-        let userRE = /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/;
-        return email.length>4 && userRE.test(email);
-    };
-    checkName = (name)=>{
-        console.log("checking name");
-        let  nameRe  = /[A-Za-z]{2,100}/;
+  checkEmail = (email) => email.length > 4 && this.emailRegex.test(email);
 
-        return nameRe.test(name);
-    };
+  checkName = (name) => this.nameRegex.test(name);
 
-    validateUser = (data = {email,password,name})=>{
-        return this.checkEmail(data.email) && this.checkName(data.name) && this.checkPass(data.password);
-    };
+  validateUser = (data = { email: String, password: String, name: String }) =>
+    this.checkEmail(data.email) &&
+    this.checkName(data.name) &&
+    this.checkPass(data.password);
 
-    validateLogin =  (data = {email,pasword})=>{
-        return this.checkEmail(data.email) && data.password.length;
-    };
-};
+  validateLogin = (data = { email: String, password: String }) =>
+    this.checkEmail(data.email) && data.password.length;
+
+  handleCors = (origin, callback) =>
+    callback(
+      (CORSORIGINS.indexOf(origin) !== -1 || CORSBETA.test(origin) || !origin)
+        ?null
+        :new Error(`${origin} Not allowed by CORS`),
+      (CORSORIGINS.indexOf(origin) !== -1 || CORSBETA.test(origin) || !origin)
+    );
+}
 
 module.exports = new AuthUser();
-

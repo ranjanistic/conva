@@ -9,7 +9,6 @@ import {
   ROOM_EXISTS,
   ROOM_EXIT,
   ROOMS_LIST,
-  CHAT_LIST,
 } from "./types";
 
 export const createRoom = (roomData) => (dispatch) => {
@@ -39,13 +38,14 @@ export const enterRoom = (roomID) => (dispatch) => {
   dispatch(loading());
   postData(post.room.ENTER, {roomID:roomID})
     .then((res) => {
+      console.log(res)
       dispatch(enteredRoom(res.data.room));
     })
     .catch((err) => {
       console.log(err);
       dispatch({
         type: REQ_ERRORS,
-        payload: err.response.data,
+        payload: err,
       });
     });
 };
@@ -67,22 +67,7 @@ export const getRooms = (_) => (dispatch) => {
       console.log(err);
       dispatch({
         type: REQ_ERRORS,
-        payload: err.response.data,
-      });
-    });
-};
-
-export const getChats = (roomID) => (dispatch) => {
-  postData(post.room.CHATS, { roomID: roomID })
-    .then((res) => {
-      console.log(res);
-      dispatch(chatList(res.data.chats));
-    })
-    .catch((err) => {
-      console.log(err);
-      dispatch({
-        type: REQ_ERRORS,
-        payload: err.response.data,
+        payload: err,
       });
     });
 };
@@ -101,11 +86,6 @@ export const enteredRoom = (roomData) => ({
 export const roomsList = (rooms) => ({
   type: ROOMS_LIST,
   data: rooms,
-});
-
-export const chatList = (chats) => ({
-  type: CHAT_LIST,
-  data: chats,
 });
 
 // loading

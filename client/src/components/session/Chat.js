@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { Input } from "../elements/Input";
 import { inputType } from "../../actions/validator";
 import { Actions } from "../elements/Actions";
+import { connectToChat } from "./Socket";
+import { Button } from "../elements/Button";
 
 class Chat extends Component {
   constructor() {
@@ -16,26 +18,50 @@ class Chat extends Component {
     };
     this.state = {
       [this.input.stateprop]: "",
-      chats: [],
+      oldchats: [],
+      chats:[]
     };
   }
+  
+  componentDidMount(){
+    connectToChat(this.props.room.id,(err,newchat)=>{
+      let chats = this.state.chats;
+      chats.push(newchat);
+      this.setState({chats:chats})
+    })
+  }
 
-  getChats = () => {
-    let chats = [];
-    [1, 2, 4].forEach((chat, c) => {
-      chats.push(
+  getAllChats=_=>this.setState({oldchats:this.props.room.chats});
+
+  showChats = (newchats,oldchats) => {
+    console.log(newchats,oldchats);
+    let chatview = [];
+    if(oldchats.length){
+      newchats = newchats.concat(oldchats)
+    } else {
+      chatview.push(
+        <div className="w3-padding-small w3-center" key={null}>
+          {Button.flat("Load older chats",this.getAllChats,"blue-text")}
+        </div>
+      )
+    }
+    console.log(newchats)
+    newchats.forEach((chat, c) => {
+      chatview.push(
         <div className="w3-padding-small" key={c}>
           {chat}
         </div>
       );
     });
-    return chats;
+    return chatview;
   };
 
   onInputChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
+  
   render() {
+    const {chats,oldchats} = this.state;
     return (
       <Fragment>
         <div
@@ -66,20 +92,25 @@ class Chat extends Component {
               })}
             </div>
           </div>
-          <div className="w3-row w3-padding-small">{this.getChats()}</div>
+          <div className="w3-row w3-padding-small scrollY">
+            {this.showChats(chats,oldchats)}
+          </div>
         </div>
       </Fragment>
     );
   }
+
 }
 
 Chat.propTypes = {
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
   room: state.room,
+  data: state.data,
 });
 export default connect(mapStateToProps)(Chat);

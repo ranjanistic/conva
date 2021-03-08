@@ -23,3 +23,26 @@ const arrangeAsGetQuery = (data = {}) => {
     }
     return body;
 };
+
+export const navigatorShare = (
+  title,
+  url,
+  afterShared = (_) => {
+    console.log("Thanks for sharing!");
+  }
+) => {
+  if (navigator.share) {
+    navigator
+      .share({
+        title: title,
+        url: url,
+      })
+      .then(() => {
+        afterShared();
+      })
+      .catch(console.error);
+  } else {
+    Toast.show("Sharing not available on your system. However, the url has been copied to your clipboard.");
+    document.execCommand('copy',true,url);
+  }
+};

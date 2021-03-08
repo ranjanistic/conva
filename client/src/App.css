@@ -92,3 +92,7 @@ button {
 .text-large{
   font-size: 24px;
 }
+
+.scrollY{
+  overflow-y: scroll;
+}

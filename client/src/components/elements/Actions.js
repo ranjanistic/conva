@@ -17,7 +17,7 @@ export const Actions = (isLoading = false, ...actions) => {
         onClick={act.onclick || ((_) => {})}
         className={`btn btn-${act.size||'large'} waves-effect waves-blue ${
           act.color || "blue"
-        } accent-3`}
+        } accent-3 ${act.classnames}`}
       >
         {act.name}
       </button>

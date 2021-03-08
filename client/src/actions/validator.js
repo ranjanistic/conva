@@ -98,8 +98,10 @@ export const isJWTValid=(token)=>{
   }
 }
 
+export const sessionToken=_=>localStorage.getItem(Key.sessionToken);
+
 export const isSessionValid = () => {
-  const token = localStorage.getItem(Key.sessionToken);
+  const token = sessionToken();
   if (!token) return false;
   return isJWTValid(token);
 };

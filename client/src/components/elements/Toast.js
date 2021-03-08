@@ -5,7 +5,7 @@ import { Key } from '../../keys';
 export const Toast = {
     show:(msg) => toast(msg, {
         position: "top-left",
-        autoClose: (msg.length*2/3)*1000,
+        autoClose: Math.min((msg.length*2/3),10)*1000,
         hideProgressBar: true,
         closeOnClick: true,
         pauseOnHover: true,
