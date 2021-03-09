@@ -20,13 +20,14 @@ class Room extends Component {
       video: true,
       astream: null,
       vstream: null,
+      listen:false
     }
     this.state = this.initialState;
   }
 
-  componentDidUpdate(props) {
+  componentDidUpdate() {
     if (!this.props.room.id) {
-      this.props.history.push(get.DASHBOARD);
+      return this.props.history.push(get.DASHBOARD);
     }
     if(this.state.video){
       this.video.srcObject = this.state.vstream
@@ -36,23 +37,19 @@ class Room extends Component {
     }
   }
   componentDidMount() {
-    const { room } = this.props;
-    this.setState({ room: room, audio: false, video: false, stream: {} });
+    if(!this.props.auth.user.verified){
+      return this.props.history.push(get.auth.VERIFY);
+    }
+    this.setState({ ...this.initialState, room: this.props.room });
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     console.log(nextProps,prevState);
     const { room, meet, hw:{cam,mic} } = nextProps;
     if (meet.active) {
-      return nextProps.history.push(`${get.meet.live(room.id)}`);
+      return nextProps.history.push(get.meet.live(room.id));
     }
-    if(cam.active){
-      return {...prevState, video: true, vstream:cam.stream };
-    }
-    if(mic.active) {
-      return {...prevState, audio: true, astream:mic.stream };
-    }
-    return { room: room, audio: false, video: false, astream:null, vstream:null };
+    return {...prevState, audio: mic.active, astream:mic.active?mic.stream:null, video:cam.active, vstream:cam.active?cam.stream:null };
   }
 
   toggleCam = (e) => {
@@ -67,6 +64,11 @@ class Room extends Component {
     this.props.toggleMic(!this.state.audio,this.state.astream);
   };
 
+  toggleLocalPlay = (e) =>{
+    this.audio.paused?this.audio.play():this.audio.pause();
+    this.setState({listen:this.audio.paused?false:true})
+  }
+
   exit = (e) => {
     e.preventDefault();
     this.props.exitRoom();
@@ -77,7 +79,7 @@ class Room extends Component {
   };
 
   render() {
-    let { room, video: cam, audio: mic } = this.state;
+    let { room, video: cam, audio: mic,listen } = this.state;
     return (
       <div className="w3-row">
         <div className="w3-row w3-padding" style={{ height: "15vh" }}>
@@ -87,45 +89,27 @@ class Room extends Component {
           </h4>
           <div className="w3-col w3-third w3-padding">
             <span className="w3-right w3-padding-small">
-              <button
-                title="Join meeting"
-                className="btn-floating waves-effect blue"
-                onClick={this.onJoinClick}
-              >
-                {Icon("video_call")}
-              </button>
+              {Button.circle(Icon("video_call"),this.onJoinClick,{classnames:"blue",title:"Join Meeting"})}
             </span>
             <span className="w3-right w3-padding-small">
-              <button
-                title="Toggle mic"
-                className="btn-floating waves-effect white"
-                onClick={this.toggleMic}
-              >
-              {Icon(mic ? "mic" : "mic_off",{classnames:"blue-text"})}
-              </button>
+              {Button.circle(Icon(mic ? "mic" : "mic_off",{classnames:"blue-text"}),this.toggleMic,{classnames:"white",title:"Toggle Mic"})}
             </span>
             <span className="w3-right w3-padding-small">
-              <button
-                title="Toggle cam"
-                className="btn-floating waves-effect white"
-                onClick={this.toggleCam}
-              >
-                {Icon(cam ? "videocam" : "videocam_off",{classnames:"blue-text"})}
-              </button>
+              {Button.circle(Icon(cam ? "videocam" : "videocam_off",{classnames:"blue-text"}),this.toggleCam,{classnames:"white",title:"Toggle Camera"})}
             </span>
           </div>
         </div>
-        <div className="w3-row " style={{ height: "85vh" }}>
+        <div className="w3-row" style={{ height: "85vh" }}>
           <div className="w3-col w3-third" style={{ padding: "0 18px", height: "85vh", }}>
-            <People></People>
+            <People />
           </div>
           <div className="w3-col w3-third" style={{ padding: "0 18px", height:"85vh" }}>
-            <Chat></Chat>
+            <Chat />
           </div>
           <div className="w3-col w3-third " style={{ height: "85vh" }}>
             <div className="w3-row" style={{ height: "20vh" }}>
               <div className="w3-col w3-half w3-padding-small">
-                <div className="slate black" style={{ height: "20vh", padding:"0" }}>
+                <div className="slate black" style={{ height: "20vh", padding:0 }}>
                   <video
                     id="localvideo"
                     width="100%"
@@ -139,9 +123,9 @@ class Room extends Component {
               </div>
               <div className="w3-col w3-half w3-padding-small">
                 <div className="slate" style={{ height: "20vh" }}>
+                  {Button.circle(Icon(listen&&mic?"headset_mic":"headset_off"),this.toggleLocalPlay,{title:"Listen to yourself"})}
                   <audio
                     id="localaudio"
-                    autoPlay="autoplay"
                     ref={(audio) => {
                       this.audio = audio;
                     }}

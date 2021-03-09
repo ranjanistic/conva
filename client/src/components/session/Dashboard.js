@@ -45,6 +45,9 @@ class Dashboard extends Component {
   componentDidMount(prevState) {
     console.log(this.props);
     console.log(prevState);
+    if(!this.props.auth.user.verified){
+      return this.props.history.push(get.auth.VERIFY);
+    }
     this.setState({ ...this.state, loading: false, roomsloading: true });
     this.props.getRooms();
   }

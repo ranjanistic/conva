@@ -1,6 +1,6 @@
-import setAuthToken from "../utils/setAuthToken";
+import { setAuthToken } from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
-import { postData } from "./requests";
+import { loading, postData } from "./actions";
 import { post } from "../paths/post";
 import { validNewUser, validLoginUser } from "./validator";
 import {
@@ -8,7 +8,8 @@ import {
   INPUT_ERRORS,
   REQ_ERRORS,
   SET_CURRENT_USER,
-  LOADING,
+  CODE_SENT,
+  CODE_VERIFIED
 } from "./types";
 import { Key } from "../keys";
 
@@ -84,16 +85,33 @@ export const loginUser = (userData) => (dispatch) => {
 export const logoutUser = (_) => (dispatch) => {
   setAuthToken(false);
   localStorage.removeItem(Key.sessionToken);
-  dispatch(setUser({}));
+  dispatch(setUser());
 };
 
+export const send2FACode = (email) => (dispatch) => {
+  postData(post.auth.twofactor.SEND, { email })
+    .then((res) => {
+      if(res.data.success)
+        dispatch({type: CODE_SENT})
+    })
+    .catch((e) => {
+
+    });
+}
+
+export const verify2FACode = (email,code) => (dispatch) => {
+  postData(post.auth.twofactor.VERIFY, { email,code })
+    .then((res) => {
+      if(res.data.success)
+        dispatch({type: CODE_VERIFIED})
+    })
+    .catch((e) => {
+
+    });
+}
+
 // Set logged in user
-export const setUser = (decoded) => ({
+export const setUser = (decoded={}) => ({
   type: SET_CURRENT_USER,
   payload: decoded,
-});
-
-// User loading
-const loading = () => ({
-  type: LOADING,
 });

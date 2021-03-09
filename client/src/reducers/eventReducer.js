@@ -1,4 +1,4 @@
-import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING, HW_ERRORS} from "../actions/types";
+import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING, HW_ERRORS, CODE_SENT} from "../actions/types";
 const initialState = {
   loading:false,
   errors:{}
@@ -23,6 +23,11 @@ export const eventReducer=(state = initialState, action) => {
         ...state,
         loading: false,
         hwerror:action.error,
+      };
+    case CODE_SENT:
+      return {
+        errors:{},
+        loading: false,
       };
     case LOADING:
       return {

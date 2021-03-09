@@ -1,13 +1,7 @@
-import { postData } from "./requests";
+import { postData, loading } from "./actions";
 import { post } from "../paths/post";
 import { validJoinMeetingData } from "./validator";
-import {
-  REQ_ERRORS,
-  MEET_JOINED,
-  MEET_LEFT,
-  LOADING,
-  INPUT_ERRORS,
-} from "./types";
+import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, INPUT_ERRORS } from "./types";
 
 export const joinMeeting = (meetData) => (dispatch) => {
   console.log(meetData);
@@ -61,9 +55,4 @@ const joinedMeet = (meetData) => ({
 // Set logged in user
 const leftMeet = (_) => ({
   type: MEET_LEFT,
-});
-
-// loading
-const loading = () => ({
-  type: LOADING,
 });

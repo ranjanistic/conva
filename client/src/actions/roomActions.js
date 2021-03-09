@@ -1,9 +1,8 @@
-import { postData } from "./requests";
+import { postData, loading } from "./actions";
 import { post } from "../paths/post";
 import { validRoomCreateData } from "./validator";
 import {
   REQ_ERRORS,
-  LOADING,
   INPUT_ERRORS,
   ROOM_CREATED,
   ROOM_EXISTS,
@@ -36,9 +35,9 @@ export const createRoom = (roomData) => (dispatch) => {
 
 export const enterRoom = (roomID) => (dispatch) => {
   dispatch(loading());
-  postData(post.room.ENTER, {roomID:roomID})
+  postData(post.room.ENTER, { roomID: roomID })
     .then((res) => {
-      console.log(res)
+      console.log(res);
       dispatch(enteredRoom(res.data.room));
     })
     .catch((err) => {
@@ -86,9 +85,4 @@ export const enteredRoom = (roomData) => ({
 export const roomsList = (rooms) => ({
   type: ROOMS_LIST,
   data: rooms,
-});
-
-// loading
-const loading = () => ({
-  type: LOADING,
 });

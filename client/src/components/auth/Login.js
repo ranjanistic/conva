@@ -12,8 +12,11 @@ import {
   getErrorByType,
   filterLoginUser,
   filterKeys,
+  extractQuery,
 } from "../../actions/validator";
 import { Input } from "../elements/Input";
+import { refer } from "../../actions/actions";
+import { Button } from "../elements/Button";
 
 class Login extends Component {
   constructor() {
@@ -43,21 +46,13 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    let qString = this.props.location.search;
-    qString = qString.replace("?","");
-    let queries = qString.split("&");
-    let nexturl = this.state.nextUrl;
-    queries.some((query) => {
-      if (query.split("=")[0] === "next") {
-        nexturl = query.split("=")[1];
-        this.setState({nextUrl:nexturl})
-        return true;
+    extractQuery(this.props.location.search,"next",(nexturl)=>{
+      nexturl = nexturl?nexturl:this.state.nextUrl;
+      if (this.props.auth.isAuthenticated) {
+        return this.props.history.push(nexturl);
       }
-      return false;
-    });
-    if (this.props.auth.isAuthenticated) {
-      return this.props.history.push(nexturl);
-    }
+      this.setState({nextUrl:nexturl})
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -140,6 +135,7 @@ class Login extends Component {
               <i className="material-icons left">keyboard_backspace</i> Back
             </span>
           </Link>
+          {Button.flat('Forgot?',_=>{refer(get.auth.RECOVERY)},"w3-right blue-text")}
           <div className="w3-row w3-padding">
             <h4>
               <b>Login</b> below
@@ -157,10 +153,6 @@ class Login extends Component {
                 {
                   name: "Login",
                   onclick: this.onSubmit,
-                },
-                {
-                  name: "Need help",
-                  color: "t",
                 }
               )}
             </div>

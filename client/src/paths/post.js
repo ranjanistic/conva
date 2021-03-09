@@ -4,6 +4,11 @@ export const post = {
     auth:{
         LOGIN: `${AUTH}/login`,
         SIGNUP: `${AUTH}/signup`,
+        twofactor: {
+            SEND:`${AUTH}/2FA/send`,
+            VERIFY:`${AUTH}/2FA/verify`,
+        },
+        VERIFICATION: `${AUTH}/verification`,
     },
     room:{
         CREATE:`${ROOM}/create`,

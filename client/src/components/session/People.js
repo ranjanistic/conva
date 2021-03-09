@@ -6,7 +6,7 @@ import { inputType } from "../../actions/validator";
 import { connectToPeople } from "./Socket";
 import { Button } from "../elements/Button";
 import { Toast } from "../elements/Toast";
-import { navigatorShare } from "../../actions/requests";
+import { navigatorShare } from "../../actions/actions";
 
 class People extends Component {
   constructor() {

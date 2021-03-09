@@ -100,6 +100,9 @@ export const isJWTValid=(token)=>{
 
 export const sessionToken=_=>localStorage.getItem(Key.sessionToken);
 
+export const extractQuery = (qString,key,callback) =>
+  callback(qString?((qString.replace("?","").split("&")).find((query) => (query.split("=")[0] === key))).split("=")[1]:'');
+
 export const isSessionValid = () => {
   const token = sessionToken();
   if (!token) return false;

@@ -5,11 +5,8 @@ import { Key } from '../../keys';
 export const Toast = {
     show:(msg) => toast(msg, {
         position: "top-left",
-        autoClose: Math.min((msg.length*2/3),10)*1000,
+        autoClose: Math.max(Math.min((msg.length*2/3),10),5)*1000,
         hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
         progress: undefined,
         style:{
             color:Color[Key.light].secondaryText,
@@ -21,9 +18,6 @@ export const Toast = {
         position: "bottom-left",
         autoClose: false,
         hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
         progress: undefined,
         style:{
             color:Color[Key.light].secondaryText,
@@ -36,8 +30,6 @@ export const Toast = {
         autoClose: false,
         hideProgressBar: true,
         onClick:onclick,
-        pauseOnHover: true,
-        draggable: true,
         progress: undefined,
         style:{
             color:Color[Key.light].secondaryText,
@@ -45,4 +37,14 @@ export const Toast = {
             fontFamily:'Questrial',
         }
     }),
+    error:(msg)=>toast(msg,{
+        position:"bottom-center",
+        autoClose:Math.max(Math.min((msg.length*2/3),10),5)*1000,
+        hideProgressBar:true,
+        style:{
+            color:Color[Key.light].negativeText,
+            background:Color[Key.light].negative,
+            fontFamily:'Questrial',
+        }
+    })
 }

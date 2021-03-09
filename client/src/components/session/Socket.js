@@ -14,3 +14,9 @@ export const connectToPeople=(roomID,callback)=>{
     socket.on('newperson', activeperson=>{callback(null,activeperson)});
     socket.emit('people',sessionToken(),roomID);
 }
+
+export const connectToStream=(roomID,callback)=>{
+    console.log("connecting to stream", roomID)
+    socket.on('newstream', newstream=>{callback(null, newstream )});
+    socket.emit('stream',sessionToken(),roomID);
+}

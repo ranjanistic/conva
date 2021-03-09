@@ -124,6 +124,7 @@ connectToDB((err, dbname) => {
               id: result._id,
               username: result.name,
               email: result.email,
+              verified: true
             },
             "secret"
           ),
@@ -178,6 +179,7 @@ connectToDB((err, dbname) => {
             id: result.ops[0]._id,
             username: result.ops[0].name,
             email: result.ops[0].email,
+            verified: true
           },
           "secret"
         ),
@@ -187,6 +189,12 @@ connectToDB((err, dbname) => {
     res.json(data);
   });
 
+  app.post("/auth/2FA/send",(req,res)=>{
+    res.json({success:true})
+  })
+  app.post("/auth/2FA/verify",(req,res)=>{
+    res.json({success:true})
+  })
   app.post("/room/create", (req, res) => {
     return res.json({
       success: true,
