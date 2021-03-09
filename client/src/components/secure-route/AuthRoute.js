@@ -11,7 +11,7 @@ const AuthRoute = ({ component: Component, auth, ...rest }) => (
       auth.isAuthenticated === true ? (
         <Component {...props} />
       ) : (
-        <Redirect to={get.auth.LOGIN} />
+        <Redirect to={get.auth.login(rest.path)} />
       )
     }
   />

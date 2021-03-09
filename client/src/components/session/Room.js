@@ -57,11 +57,13 @@ class Room extends Component {
 
   toggleCam = (e) => {
     e.preventDefault();
+    console.log(this.state);
     this.props.toggleCamera(!this.state.video,this.state.vstream);
   };
 
   toggleMic = (e) => {
     e.preventDefault();
+    console.log(this.state);
     this.props.toggleMic(!this.state.audio,this.state.astream);
   };
 
