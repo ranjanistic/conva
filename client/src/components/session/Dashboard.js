@@ -48,6 +48,9 @@ class Dashboard extends Component {
     if(!this.props.auth.user.verified){
       return this.props.history.push(get.auth.VERIFY);
     }
+    if(this.props.auth.user.temp){
+      return this.props.logoutUser();
+    }
     this.setState({ ...this.state, loading: false, roomsloading: true });
     this.props.getRooms();
   }

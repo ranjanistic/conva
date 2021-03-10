@@ -7,6 +7,7 @@ export const STOP_LOADING = "STOP_LOADING";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const CODE_SENT = "CODE_SENT";
 export const CODE_VERIFIED = "CODE_VERIFIED";
+export const CODE_EXPIRED = "CODE_EXPIRED";
 export const ROOM_CREATED = "ROOM_CREATED";
 export const ROOM_EXISTS = "ROOM_EXISTS";
 export const ROOM_EXIT = "ROOM_EXIT";

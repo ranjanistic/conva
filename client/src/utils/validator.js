@@ -45,7 +45,8 @@ export const errorByType = {
   [inputType.number]: "Not a valid number",
   [inputType.naturalnumber]: "Must be greater than zero",
   [inputType.wholenumber]: "Must be a positive number",
-  [inputType.password]: "Weak password. Must include special chars, upper & lowercase letters with numbers.",
+  [inputType.password]:
+    "Weak password. Must include special chars, upper & lowercase letters with numbers.",
   [inputType.weekday]: "Invalid weekday",
   [inputType.nonempty]: "This can't be empty.",
 };
@@ -87,27 +88,34 @@ export const isStringValid = (value = String, type = inputType.nonempty) =>
     ? checkValidityByType[type](value)
     : checkValidityByType[inputType.nonempty](value);
 
-
-export const isJWTValid=(token)=>{
+export const isJWTValid = (token) => {
   try {
     let decoded = jwt_decode(token);
     const currentTime = Date.now() / 1000;
-    return decoded.exp < currentTime?false:decoded
+    return decoded.exp < currentTime ? false : decoded;
   } catch {
     return false;
   }
-}
-
-export const sessionToken=_=>localStorage.getItem(Key.sessionToken);
-
-export const extractQuery = (qString,key,callback) =>
-  callback(qString?((qString.replace("?","").split("&")).find((query) => (query.split("=")[0] === key))).split("=")[1]:'');
-
-export const isSessionValid = () => {
-  const token = sessionToken();
-  if (!token) return false;
-  return isJWTValid(token);
 };
+
+export const sessionToken = (temp = false) =>
+  localStorage.getItem(temp ? Key.tempSessionToken : Key.sessionToken);
+
+export const isSessionValid = (temp = false) => {
+  const token = sessionToken(temp);
+  return !token ? false : isJWTValid(token);
+};
+
+export const extractQuery = (qString, key, callback) =>
+  callback(
+    qString
+      ? qString
+          .replace("?", "")
+          .split("&")
+          .find((query) => query.split("=")[0] === key)
+          .split("=")[1]
+      : ""
+  );
 
 export const validNewUser = (
   user = { email: String, password: String, username: String }
@@ -137,6 +145,29 @@ export const validLoginUser = (user = { email: String, password: String }) => ({
       ? 0
       : getErrorByType(inputType.email),
     password: isStringValid(user.password)
+      ? 0
+      : getErrorByType(inputType.nonempty),
+  },
+});
+
+export const validRecoveryInfo = (info = { email: String }) => ({
+  isValid: isStringValid(info.email, inputType.email),
+  err: {
+    email: isStringValid(info.email, inputType.email)
+      ? 0
+      : getErrorByType(inputType.email),
+  },
+});
+
+export const valid2FAData = (data = { email: String, code: String }) => ({
+  isValid:
+    isStringValid(data.email, inputType.email) &&
+    isStringValid(data.code, inputType.nonempty),
+  err: {
+    email: isStringValid(data.email, inputType.email)
+      ? 0
+      : getErrorByType(inputType.email),
+    twofacode: isStringValid(data.code, inputType.nonempty)
       ? 0
       : getErrorByType(inputType.nonempty),
   },

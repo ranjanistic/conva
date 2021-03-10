@@ -4,6 +4,7 @@ export const post = {
     auth:{
         LOGIN: `${AUTH}/login`,
         SIGNUP: `${AUTH}/signup`,
+        RECPASS: `${AUTH}/setrecoverypass`,
         twofactor: {
             SEND:`${AUTH}/2FA/send`,
             VERIFY:`${AUTH}/2FA/verify`,

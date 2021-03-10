@@ -46,5 +46,16 @@ export const Toast = {
             background:Color[Key.light].negative,
             fontFamily:'Questrial',
         }
+    }),
+    errorAction:(msg,onClick)=>toast(msg,{
+        position:"bottom-center",
+        autoClose:false,
+        hideProgressBar:true,
+        onClick,
+        style:{
+            color:Color[Key.light].negativeText,
+            background:Color[Key.light].negative,
+            fontFamily:'Questrial',
+        }
     })
 }

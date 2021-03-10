@@ -3,7 +3,7 @@ const express = require("express"),
   app = express(),
   { connectToDB, Users } = require("./db"),
   server = require("http").createServer(app);
-  (bodyParser = require("body-parser")),
+(bodyParser = require("body-parser")),
   (cors = require("cors")),
   (bcrypt = require("bcrypt")),
   (io = require("socket.io")(server, {
@@ -23,6 +23,7 @@ app.use(
   })
 );
 
+const sessionSecret = "secret";
 const encrypt = async (password) => {
   return await bcrypt.hash(password, 16);
 };
@@ -32,17 +33,17 @@ io.on("connection", (client) => {
   console.log(client);
   client.on("chatroom", (sessionToken, roomID) => {
     console.log("client is subscribing chatroom ", roomID, sessionToken);
-    setInterval(()=>{
-      client.emit("newmsg", "lol")
-      console.log("loled")
-    },1000);
+    setInterval(() => {
+      client.emit("newmsg", "lol");
+      console.log("loled");
+    }, 1000);
   });
   client.on("people", (sessionToken, roomID) => {
     console.log("client is subscribing people ", roomID, sessionToken);
-    setInterval(()=>{
-      client.emit("newperson", "lol")
-      console.log("loled")
-    },1000);
+    setInterval(() => {
+      client.emit("newperson", "lol");
+      console.log("loled");
+    }, 1000);
   });
 });
 // io.on('connection', (socket) => {
@@ -124,9 +125,9 @@ connectToDB((err, dbname) => {
               id: result._id,
               username: result.name,
               email: result.email,
-              verified: true
+              verified: true,
             },
-            "secret"
+            sessionSecret
           ),
         };
       } else {
@@ -179,9 +180,9 @@ connectToDB((err, dbname) => {
             id: result.ops[0]._id,
             username: result.ops[0].name,
             email: result.ops[0].email,
-            verified: true
+            verified: true,
           },
-          "secret"
+          sessionSecret
         ),
       };
     }
@@ -189,12 +190,36 @@ connectToDB((err, dbname) => {
     res.json(data);
   });
 
-  app.post("/auth/2FA/send",(req,res)=>{
-    res.json({success:true})
-  })
-  app.post("/auth/2FA/verify",(req,res)=>{
-    res.json({success:true})
-  })
+  app.post("/auth/2FA/send", (req, res) => {
+    res.json({ success: true });
+  });
+  app.post("/auth/2FA/verify", async (req, res) => {
+    console.log(req.headers);
+    //if not req.headers.authorization, assign temporary token.
+    const { email, code } = req.body;
+    let result = await Users().findOne({ email });
+    res.json({
+      success: true,
+      token: jwt.sign(
+        {
+          id: result._id,
+          username: result.name,
+          email: result.email,
+          verified: true,
+          temp: true,
+        },
+        sessionSecret
+      ),
+    });
+  });
+  
+  app.post("/auth/setrecoverypass", async (req, res) => {
+    console.log(req.body);
+    //if not req.headers.authorization, don't.
+    const { newpassword } = req.body;
+    res.json({success: true});
+  });
+
   app.post("/room/create", (req, res) => {
     return res.json({
       success: true,
@@ -213,8 +238,8 @@ connectToDB((err, dbname) => {
       room: {
         id: req.body.roomID,
         title: req.body.roomID,
-        people: [6,5,4,3,2,1],
-        chats: [1,2,3,4,5,6],
+        people: [6, 5, 4, 3, 2, 1],
+        chats: [1, 2, 3, 4, 5, 6],
       },
     });
   });
