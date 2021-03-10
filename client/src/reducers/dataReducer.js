@@ -1,4 +1,4 @@
-import { ROOMS_LIST} from "../actions/types";
+import { ROOMS_LIST} from "../utils/dispatchType";
 const initialState = {
     rooms:[],
     chats:[],

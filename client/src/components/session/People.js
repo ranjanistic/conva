@@ -2,7 +2,7 @@ import { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Input } from "../elements/Input";
-import { inputType } from "../../actions/validator";
+import { inputType } from "../../utils/validator";
 import { connectToPeople } from "./Socket";
 import { Button } from "../elements/Button";
 import { Toast } from "../elements/Toast";

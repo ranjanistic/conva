@@ -1,5 +1,5 @@
 import openSocket from "socket.io-client"
-import { sessionToken } from "../../actions/validator";
+import { sessionToken } from "../../utils/validator";
 
 const socket = openSocket(`${process.env.REACT_APP_PROXY_URL}}`);
 

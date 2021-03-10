@@ -1,4 +1,4 @@
-import { Key } from "./keys";
+import { Key } from "./utils/keys";
 
 export const Color = {
     [Key.light]:{

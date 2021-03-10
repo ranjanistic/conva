@@ -1,4 +1,4 @@
-import { CAM_ON, CAM_OFF, MIC_ON, MIC_OFF } from "./types";
+import { CAM_ON, CAM_OFF, MIC_ON, MIC_OFF } from "../utils/dispatchType";
 
 const checkMediaDevices = () => (navigator.mediaDevices || navigator.mediaDevices.enumerateDevices)
 

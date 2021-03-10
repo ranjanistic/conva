@@ -13,7 +13,7 @@ import {
   filterRoomCreateData,
   filterKeys,
   validRoomCreateData,
-} from "../../actions/validator";
+} from "../../utils/validator";
 
 import { get } from "../../paths/get";
 import { Loading } from "../elements/Loader";

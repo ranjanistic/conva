@@ -1,7 +1,7 @@
 import { postData, loading } from "./actions";
 import { post } from "../paths/post";
-import { validJoinMeetingData } from "./validator";
-import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, INPUT_ERRORS } from "./types";
+import { validJoinMeetingData } from "../utils/validator";
+import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, INPUT_ERRORS } from "../utils/dispatchType";
 
 export const joinMeeting = (meetData) => (dispatch) => {
   console.log(meetData);

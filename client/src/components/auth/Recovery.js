@@ -10,7 +10,7 @@ import {
   validateTextField,
   getErrorByType,
   filterKeys,
-} from "../../actions/validator";
+} from "../../utils/validator";
 import { Input } from "../elements/Input";
 import { send2FACode, verify2FACode } from "../../actions/authActions";
 

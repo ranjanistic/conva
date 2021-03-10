@@ -1,4 +1,4 @@
-import { Key } from "./../keys";
+import { Key } from "./keys";
 import jwt_decode from "jwt-decode";
 
 export const constant = {

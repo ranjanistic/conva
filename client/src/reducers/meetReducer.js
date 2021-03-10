@@ -1,4 +1,4 @@
-import { MEET_JOINED,MEET_LEFT } from "../actions/types";
+import { MEET_JOINED,MEET_LEFT } from "../utils/dispatchType";
 const initialState = {};
 export const meetReducer=(state = initialState, action)=>{
   switch (action.type) {

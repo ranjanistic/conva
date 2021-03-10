@@ -1,6 +1,6 @@
 import { postData, loading } from "./actions";
 import { post } from "../paths/post";
-import { validRoomCreateData } from "./validator";
+import { validRoomCreateData } from "../utils/validator";
 import {
   REQ_ERRORS,
   INPUT_ERRORS,
@@ -8,7 +8,7 @@ import {
   ROOM_EXISTS,
   ROOM_EXIT,
   ROOMS_LIST,
-} from "./types";
+} from "../utils/dispatchType";
 
 export const createRoom = (roomData) => (dispatch) => {
   const result = validRoomCreateData(roomData);
@@ -56,7 +56,6 @@ export const exitRoom = () => (dispatch) => {
 };
 
 export const getRooms = (_) => (dispatch) => {
-  console.log("getting rooms");
   postData(post.room.RECEIVE)
     .then((res) => {
       console.log(res);

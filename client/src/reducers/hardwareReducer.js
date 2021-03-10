@@ -1,4 +1,4 @@
-import { CAM_ON, CAM_OFF, MIC_ON, MIC_OFF } from "../actions/types";
+import { CAM_ON, CAM_OFF, MIC_ON, MIC_OFF } from "../utils/dispatchType";
 
 const initialState = {
   cam: {

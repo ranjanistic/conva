@@ -5,7 +5,7 @@ import { exitRoom } from "../../actions/roomActions";
 import { joinMeeting } from "../../actions/meetActions";
 import { toggleCamera,toggleMic } from "../../actions/hardware";
 import { get } from "../../paths/get";
-import { filterMeetJoinData } from "../../actions/validator";
+import { filterMeetJoinData } from "../../utils/validator";
 import People from "./People";
 import Chat from "./Chat";
 import { Icon } from "../elements/Icon";

@@ -1,14 +1,20 @@
 import axios from "axios";
-import { constant } from "./validator";
+import { constant } from "../utils/validator";
 import { Toast } from "../components/elements/Toast";
-import { LOADING } from "./types";
+import { LOADING } from "../utils/dispatchType";
 
 export const postData = async (path, data = {}) => {
   if (!navigator.onLine) {
     Toast.error("Internet error");
     return null;
-  } else
-    return await axios.post(`${process.env.REACT_APP_PROXY_URL}${path}`, data);
+  } else{
+    try{
+      return await axios.post(`${process.env.REACT_APP_PROXY_URL}${path}`, data);
+    }catch(e){
+      Toast.error(String(e));
+      console.log(e);
+    }
+  }
 };
 
 export const refer = (href, queryData = {}) =>

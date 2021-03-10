@@ -2,7 +2,7 @@ import { setAuthToken } from "../utils/setAuthToken";
 import jwt_decode from "jwt-decode";
 import { loading, postData } from "./actions";
 import { post } from "../paths/post";
-import { validNewUser, validLoginUser } from "./validator";
+import { validNewUser, validLoginUser } from "../utils/validator";
 import {
   AUTH_ERRORS,
   INPUT_ERRORS,
@@ -10,8 +10,8 @@ import {
   SET_CURRENT_USER,
   CODE_SENT,
   CODE_VERIFIED
-} from "./types";
-import { Key } from "../keys";
+} from "../utils/dispatchType";
+import { Key } from "../utils/keys";
 
 // Register User
 export const registerUser = (userData) => (dispatch) => {

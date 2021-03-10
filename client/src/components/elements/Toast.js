@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { Color } from '../../Colors';
-import { Key } from '../../keys';
+import { Key } from '../../utils/keys';
 
 export const Toast = {
     show:(msg) => toast(msg, {

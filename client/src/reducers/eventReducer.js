@@ -1,4 +1,4 @@
-import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING, HW_ERRORS, CODE_SENT} from "../actions/types";
+import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING, HW_ERRORS, CODE_SENT} from "../utils/dispatchType";
 const initialState = {
   loading:false,
   errors:{}

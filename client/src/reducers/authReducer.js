@@ -1,4 +1,4 @@
-import { SET_CURRENT_USER } from "../actions/types";
+import { SET_CURRENT_USER } from "../utils/dispatchType";
 const isEmpty = require("is-empty");
 const initialState = {
   isAuthenticated: false,

@@ -1,4 +1,4 @@
-import { ROOM_CREATED, ROOM_EXISTS, ROOM_EXIT} from "../actions/types";
+import { ROOM_CREATED, ROOM_EXISTS, ROOM_EXIT} from "../utils/dispatchType";
 const initialState = {};
 export const roomReducer=(state = initialState, action) =>{
   switch (action.type) {

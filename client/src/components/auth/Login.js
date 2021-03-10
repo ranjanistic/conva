@@ -13,7 +13,7 @@ import {
   filterLoginUser,
   filterKeys,
   extractQuery,
-} from "../../actions/validator";
+} from "../../utils/validator";
 import { Input } from "../elements/Input";
 import { refer } from "../../actions/actions";
 import { Button } from "../elements/Button";

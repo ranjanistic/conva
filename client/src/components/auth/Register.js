@@ -12,7 +12,7 @@ import {
   getErrorByType,
   filterSignupUser,
   filterKeys,
-} from "../../actions/validator";
+} from "../../utils/validator";
 import { Input } from "../elements/Input";
 
 class Register extends Component {

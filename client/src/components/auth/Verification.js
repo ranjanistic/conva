@@ -11,7 +11,7 @@ import {
   validateTextField,
   getErrorByType,
   filterKeys,
-} from "../../actions/validator";
+} from "../../utils/validator";
 
 class Verification extends Component {
   constructor() {
