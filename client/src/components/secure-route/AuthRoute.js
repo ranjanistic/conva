@@ -8,10 +8,10 @@ const AuthRoute = ({ component: Component, auth, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      auth.isAuthenticated === true ? (
+      auth.isAuthenticated === true? (
         <Component {...props} />
       ) : (
-        <Redirect to={get.auth.LOGIN} />
+        <Redirect to={get.auth.login(rest.path)} />
       )
     }
   />

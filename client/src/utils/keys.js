@@ -1,5 +1,6 @@
 export const Key = {
     sessionToken:"sessionToken",
+    tempSessionToken:"tempSessionToken",
     roomData:"roomData",
     test:"test",
     production:"production",

@@ -68,5 +68,31 @@ body {
 
 h4,h3,h2,h1,
 button {
-  font-family: "Questrial", sans-serif;
+  font-family: 'Questrial', sans-serif;
+}
+
+.slate {
+  background-color: var(--secondary);
+  border-radius: 12px;
+  overflow-y: scroll;
+  padding: "8px 0";
+  box-shadow: 0px 4px 18px #b9b9b9aa;
+}
+.group{
+  background-color: var(--primary);
+  padding: 12px 8px;
+  margin: 8px;
+  border-radius: 8px;
+}
+.caption {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.text-large{
+  font-size: 24px;
+}
+
+.scrollY{
+  overflow-y: scroll;
 }

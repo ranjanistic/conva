@@ -3,9 +3,8 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
-import { createRoom,enterRoom } from "../../actions/roomActions";
-import { actions } from "../elements/Elements";
-import classnames from "classnames";
+import { createRoom, enterRoom, getRooms } from "../../actions/roomActions";
+import { Actions } from "../elements/Actions";
 
 import {
   inputType,
@@ -13,9 +12,12 @@ import {
   getErrorByType,
   filterRoomCreateData,
   filterKeys,
-} from "../../actions/validator";
+  validRoomCreateData,
+} from "../../utils/validator";
 
 import { get } from "../../paths/get";
+import { Loading } from "../elements/Loader";
+import { Input } from "../elements/Input";
 
 class Dashboard extends Component {
   constructor() {
@@ -34,27 +36,43 @@ class Dashboard extends Component {
       rooms: [],
       errors: {},
       loading: false,
+      roomsloading: true,
     };
-    
   }
 
-  componentDidMount(){
+  componentDidUpdate(props, state) {}
+
+  componentDidMount(prevState) {
     console.log(this.props);
-    // const {meet} = this.props;
-    // if (meet.isActive) {
-    //   return refer(`${get.MEET.room(meet.roomid)}`);
-    // }
-    this.setState({rooms:{}})
-    // console.log("here");
+    console.log(prevState);
+    if(!this.props.auth.user.verified){
+      return this.props.history.push(get.auth.VERIFY);
+    }
+    if(this.props.auth.user.temp){
+      return this.props.logoutUser();
+    }
+    this.setState({ ...this.state, loading: false, roomsloading: true });
+    this.props.getRooms();
   }
 
-  componentWillReceiveProps(nextProps) {
+  static getDerivedStateFromProps(nextProps, prevState) {
     console.log(nextProps);
-    const { event,room } = nextProps;
-    this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
-    if (event.loading&&room.id) {
-      return this.props.history.push(`${get.room.self(room.id)}`);
+    console.log(prevState);
+    const { event, room, data } = nextProps;
+    if (
+      Object.keys(filterKeys(event.errors)).length &&
+      !validRoomCreateData(filterRoomCreateData(prevState)).isValid
+    ) {
+      return {
+        errors: event.loading ? {} : filterKeys(event.errors),
+        loading: event.loading,
+      };
     }
+    if (event.loading && room.id) {
+      nextProps.history.push(`${get.room.self(room.id)}`);
+      return null;
+    }
+    return { ...prevState, roomsloading: false, errors: {}, rooms: data.rooms };
   }
 
   getInputFields(errors, disabled = false) {
@@ -62,25 +80,18 @@ class Dashboard extends Component {
     Object.keys(this.state).forEach((key, k) => {
       if (k < this.inputs.length) {
         inputfields.push(
-          <div className="w3-col w3-half w3-padding input-field" key={key}>
-            <input
-              onChange={this.onChange}
-              value={this.state[key]}
-              error={errors[this.inputs[k].type]}
-              id={key}
-              type={this.inputs[k].type}
-              disabled={disabled}
-              autoFocus={k === 0}
-              autoComplete={this.inputs[k].autocomp}
-              className={classnames("", {
-                invalid: errors[key],
-              })}
-            />
-            <label htmlFor={key} className="w3-padding">
-              {this.inputs[k].caption}
-            </label>
-            <span className="red-text">{errors[key]}</span>
-          </div>
+          Input({
+            id:key,
+            value:this.state[key],
+            type:this.inputs[k].type,
+            caption:this.inputs[k].caption,
+            error:errors[key],
+            disabled:disabled,
+            onChange:this.onChange,
+            autocomp:this.inputs[k].autocomp,
+            autoFocus:k === 0,
+            classnames:"w3-half"
+          })
         );
       }
     });
@@ -113,7 +124,13 @@ class Dashboard extends Component {
     this.props.logoutUser();
   };
 
-  onJoinClick=(e)=>{
+  enterRoom = (e)=>{
+    e.preventDefault();
+    console.log(e.target.id)
+    this.props.enterRoom(e.target.id)
+  }
+
+  onCreateRoomClick = (e) => {
     e.preventDefault();
     this.setState({
       [this.inputs[0].stateprop]: document
@@ -124,23 +141,42 @@ class Dashboard extends Component {
     });
     console.log(this.state);
     this.props.createRoom(filterRoomCreateData(this.state));
-  }
+  };
 
-  getRoomsList(rooms=[]){
-    if (!rooms.length) return <div className="w3-center w3-jumbo w3-padding w3-text-gray" style={{ marginTop:"30vh"}}>No rooms yet.</div>;
+  getRoomsList(loading, rooms = []) {
+    if (!rooms.length || loading)
+      return (
+        <div
+          className="w3-center w3-jumbo w3-padding w3-text-gray"
+          style={{ marginTop: "30vh" }}
+        >
+          {loading ? Loading(120) : "No rooms yet."}
+        </div>
+      );
+    let roombtns = [];
     rooms.forEach((room, r) => {
-      <div className="btn waves-effect w3-row w3-margin" key={r}>
-        <div className="w3-row">{room.title}</div>
-      </div>;
+      roombtns.push(
+        <div className="w3-padding" key={r}>
+          <div className="w3-row btn-flat secondary waves-effect" id={room} style={{ width: "100%" }} onClick={this.enterRoom}>
+            <div className="w3-row" id={room}>{room}</div>
+            <div className="w3-row">{room.title}</div>
+          </div>
+        </div>
+      );
     });
+    return roombtns;
   }
 
   render() {
-    const {user} = this.props.auth,
-      { loading, rooms, errors} = this.state;
+    const { user } = this.props.auth,
+      { loading, rooms, errors, roomsloading } = this.state;
+    console.log(roomsloading);
     return (
       <div className="w3-row">
-        <div className="w3-col w3-twothird secondary z-depth-4" style={{ padding:"8rem 4rem" }}>
+        <div
+          className="w3-col w3-twothird secondary z-depth-4"
+          style={{ padding: "8rem 4rem" }}
+        >
           <div className="w3-row w3-padding" id="navbar">
             <Link to={get.ROOT}>
               <span className="btn-flat waves-effect">
@@ -149,38 +185,45 @@ class Dashboard extends Component {
             </Link>
             <span className="w3-right">
               <Link to={get.ACCOUNT}>
-                <span title="Account" className="btn-flat blue white-text waves-effect waves-light">
+                <span
+                  title="Account"
+                  className="btn-flat blue white-text waves-effect waves-light"
+                >
                   <i className="material-icons">manage_accounts</i>
                 </span>
               </Link>
-              <span title="Logout" className="btn-flat red white-text waves-effect waves-light" onClick={this.onLogoutClick}>
+              <span
+                title="Logout"
+                className="btn-flat red white-text waves-effect waves-light"
+                onClick={this.onLogoutClick}
+              >
                 <i className="material-icons">logout</i>
               </span>
             </span>
           </div>
           <div className="w3-row w3-padding">
-            <h4>
-              Welcome, {user.username.split(" ")[0]}.
-            </h4>
-            <br/>
+            <h4>Welcome, {user.username.split(" ")[0]}.</h4>
+            <br />
             <p className="grey-text text-darken-1">
-              Create a new room by setting a title below. Or view any of your existing rooms from the list.
+              Create a new room by setting a title below. Or view any of your
+              existing rooms from the list.
             </p>
           </div>
           <form className="w3-row">
-            {this.getInputFields(errors,loading)}
+            {this.getInputFields(errors, loading)}
             <div className="w3-row w3-padding" id="actions">
-              {actions(loading, {
+              {Actions(loading, {
                 name: "Create Room",
-                onclick:this.onJoinClick,
+                onclick: this.onCreateRoomClick,
               })}
             </div>
           </form>
         </div>
-        <div className="w3-col w3-third w3-padding primary" style={{height:"100vh"}}>
-          {this.getRoomsList(rooms)}
-        </div>
-        <div id="dialog">
+        <div
+          className="w3-col w3-third w3-padding primary"
+          style={{ height: "100vh" }}
+        >
+          {this.getRoomsList(roomsloading, rooms)}
         </div>
       </div>
     );
@@ -189,6 +232,9 @@ class Dashboard extends Component {
 
 Dashboard.propTypes = {
   logoutUser: PropTypes.func.isRequired,
+  createRoom: PropTypes.func.isRequired,
+  enterRoom: PropTypes.func.isRequired,
+  getRooms: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   event: PropTypes.object.isRequired,
 };
@@ -196,7 +242,13 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   event: state.event,
   room: state.room,
-  meet: state.meet
+  meet: state.meet,
+  data: state.data,
 });
 
-export default connect(mapStateToProps, { logoutUser, createRoom, enterRoom})(Dashboard);
+export default connect(mapStateToProps, {
+  logoutUser,
+  createRoom,
+  enterRoom,
+  getRooms,
+})(Dashboard);

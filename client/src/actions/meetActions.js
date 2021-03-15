@@ -1,7 +1,7 @@
-import { postData } from "./requests";
+import { postData, loading } from "./actions";
 import { post } from "../paths/post";
-import { validJoinMeetingData } from "./validator";
-import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, LOADING,INPUT_ERRORS } from "./types";
+import { validJoinMeetingData } from "../utils/validator";
+import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, INPUT_ERRORS } from "../utils/dispatchType";
 
 export const joinMeeting = (meetData) => (dispatch) => {
   console.log(meetData);
@@ -33,7 +33,7 @@ export const leaveMeeting = (userData) => (dispatch) => {
   postData(post.meet.END, userData)
     .then((res) => {
       console.log(res);
-      if(res.data.success){
+      if (res.data.success) {
         sessionStorage.clear();
         dispatch(leftMeet());
       }
@@ -47,24 +47,12 @@ export const leaveMeeting = (userData) => (dispatch) => {
 };
 
 // Set logged in user
-const joinedMeet = (meetData) => {
-  return {
-    type: MEET_JOINED,
-    payload: meetData,
-  };
-};
+const joinedMeet = (meetData) => ({
+  type: MEET_JOINED,
+  payload: meetData,
+});
 
 // Set logged in user
-const leftMeet = (_) => {
-  console.log("leaving...")
-  return {
-    type: MEET_LEFT,
-  };
-};
-
-// loading
-const loading = () => {
-  return {
-    type: LOADING,
-  };
-};
+const leftMeet = (_) => ({
+  type: MEET_LEFT,
+});

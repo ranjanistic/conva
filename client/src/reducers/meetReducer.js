@@ -1,6 +1,6 @@
-import { MEET_JOINED,MEET_LEFT } from "../actions/types";
+import { MEET_JOINED,MEET_LEFT } from "../utils/dispatchType";
 const initialState = {};
-export default function meetReducer(state = initialState, action) {
+export const meetReducer=(state = initialState, action)=>{
   switch (action.type) {
     case MEET_JOINED:
       return action.payload;

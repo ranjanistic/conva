@@ -1,8 +1,8 @@
 import { Loading } from "./Loader";
 
-export const actions = (isLoading = false, ...actions) => {
+export const Actions = (isLoading = false, ...actions) => {
   if (isLoading) {
-    return Loading;
+    return Loading();
   }
   let buttons = [];
   actions.forEach((act, a) => {
@@ -15,9 +15,9 @@ export const actions = (isLoading = false, ...actions) => {
           marginRight: "12px",
         }}
         onClick={act.onclick || ((_) => {})}
-        className={`btn btn-large waves-effect waves-blue ${
+        className={`btn btn-${act.size||'large'} waves-effect waves-blue ${
           act.color || "blue"
-        } accent-3`}
+        } accent-3 ${act.classnames}`}
       >
         {act.name}
       </button>

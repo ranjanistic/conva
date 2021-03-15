@@ -1,10 +1,11 @@
-import { ROOM_CREATED, ROOM_EXISTS} from "../actions/types";
+import { ROOM_CREATED, ROOM_EXISTS, ROOM_EXIT} from "../utils/dispatchType";
 const initialState = {};
-export default function meetReducer(state = initialState, action) {
+export const roomReducer=(state = initialState, action) =>{
   switch (action.type) {
     case ROOM_EXISTS:
     case ROOM_CREATED:
       return action.payload;
+    case ROOM_EXIT: return {};
     default:
       return state;
   }

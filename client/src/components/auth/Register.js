@@ -3,8 +3,7 @@ import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
-import classnames from "classnames";
-import { actions } from "../elements/Elements";
+import { Actions } from "../elements/Actions";
 import { get } from "../../paths/get";
 
 import {
@@ -13,7 +12,8 @@ import {
   getErrorByType,
   filterSignupUser,
   filterKeys,
-} from "../../actions/validator";
+} from "../../utils/validator";
+import { Input } from "../elements/Input";
 
 class Register extends Component {
   constructor() {
@@ -52,13 +52,16 @@ class Register extends Component {
       this.props.history.push(get.DASHBOARD);
     }
   }
-
+  
   componentWillReceiveProps(nextProps) {
     if (nextProps.auth.isAuthenticated) {
       return this.props.history.push(get.DASHBOARD);
     }
     const { event } = nextProps;
-    this.setState({ errors: event.loading?{}:filterKeys(event.errors), loading: event.loading });
+    this.setState({
+      errors: event.loading ? {} : filterKeys(event.errors),
+      loading: event.loading,
+    });
   }
 
   onChange = (e) => {
@@ -105,25 +108,18 @@ class Register extends Component {
     Object.keys(this.state).forEach((key, k) => {
       if (k < this.inputs.length) {
         inputfields.push(
-          <div className="w3-col w3-third input-field w3-padding" key={key}>
-            <input
-              onChange={this.onChange}
-              value={this.state[key]}
-              error={errors[key]}
-              id={key}
-              disabled={disabled}
-              type={this.inputs[k].type}
-              autoFocus={k === 0}
-              autoComplete={this.inputs[k].autocomp}
-              className={classnames("", {
-                invalid: errors[key],
-              })}
-            />
-            <label htmlFor={key} className="w3-padding">
-              {this.inputs[k].caption}
-            </label>
-            <span className="red-text">{errors[key]}</span>
-          </div>
+          Input({
+            id:key,
+            value:this.state[key],
+            type:this.inputs[k].type,
+            caption:this.inputs[k].caption,
+            error:errors[key],
+            disabled:disabled,
+            onChange:this.onChange,
+            autocomp:this.inputs[k].autocomp,
+            autoFocus:k === 0,
+            classnames:"w3-third"
+          })
         );
       }
     });
@@ -154,7 +150,7 @@ class Register extends Component {
             {this.getInputFields(errors, loading)}
             <br />
             <div className="w3-row w3-padding">
-              {actions(loading, {
+              {Actions(loading, {
                 name: "Register",
                 onclick: this.onSubmit,
               })}

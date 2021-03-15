@@ -6,7 +6,11 @@ export const get ={
     ACCOUNT : '/account',
     auth:{
         LOGIN:`${AUTH}/login`,
-        SIGNUP:`${AUTH}/register`,  
+        SIGNUP:`${AUTH}/register`,
+        VERIFY:`${AUTH}/verify`,
+        RECOVERY:`${AUTH}/recovery`,
+        login:(nextURL='')=>`${AUTH}/login${nextURL?'?next='+nextURL:''}`,
+        signup:(nextURL='')=>`${AUTH}/register${nextURL?'?next='+nextURL:''}`,
     },
     room: {
         self:(roomid=":roomid")=>`${ROOM}/${roomid}`,

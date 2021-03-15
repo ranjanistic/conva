@@ -2,67 +2,48 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginUser } from "../../actions/authActions";
 import { Actions } from "../elements/Actions";
 import { get } from "../../paths/get";
-
+import { Input } from "../elements/Input";
+import { logoutUser, send2FACode, verify2FACode } from "../../actions/authActions";
 import {
   inputType,
   validateTextField,
   getErrorByType,
-  filterLoginUser,
   filterKeys,
-  extractQuery,
 } from "../../utils/validator";
-import { Input } from "../elements/Input";
-import { refer } from "../../actions/actions";
-import { Button } from "../elements/Button";
 
-class Login extends Component {
+class Verification extends Component {
   constructor() {
     super();
     this.inputs = [
       {
-        stateprop: inputType.email,
-        caption: "Email address",
-        autocomp: inputType.email,
-        type: inputType.email,
-      },
-      {
-        stateprop: inputType.password,
-        caption: "Password",
-        autocomp: inputType.password,
-        type: inputType.nonempty,
-      },
+        stateprop: "twofacode",
+        caption: "Type the code",
+        autocomp: inputType.text,
+        type: inputType.text,
+      }
     ];
-
-    this.state = {
+    this.initState = {
       [this.inputs[0].stateprop]: "",
-      [this.inputs[1].stateprop]: "",
       errors: {},
       loading: false,
       nextUrl: get.DASHBOARD,
-    };
+    }
+    this.state = this.initState;
   }
 
   componentDidMount() {
-    extractQuery(this.props.location.search,"next",(nexturl)=>{
-      nexturl = nexturl?nexturl:this.state.nextUrl;
-      if (this.props.auth.isAuthenticated) {
-        return this.props.history.push(nexturl);
-      }
-      this.setState({nextUrl:nexturl})
-    })
+    if(this.props.auth.user.verified){
+        this.props.history.push(get.DASHBOARD);
+    }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.isAuthenticated) {
-      return this.props.history.push(this.state.nextUrl);
-    }
+  static getDerivedStateFromProps(nextProps,prevState){
     const { event } = nextProps;
-    this.setState({
-      errors: event.loading ? {} : filterKeys(event.errors),
-      loading: event.loading,
+    return ({
+        errors: event.loading ? {} : filterKeys(event.errors),
+        loading: event.loading,
     });
   }
 
@@ -95,7 +76,7 @@ class Login extends Component {
           Input({
             id: key,
             value: this.state[key],
-            type: key,
+            type: this.inputs[k].type,
             caption: this.inputs[k].caption,
             error: errors[key],
             disabled: disabled,
@@ -113,20 +94,24 @@ class Login extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     this.setState({
-      [this.inputs[0].stateprop]: document
-        .getElementById(this.inputs[0].stateprop)
-        .value.trim(),
-      [this.inputs[1].stateprop]: document.getElementById(
-        this.inputs[1].stateprop
-      ).value,
+      [this.inputs[0].stateprop]: document.getElementById(this.inputs[0].stateprop).value.trim(),
       loading: true,
       errors: {},
     });
-    this.props.loginUser(filterLoginUser(this.state));
+    this.props.verify2FACode(this.props.auth.user.email,this.state.twofacode);
   };
 
+
+  sendCode = (e) => {
+    this.props.send2FACode(this.props.auth.user.email);
+  }
+
+  onLogoutClick=(e)=>{
+      this.props.logoutUser();
+  }
+
   render() {
-    const { errors, loading } = this.state;
+    const { errors, loading } = this.state, {user} = this.props.auth;
     return (
       <div style={{ marginTop: "4rem" }} className="container">
         <div className="w3-row w3-padding">
@@ -135,15 +120,29 @@ class Login extends Component {
               <i className="material-icons left">keyboard_backspace</i> Back
             </span>
           </Link>
-          {Button.flat('Forgot?',_=>{refer(get.auth.RECOVERY)},"w3-right blue-text")}
+          <span className="w3-right">
+              <Link to={get.ACCOUNT}>
+                <span
+                  title="Account"
+                  className="btn-flat blue white-text waves-effect waves-light"
+                >
+                  <i className="material-icons">manage_accounts</i>
+                </span>
+              </Link>
+              <span
+                title="Logout"
+                className="btn-flat red white-text waves-effect waves-light"
+                onClick={this.onLogoutClick}
+              >
+                <i className="material-icons">logout</i>
+              </span>
+            </span>
           <div className="w3-row w3-padding">
             <h4>
-              <b>Login</b> below
+              <b>Account verification</b>.
             </h4>
-            <br />
-            <p className="grey-text text-darken-1">
-              Don't have an account? <Link to={get.auth.SIGNUP}>Register</Link>
-            </p>
+            <br/>
+            <p>To let you use Conva, we need to verify you. Click 'Send code' to send yourself a code at <b>{user.email}</b>, and then enter that code here to verify.</p>
           </div>
           <form className="w3-row">
             {this.getInputFields(errors, loading)}
@@ -151,9 +150,13 @@ class Login extends Component {
               {Actions(
                 loading,
                 {
-                  name: "Login",
+                    name: "Send code",
+                    onclick: this.sendCode
+                },
+                {
+                  name: "Verify",
                   onclick: this.onSubmit,
-                }
+                },
               )}
             </div>
           </form>
@@ -163,8 +166,10 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
-  loginUser: PropTypes.func.isRequired,
+Verification.propTypes = {
+  send2FACode: PropTypes.func.isRequired,
+  verify2FACode: PropTypes.func.isRequired,
+  logoutUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   event: PropTypes.object.isRequired,
 };
@@ -172,4 +177,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
   event: state.event,
 });
-export default connect(mapStateToProps, { loginUser })(withRouter(Login));
+export default connect(mapStateToProps,{send2FACode,verify2FACode, logoutUser})(withRouter(Verification));

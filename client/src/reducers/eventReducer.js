@@ -1,9 +1,9 @@
-import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING} from "../actions/types";
+import { REQ_ERRORS,INPUT_ERRORS,AUTH_ERRORS,LOADING, HW_ERRORS } from "../utils/dispatchType";
 const initialState = {
-  loading:true,
+  loading:false,
   errors:{}
 };
-export default function eventReducer(state = initialState, action) {
+export const eventReducer=(state = initialState, action) => {
   switch (action.type) {
     case REQ_ERRORS:
       return {
@@ -17,6 +17,12 @@ export default function eventReducer(state = initialState, action) {
         ...state,
         loading: false,
         errors:action.errors,
+      };
+    case HW_ERRORS:
+      return {
+        ...state,
+        loading: false,
+        hwerror:action.error,
       };
     case LOADING:
       return {
