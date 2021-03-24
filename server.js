@@ -1,32 +1,43 @@
 const express = require("express"),
-  { validateUser, validateLogin, handleCors } = require("./re"),
   app = express(),
-  { connectToDB, Users } = require("./db"),
-  server = require("http").createServer(app);
-(bodyParser = require("body-parser")),
-  (cors = require("cors")),
-  (bcrypt = require("bcrypt")),
-  (io = require("socket.io")(server, {
+  { handleCors } = require("./validate"),
+  { connectToDB } = require("./db"),
+  server = require("http").createServer(app),
+  cors = require("cors"),
+  bodyParser = require("body-parser"),
+  helmet = require("helmet"),
+  io = require("socket.io")(server, {
     cors: {
       origin: handleCors,
     },
-  })),
-  (jwt = require("jsonwebtoken")),
-  (helmet = require("helmet"));
+  });
 
 app.use(helmet());
 app.use(bodyParser.json());
+app.use(cors({
+  origin: handleCors,
+}));
 
-app.use(
-  cors({
-    origin: handleCors,
-  })
-);
+connectToDB((err, dbname) => {
+  if (err) return console.log(err);
+  console.log(`Connected to ${dbname}`);
 
-const sessionSecret = "secret";
-const encrypt = async (password) => {
-  return await bcrypt.hash(password, 16);
-};
+  app.use("/auth", require("./routes/auth"));
+  app.use("/room", require("./routes/room"));
+  app.use("/meet", require("./routes/meet"));
+
+  app.get("/", (req, res) => {
+    res.send("Conva Backend. Status: Good");
+  });
+
+  const server_port = process.env.PORT || 5000 || 80;
+  const server_host = "0.0.0.0" || "localhost";
+
+  server.listen(server_port, server_host, () => {
+    console.log(`Server on ${server_host}:${server_port}`);
+  });
+});
+
 
 io.on("connection", (client) => {
   console.log("connection");
@@ -89,188 +100,3 @@ io.on("connection", (client) => {
 //     socket.broadcast.to(event.roomId).emit('webrtc_ice_candidate', event)
 //   })
 // })
-
-// app.use("/auth",require('routes/auth.js'))
-// app.use("/room",require('routes/room.js'))
-
-connectToDB((err, dbname) => {
-  if (err) {
-    return console.log(err);
-  }
-
-  console.log(`Connected to ${dbname}`);
-
-  app.get("/", (req, res) => {
-    res.send("Conva Backend.");
-  });
-
-  app.post("/auth/login", async (req, res) => {
-    if (!validateLogin(req.body)) {
-      console.log("validation failed");
-      return res.json({ success: false });
-    }
-
-    const { email, password } = req.body;
-
-    let data = {};
-
-    result = await Users().findOne({ email: email });
-    if (result) {
-      comparison = await bcrypt.compare(password, result.password);
-      if (comparison) {
-        data = {
-          success: true,
-          token: jwt.sign(
-            {
-              id: result._id,
-              username: result.name,
-              email: result.email,
-              verified: true,
-            },
-            sessionSecret
-          ),
-        };
-      } else {
-        data = {
-          success: false,
-          errors: {
-            password: "Wrong credentials",
-          },
-        };
-      }
-    } else {
-      data = {
-        success: false,
-        errors: {
-          email: "Account not found",
-        },
-      };
-    }
-
-    console.log(data);
-    res.json(data);
-  });
-
-  app.post("/auth/signup", async (req, res) => {
-    if (!validateUser(req.body)) {
-      console.log("signup failed");
-      return res.json({ success: false });
-    }
-    let { email, password, username } = req.body;
-    let data = {};
-    check = await Users().findOne({ email: email });
-    if (check) {
-      data = {
-        success: false,
-        errors: {
-          email: "Account already exists.",
-        },
-      };
-    } else {
-      newpass = await encrypt(password);
-      result = await Users().insertOne({
-        email: email,
-        password: newpass,
-        name: username,
-      });
-      data = {
-        success: true,
-        token: jwt.sign(
-          {
-            id: result.ops[0]._id,
-            username: result.ops[0].name,
-            email: result.ops[0].email,
-            verified: true,
-          },
-          sessionSecret
-        ),
-      };
-    }
-    console.log(data);
-    res.json(data);
-  });
-
-  app.post("/auth/2FA/send", (req, res) => {
-    res.json({ success: true });
-  });
-  app.post("/auth/2FA/verify", async (req, res) => {
-    console.log(req.headers);
-    //if not req.headers.authorization, assign temporary token.
-    const { email, code } = req.body;
-    let result = await Users().findOne({ email });
-    res.json({
-      success: true,
-      token: jwt.sign(
-        {
-          id: result._id,
-          username: result.name,
-          email: result.email,
-          verified: true,
-          temp: true,
-        },
-        sessionSecret
-      ),
-    });
-  });
-  
-  app.post("/auth/setrecoverypass", async (req, res) => {
-    console.log(req.body);
-    //if not req.headers.authorization, don't.
-    const { newpassword } = req.body;
-    res.json({success: true});
-  });
-
-  app.post("/room/create", (req, res) => {
-    return res.json({
-      success: true,
-      room: {
-        id: "123456",
-        title: req.body.title,
-        people: [],
-        chats: [],
-      },
-    });
-  });
-
-  app.post("/room/enter", (req, res) => {
-    return res.json({
-      success: true,
-      room: {
-        id: req.body.roomID,
-        title: req.body.roomID,
-        people: [6, 5, 4, 3, 2, 1],
-        chats: [1, 2, 3, 4, 5, 6],
-      },
-    });
-  });
-
-  app.post("/room/receive", (req, res) => {
-    return res.json({
-      success: true,
-      rooms: [1, 2, 3, 4, 5, 6],
-    });
-  });
-
-  app.post("/meet/join", (req, res) => {
-    console.log(req.body);
-    return res.json({
-      success: true,
-      meet: {
-        active: true,
-        people: [],
-        chats: [],
-      },
-    });
-  });
-
-  app.post("/meet/end", (req, res) => {
-    console.log("here");
-    return res.json({ success: true });
-  });
-  const server_port = process.env.PORT || 5000 || 80;
-  const server_host = "0.0.0.0" || "localhost";
-
-  server.listen(server_port, server_host, () => {
-    console.log(`Server on ${server_host}:${server_port}`);
-  });
-});
