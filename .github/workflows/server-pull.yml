@@ -9,6 +9,8 @@ on:
       - ".github/workflows/client.yml"
       - ".github/workflows/client-pull.yml"
       - "README.md"
+      - ".sample.env"
+      - "env.js"
 
 jobs:
   test_build:

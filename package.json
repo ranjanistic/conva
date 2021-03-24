@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "env": "node env.js",
     "test": "mocha",
     "client-test": "npm run test --prefix client",
     "client-test:auto": "npm run test:auto --prefix client",

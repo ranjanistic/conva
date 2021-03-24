@@ -9,9 +9,21 @@ _You can use ```npm run commit``` to commit your changes in a procedural way. [S
 
 ## Environment
 
+Before starting development, for first time setup.
+
 ### Setup
 
-Manually create a .env file in the root of project, copy contents from [.sample.env](.sample.env), and set the values as per your development requirements.
+#### Automatic
+
+```bash
+npm run env
+```
+
+Follow the CLI to generate local .env file at root of project automatically.
+
+#### Manual
+
+Create a .env file in the root of project, copy contents from [.sample.env](.sample.env), and set the values as per your development requirements.
 
 ### Install packages
 
