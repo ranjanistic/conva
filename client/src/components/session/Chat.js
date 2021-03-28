@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { Input } from "../elements/Input";
 import { inputType } from "../../utils/validator";
 import { Actions } from "../elements/Actions";
-import { connectToChat } from "./Socket";
+import { connectToChat, disconnectFromChat } from "./Socket";
 import { Button } from "../elements/Button";
 
 class Chat extends Component {
@@ -27,8 +27,12 @@ class Chat extends Component {
     connectToChat(this.props.room.id,(err,newchat)=>{
       let chats = this.state.chats;
       chats.push(newchat);
-      this.setState({chats:chats})
+      this.setState({chats})
     })
+  }
+
+  componentWillUnmount(){
+    disconnectFromChat(this.props.room.id)
   }
 
   getAllChats=_=>this.setState({oldchats:this.props.room.chats});

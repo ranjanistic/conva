@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Input } from "../elements/Input";
 import { inputType } from "../../utils/validator";
-import { connectToPeople } from "./Socket";
+import { connectToPeople, disconnectFromPeople } from "./Socket";
 import { Button } from "../elements/Button";
 import { Toast } from "../elements/Toast";
 import { navigatorShare } from "../../actions/actions";
@@ -30,6 +30,10 @@ class People extends Component {
       activepeople.push(activeperson);
       this.setState({activepeople:activepeople})
     })
+  }
+
+  componentWillUnmount(){
+    disconnectFromPeople(this.props.room.id)
   }
 
   getAllMembers=_=>this.setState({members:this.props.room.people});

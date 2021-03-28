@@ -29,7 +29,7 @@
     "eslint": "^7.20.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "set HTTPS=true&&set SSL_CRT_FILE=../localhost.pem&&set SSL_KEY_FILE=../localhost-key.pem&&react-scripts start",
     "build": "react-scripts build",
     "unbuild": "node unbuild.js",
     "test": "react-scripts test",

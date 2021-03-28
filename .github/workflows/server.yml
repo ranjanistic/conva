@@ -11,6 +11,7 @@ on:
       - "README.md"
       - ".sample.env"
       - "env.js"
+      - "nodemon.json"
 
 jobs:
   deploy:
@@ -23,14 +24,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Node.js ${{ matrix.node-version }}
+    - name: Using Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
-    - uses: akhileshns/heroku-deploy@v3.3.6
+    - name: Clean Installing Dependencies
+      run: npm ci
+    - name: Running tests
+      run: npm test
+    - name: Building
+      run: npm run build --if-present
+    - name: Heroku Backend Deploy
+      uses: akhileshns/heroku-deploy@v3.3.6
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_app_name: ${{secrets.HEROKU_APP_NAME}}

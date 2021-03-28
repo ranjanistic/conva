@@ -2,7 +2,6 @@ const express = require("express"),
   meet = express.Router();
 
 meet.post("/join", (req, res) => {
-  console.log(req.body);
   return res.json({
     success: true,
     meet: {

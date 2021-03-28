@@ -20,18 +20,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Node.js ${{ matrix.node-version }}
+    - name: Using Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Build
-      run: |
-        npm run client-ci
-        npm run client-build
-    - name: Test
-      run: |
-        npm run client-test:auto
-    - name: Firebase Deploy
+    - name: Clean Installing Dependencies
+      run: npm run ci:client
+    - name: Running tests
+      run: npm run test:client:auto
+    - name: Building
+      run: npm run build:client
+    - name: Firebase Frontend Live Deploy
       uses: FirebaseExtended/action-hosting-deploy@v0
       with:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'

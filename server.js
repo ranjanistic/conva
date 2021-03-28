@@ -1,22 +1,51 @@
 const express = require("express"),
   app = express(),
-  { handleCors } = require("./validate"),
+  { handleCors , sessionTokenValid} = require("./validate"),
   { connectToDB } = require("./db"),
-  server = require("http").createServer(app),
   cors = require("cors"),
-  bodyParser = require("body-parser"),
   helmet = require("helmet"),
-  io = require("socket.io")(server, {
+  http = require("http"),
+  io = require("socket.io"),
+  https = require("https"),
+  fs = require("fs");
+
+app.use(helmet());
+app.use(express.json());
+app.use(cors({
+  origin: handleCors,
+}));
+
+const channel = {
+  listener:{
+      chat:"newmsg",
+      people:"newperson",
+      stream:"newstream"
+  },
+  provider:{
+      chat:"chatroom",
+      people:"people",
+      stream:"stream"
+  }
+}
+
+const tryHttps = (afterTry) => {
+  let server,socket;
+  try {
+    const key = fs.readFileSync("./localhost-key.pem"),
+    cert = fs.readFileSync("./localhost.pem");
+    server = https.createServer({key,cert},app);
+    console.log("https")
+  } catch (e) {
+    server = http.createServer(app);
+    console.log("http")
+  }
+  socket = io(server, {
     cors: {
       origin: handleCors,
     },
   });
-
-app.use(helmet());
-app.use(bodyParser.json());
-app.use(cors({
-  origin: handleCors,
-}));
+  return afterTry(server,socket);
+}
 
 connectToDB((err, dbname) => {
   if (err) return console.log(err);
@@ -27,36 +56,39 @@ connectToDB((err, dbname) => {
   app.use("/meet", require("./routes/meet"));
 
   app.get("/", (req, res) => {
-    res.send("Conva Backend. Status: Good");
+    res.send("Conva Backend. Status: Good. Access Conva <a href=\"https://convameet.web.app\">here</a>.");
   });
 
-  const server_port = process.env.PORT || 5000 || 80;
-  const server_host = "0.0.0.0" || "localhost";
+  const server_port = process.env.PORT || 5000 || 80,
+   server_host = "0.0.0.0" || "localhost";
 
-  server.listen(server_port, server_host, () => {
-    console.log(`Server on ${server_host}:${server_port}`);
-  });
+  tryHttps((server,socket)=>{
+    server.listen(server_port, server_host, () => {
+      console.log(`Server on ${server_host}:${server_port}`);
+    });
+    socket.on("connection", (client) => {
+      console.log("socket connected");
+      client.on(channel.provider.chat, (sessionToken, roomID) => {
+        if(sessionTokenValid(sessionToken)){
+          console.log("Listening to chats of", roomID);
+          client.emit(channel.listener.chat, "First Message!");
+        } else console.log("Invalid session token", sessionToken)
+      });
+      client.on(channel.provider.people, (sessionToken, roomID) => {
+        if(sessionTokenValid(sessionToken)){
+          console.log("Listening to people of", roomID);
+          client.emit(channel.listener.people, "Welcome!");
+        } else console.log("Invalid session token", sessionToken)
+      });
+      client.on(channel.provider.stream, (sessionToken, roomID) => {
+        if(sessionTokenValid(sessionToken)){
+          console.log("Listening to stream of", roomID);
+        } else console.log("Invalid session token", sessionToken)
+      });
+    });
+  })
 });
 
-
-io.on("connection", (client) => {
-  console.log("connection");
-  console.log(client);
-  client.on("chatroom", (sessionToken, roomID) => {
-    console.log("client is subscribing chatroom ", roomID, sessionToken);
-    setInterval(() => {
-      client.emit("newmsg", "lol");
-      console.log("loled");
-    }, 1000);
-  });
-  client.on("people", (sessionToken, roomID) => {
-    console.log("client is subscribing people ", roomID, sessionToken);
-    setInterval(() => {
-      client.emit("newperson", "lol");
-      console.log("loled");
-    }, 1000);
-  });
-});
 // io.on('connection', (socket) => {
 //   socket.on('join', (roomId) => {
 //     console.log(roomId);
