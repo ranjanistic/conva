@@ -7,8 +7,8 @@ console.log("Convameet Environment Setup");
 console.log("Press enter to accept (default) values.\n");
 readline.question("NODE_ENV: (development) ",(nodeenv)=>{
     if(!nodeenv) nodeenv = 'development';
-    readline.question("CORSORIGIN: (http://localhost:3000) ",(cors)=>{
-        if(!cors) cors = 'http://localhost:3000';
+    readline.question("CORSORIGIN: (https://localhost:3000) ",(cors)=>{
+        if(!cors) cors = 'https://localhost:3000';
         readline.question("DBNAME: (convameetDB) ",(dbname)=>{
             if(!dbname) dbname = 'convameetDB';
             readline.question("DBURL [Your mongodb link]: ",(dblink)=>{

@@ -11,7 +11,19 @@ _You can use ```npm run commit``` to commit your changes in a procedural way. [S
 
 Before starting development, for first time setup.
 
-### Setup
+### Local SSL
+
+Generate local SSL key & certificate. Refer [this](https://github.com/FiloSottile/mkcert#installation) for ```mkcert```.
+
+```bash
+mkcert localhost
+```
+
+### Variables Setup
+
+- _Client env variables are already present in [client](client/) directory in .env.* files. You can change them manually if you need to._
+
+- _Server env variables load from [.env](.env) file at root._
 
 #### Automatic
 
@@ -30,7 +42,7 @@ Create a .env file in the root of project, copy contents from [.sample.env](.sam
 ```bash
 npm install -g create-react-app # global client initializer
 npm install # server packages
-npm run client-install # client packages
+npm run install:client # client packages
 ```
 
 ## Development
@@ -43,13 +55,13 @@ npm run dev # client & server localhost
 
 _By default, Backend at port: 5000_, _Frontend at port: 3000_
 
-### To run only server
+### Run only server
 
 ```bash
 npm run server
 ```
 
-### To run only client
+### Run only client
 
 ```bash
 npm run client
@@ -60,7 +72,7 @@ npm run client
 ### Full application auto testing
 
 ```bash
-npm run full-test
+npm run test:full
 ```
 
 ### Backend Unit Testing
@@ -71,19 +83,21 @@ npm test
 
 ### Frontend Unit Testing
 
-For automatic testing
-
-```bash
-npm run client-test:auto
-```
-
 For interactive testing
 
 ```bash
-npm run client-test
+npm run test:client
+```
+
+For automatic testing
+
+```bash
+npm run test:client:auto
 ```
 
 ## Contributing
+
+Refer [package.json](package.json) for more npm scripts.
 
 ```bash
 npm run commit
@@ -102,6 +116,7 @@ Use the above command to locally run unit tests, build linting & committing chan
 ## Footnotes
 
 - _It is highly recommended that ```npm run commit``` is used to commit your contributory changes._
+
 - _Actions workflow is enabled for commits on main branch, therefore tests, builds and deploys are automated from this branch._
 
 - _Actions workflow is enabled for pull requests for build and test._

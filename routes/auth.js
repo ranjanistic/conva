@@ -1,16 +1,11 @@
 const express = require("express"),
   auth = express.Router(),
-  {SESSIONKEY:sessionSecret} = require("../config"),
-  { validateUser, validateLogin } = require("../validate"),
+  { validateUser, validateLogin, createSessionToken, encrypt } = require("../validate"),
   { Users } = require("../db"),
-  bcrypt = require("bcrypt"),
-  jwt = require("jsonwebtoken");
-
-const encrypt = async (password) => await bcrypt.hash(password, 10);
+  bcrypt = require("bcrypt");
 
 auth.post("/login", async (req, res) => {
   if (!validateLogin(req.body)) {
-    console.log("validation failed");
     return res.json({ success: false });
   }
   const { email, password } = req.body;
@@ -23,15 +18,12 @@ auth.post("/login", async (req, res) => {
     if (comparison) {
       data = {
         success: true,
-        token: jwt.sign(
-          {
-            id: result._id,
-            username: result.name,
-            email: result.email,
-            verified: true,
-          },
-          sessionSecret
-        ),
+        token: createSessionToken({
+          id: result._id,
+          username: result.name,
+          email: result.email,
+          verified: true,
+        })
       };
     } else {
       data = {
@@ -49,14 +41,11 @@ auth.post("/login", async (req, res) => {
       },
     };
   }
-
-  console.log(data);
-  res.json(data);
+  return res.json(data);
 });
 
 auth.post("/signup", async (req, res) => {
   if (!validateUser(req.body)) {
-    console.log("signup failed");
     return res.json({ success: false });
   }
   let { email, password, username } = req.body;
@@ -78,19 +67,15 @@ auth.post("/signup", async (req, res) => {
     });
     data = {
       success: true,
-      token: jwt.sign(
-        {
-          id: result.ops[0]._id,
-          username: result.ops[0].name,
-          email: result.ops[0].email,
-          verified: true,
-        },
-        sessionSecret
-      ),
+      token: createSessionToken({
+        id: result.ops[0]._id,
+        username: result.ops[0].name,
+        email: result.ops[0].email,
+        verified: true,
+      })
     };
   }
-  console.log(data);
-  res.json(data);
+  return res.json(data);
 });
 
 auth.post("/2FA/send", (req, res) => {
@@ -103,16 +88,13 @@ auth.post("/2FA/verify", async (req, res) => {
   let result = await Users().findOne({ email });
   res.json({
     success: true,
-    token: jwt.sign(
-      {
-        id: result._id,
-        username: result.name,
-        email: result.email,
-        verified: true,
-        temp: true,
-      },
-      sessionSecret
-    ),
+    token: createSessionToken({
+      id: result._id,
+      username: result.name,
+      email: result.email,
+      verified: true,
+      temp: true,
+    })
   });
 });
 
