@@ -1,6 +1,6 @@
 const express = require("express"),
   app = express(),
-  { handleCors , sessionTokenValid} = require("./validate"),
+  { handleCors, sessionTokenValid } = require("./validate"),
   { connectToDB } = require("./db"),
   cors = require("cors"),
   helmet = require("helmet"),
@@ -11,41 +11,43 @@ const express = require("express"),
 
 app.use(helmet());
 app.use(express.json());
-app.use(cors({
-  origin: handleCors,
-}));
+app.use(
+  cors({
+    origin: handleCors,
+  })
+);
 
 const channel = {
-  listener:{
-      chat:"newmsg",
-      people:"newperson",
-      stream:"newstream"
+  listener: {
+    chat: "newmsg",
+    people: "newperson",
+    stream: "newstream",
   },
-  provider:{
-      chat:"chatroom",
-      people:"people",
-      stream:"stream"
-  }
-}
+  provider: {
+    chat: "chatroom",
+    people: "people",
+    stream: "stream",
+  },
+};
 
 const tryHttps = (afterTry) => {
-  let server,socket;
-  try {
-    const key = fs.readFileSync("./localhost-key.pem"),
-    cert = fs.readFileSync("./localhost.pem");
-    server = https.createServer({key,cert},app);
-    console.log("https")
-  } catch (e) {
-    server = http.createServer(app);
-    console.log("http")
-  }
-  socket = io(server, {
+  const server = ((_) => {
+    try {
+      const key = fs.readFileSync("./localhost-key.pem"),
+        cert = fs.readFileSync("./localhost.pem");
+      console.log("https");
+      return https.createServer({ key, cert }, app);
+    } catch (e) {
+      console.log("http");
+      return http.createServer(app);
+    }
+  })();
+  return afterTry(server, io(server, {
     cors: {
       origin: handleCors,
     },
-  });
-  return afterTry(server,socket);
-}
+  }));
+};
 
 connectToDB((err, dbname) => {
   if (err) return console.log(err);
@@ -56,37 +58,39 @@ connectToDB((err, dbname) => {
   app.use("/meet", require("./routes/meet"));
 
   app.get("/", (req, res) => {
-    res.send("Conva Backend. Status: Good. Access Conva <a href=\"https://convameet.web.app\">here</a>.");
+    res.send(
+      'Conva Backend. Status: Good. Access Conva <a href="https://convameet.web.app">here</a>.'
+    );
   });
 
   const server_port = process.env.PORT || 5000 || 80,
-   server_host = "0.0.0.0" || "localhost";
+    server_host = "0.0.0.0" || "localhost";
 
-  tryHttps((server,socket)=>{
+  tryHttps((server, socket) => {
     server.listen(server_port, server_host, () => {
       console.log(`Server on ${server_host}:${server_port}`);
     });
     socket.on("connection", (client) => {
       console.log("socket connected");
       client.on(channel.provider.chat, (sessionToken, roomID) => {
-        if(sessionTokenValid(sessionToken)){
+        if (sessionTokenValid(sessionToken)) {
           console.log("Listening to chats of", roomID);
           client.emit(channel.listener.chat, "First Message!");
-        } else console.log("Invalid session token", sessionToken)
+        } else console.log("Invalid session token", sessionToken);
       });
       client.on(channel.provider.people, (sessionToken, roomID) => {
-        if(sessionTokenValid(sessionToken)){
+        if (sessionTokenValid(sessionToken)) {
           console.log("Listening to people of", roomID);
           client.emit(channel.listener.people, "Welcome!");
-        } else console.log("Invalid session token", sessionToken)
+        } else console.log("Invalid session token", sessionToken);
       });
       client.on(channel.provider.stream, (sessionToken, roomID) => {
-        if(sessionTokenValid(sessionToken)){
+        if (sessionTokenValid(sessionToken)) {
           console.log("Listening to stream of", roomID);
-        } else console.log("Invalid session token", sessionToken)
+        } else console.log("Invalid session token", sessionToken);
       });
     });
-  })
+  });
 });
 
 // io.on('connection', (socket) => {

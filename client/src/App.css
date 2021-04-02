@@ -52,8 +52,17 @@
 }
 
 .primary{
-    background-color: var(--primary);
-    color: var(--primary-text);
+  background-color: var(--primary);
+  color: var(--primary-text);
+}
+.positive,.positive:hover,.positive:active,.positive:focus{
+    background-color: var(--positive);
+    color: var(--positive-text);
+}
+
+.negative{
+    background-color: var(--negative);
+    color: var(--negative-text);
 }
 .secondary{
     background-color: var(--secondary);
@@ -95,4 +104,11 @@ button {
 
 .scrollY{
   overflow-y: scroll;
+}
+
+btn-flat{
+  color: var(--positive)
+}
+a{
+  color: var(--positive);
 }

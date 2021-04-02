@@ -109,11 +109,12 @@ export const send2FACode = (email) => (dispatch) => {
     dispatch(loading());
     postData(post.auth.twofactor.SEND, { email })
       .then((res) => {
+        console.log(res)
         if (res.data.success) {
           dispatch({ type: CODE_SENT });
           setTimeout(() => {
             dispatch({ type: CODE_EXPIRED });
-          }, 15*60*1000);
+          }, res.data.expireMillis);
         }
       })
       .catch((e) => {});
@@ -135,6 +136,7 @@ export const verify2FACode = (email, code) => (dispatch) => {
           const { token } = res.data;
           let data = isJWTValid(token)
           localStorage.setItem(data.temp?Key.tempSessionToken:Key.sessionToken, token);
+          if(!data.temp) localStorage.removeItem(Key.tempSessionToken);
           setAuthToken(token);
           dispatch(setUser(data));
           dispatch({ type: CODE_VERIFIED });

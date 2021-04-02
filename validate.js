@@ -1,4 +1,5 @@
-const { CORSORIGINS, CORSBETA, SESSIONKEY} = require("./config"),
+const { ObjectId } = require("bson"),
+  { CORSORIGINS, CORSBETA, SESSIONKEY} = require("./config"),
   jwt = require("jsonwebtoken"), bcrypt = require("bcrypt");
 
 class Validate {
@@ -13,6 +14,14 @@ class Validate {
   checkEmail = (email) => email.length > 4 && this.emailRegex.test(email);
 
   checkName = (name) => this.nameRegex.test(name);
+
+  validObjectId(_id) {
+    try {
+      return ObjectId(_id);
+    } catch {
+      return false;
+    }
+  }
 
   encrypt = async (string) => await bcrypt.hash(string, 10);
 

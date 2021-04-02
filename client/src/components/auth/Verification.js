@@ -40,7 +40,17 @@ class Verification extends Component {
   }
 
   static getDerivedStateFromProps(nextProps,prevState){
-    const { event } = nextProps;
+    const { event,auth } = nextProps;
+    console.log(nextProps);
+    if(auth.user.verified){
+      nextProps.history.push(get.DASHBOARD);
+    }
+    if (auth.twofa.sent) {
+      return {
+        errors: {},
+        loading: false,
+      };
+    }
     return ({
         errors: event.loading ? {} : filterKeys(event.errors),
         loading: event.loading,

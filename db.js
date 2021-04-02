@@ -1,18 +1,19 @@
-
-const {MongoClient} = require('mongodb'), {DBURL,DBNAME} = require("./config");
+const { MongoClient } = require("mongodb"),
+  { DBURL, DBNAME } = require("./config");
 
 var dbobj;
 module.exports = {
-  connectToDB: (callback )=>{
+  connectToDB: (callback) => {
     MongoClient.connect(
-        DBURL,
-        { useNewUrlParser: true , useUnifiedTopology: true}, ( err, client )=> {
-            if(!err) dbobj = client.db(DBNAME);
-            return callback( err,DBNAME );
-        }
+      DBURL,
+      { useNewUrlParser: true, useUnifiedTopology: true },
+      (err, client) => {
+        if (!err) dbobj = client.db(DBNAME);
+        return callback(err, DBNAME);
+      }
     );
   },
-   Users: ()=>{
-     return dbobj.collection("user");
-   }
-}
+  Users: () => {
+    return dbobj.collection("user");
+  },
+};
