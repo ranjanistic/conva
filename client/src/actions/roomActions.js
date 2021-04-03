@@ -21,6 +21,7 @@ export const createRoom = (roomData) => (dispatch) => {
     dispatch(loading());
     postData(post.room.CREATE, roomData)
       .then((res) => {
+        console.log('res',res)
         dispatch(roomCreated(res.data.room));
       })
       .catch((err) => {
@@ -35,7 +36,7 @@ export const createRoom = (roomData) => (dispatch) => {
 
 export const enterRoom = (roomID) => (dispatch) => {
   dispatch(loading());
-  postData(post.room.ENTER, { roomID: roomID })
+  postData(post.room.ENTER, { roomID })
     .then((res) => {
       console.log(res);
       dispatch(enteredRoom(res.data.room));
@@ -58,7 +59,7 @@ export const exitRoom = () => (dispatch) => {
 export const getRooms = (_) => (dispatch) => {
   postData(post.room.RECEIVE)
     .then((res) => {
-      console.log(res);
+      console.log('rooms',res);
       dispatch(roomsList(res.data.rooms));
     })
     .catch((err) => {

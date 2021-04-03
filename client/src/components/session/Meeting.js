@@ -62,7 +62,7 @@ class Meeting extends Component {
     console.log(nextProps);
     const { room, meet } = nextProps;
     if (!meet.active) {
-      return this.props.history.push(get.room.self(room.id));
+      return this.props.history.push(get.room.self(room._id));
     }
     return prevState;
   }

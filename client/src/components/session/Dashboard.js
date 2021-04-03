@@ -68,10 +68,11 @@ class Dashboard extends Component {
         loading: event.loading,
       };
     }
-    if (event.loading && room.id) {
-      nextProps.history.push(`${get.room.self(room.id)}`);
+    if (event.loading && room._id) {
+      nextProps.history.push(`${get.room.self(room._id)}`);
       return null;
     }
+    console.log("data",data.rooms);
     return { ...prevState, roomsloading: false, errors: {}, rooms: data.rooms };
   }
 
@@ -126,8 +127,8 @@ class Dashboard extends Component {
 
   enterRoom = (e)=>{
     e.preventDefault();
-    console.log(e.target.id)
-    this.props.enterRoom(e.target.id)
+    console.log(e.target.parentNode.id)
+    this.props.enterRoom(e.target.parentNode.id)
   }
 
   onCreateRoomClick = (e) => {
@@ -150,15 +151,14 @@ class Dashboard extends Component {
           className="w3-center w3-jumbo w3-padding w3-text-gray"
           style={{ marginTop: "30vh" }}
         >
-          {loading ? Loading(120) : "No rooms yet."}
+          {loading ? "No rooms yet.":Loading(120)}
         </div>
       );
     let roombtns = [];
     rooms.forEach((room, r) => {
       roombtns.push(
         <div className="w3-padding" key={r}>
-          <div className="w3-row btn-flat secondary waves-effect" id={room} style={{ width: "100%" }} onClick={this.enterRoom}>
-            <div className="w3-row" id={room}>{room}</div>
+          <div className="w3-row btn-flat secondary waves-effect" id={room._id} style={{ width: "100%" }} onClick={this.enterRoom}>
             <div className="w3-row">{room.title}</div>
           </div>
         </div>

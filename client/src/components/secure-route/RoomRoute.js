@@ -9,7 +9,7 @@ const RoomRoute = ({ component: Component, auth, room, ...rest }) => {
   <Route
     {...rest}
     render={props =>
-      (auth.isAuthenticated && room.id)? (
+      (auth.isAuthenticated && room._id)? (
         <Component {...props} />
       ) : (
         <Redirect to={get.DASHBOARD} />

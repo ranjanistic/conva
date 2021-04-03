@@ -56,6 +56,7 @@ connectToDB((err, dbname) => {
   app.use("/auth", require("./routes/auth"));
   app.use("/room", require("./routes/room"));
   app.use("/meet", require("./routes/meet"));
+  app.use("/self", require("./routes/self"));
 
   app.get("/", (req, res) => {
     res.send(

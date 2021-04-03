@@ -3,7 +3,7 @@ const { MongoClient } = require("mongodb"),
 
 var dbobj;
 module.exports = {
-  connectToDB: (callback) => {
+  connectToDB: (callback) => 
     MongoClient.connect(
       DBURL,
       { useNewUrlParser: true, useUnifiedTopology: true },
@@ -11,9 +11,7 @@ module.exports = {
         if (!err) dbobj = client.db(DBNAME);
         return callback(err, DBNAME);
       }
-    );
-  },
-  Users: () => {
-    return dbobj.collection("user");
-  },
+    ),
+  Users: () => dbobj.collection("user"),
+  Rooms: () => dbobj.collection("room")
 };

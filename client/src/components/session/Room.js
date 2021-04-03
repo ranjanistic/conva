@@ -26,7 +26,7 @@ class Room extends Component {
   }
 
   componentDidUpdate() {
-    if (!this.props.room.id) {
+    if (!this.props.room._id) {
       return this.props.history.push(get.DASHBOARD);
     }
     if(this.state.video){
@@ -47,7 +47,7 @@ class Room extends Component {
     console.log(nextProps,prevState);
     const { room, meet, hw:{cam,mic} } = nextProps;
     if (meet.active) {
-      return nextProps.history.push(get.meet.live(room.id));
+      return nextProps.history.push(get.meet.live(room._id));
     }
     return {...prevState, audio: mic.active, astream:mic.active?mic.stream:null, video:cam.active, vstream:cam.active?cam.stream:null };
   }

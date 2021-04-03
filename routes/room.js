@@ -1,35 +1,50 @@
 const express = require("express"),
-  room = express.Router();
+  room = express.Router(),
+  User = require("../models/user"),
+  Room = require("../models/room");
 
-room.post("/create", (req, res) => {
+room.post("/create", async (req, res) => {
+  const session = User.checkSession(req.headers.authorization);
+  if (!session) return res.json({ success: false });
+  const room = await Room.createNew({
+    title: req.body.title,
+    adminID: session.id,
+  });
   return res.json({
-    success: true,
-    room: {
-      id: "123456",
-      title: req.body.title,
-      people: [],
-      chats: [],
-    },
+    success: room?true:false,
+    room,
   });
 });
 
-room.post("/enter", (req, res) => {
+room.post("/enter", async (req, res) => {
+  const session = User.checkSession(req.headers.authorization);
+  if (!session) return res.json({ success: false });
+  const room = await Room.getByIDIfUser(req.body.roomID,session.id)
+  return res.json({success: room?true:false,room});
+});
+
+room.post("/receive", async(req, res) => {
+  const session = User.checkSession(req.headers.authorization);
+  if (!session) return res.json({ success: false });
+  const rooms = await Room.getListByUserID(session.id)
   return res.json({
     success: true,
-    room: {
-      id: req.body.roomID,
-      title: req.body.roomID,
-      people: [6, 5, 4, 3, 2, 1],
-      chats: [1, 2, 3, 4, 5, 6],
-    },
+    rooms
   });
 });
 
-room.post("/receive", (req, res) => {
-  return res.json({
-    success: true,
-    rooms: [1, 2, 3, 4, 5, 6],
-  });
+room.post("/leave", async(req, res) => {
+  const session = User.checkSession(req.headers.authorization);
+  if (!session) return res.json({ success: false });
+  const left = await Room.removePerson(req.body.roomID,session.id)
+  return res.json({success: left?true:false});
+});
+
+room.post("/remove", async(req, res) => {
+  const session = User.checkSession(req.headers.authorization);
+  if (!session) return res.json({ success: false });
+  const removed = await Room.removePerson(req.body.roomID,req.body.personID, req.body.block)
+  return res.json({success: removed?true:false});
 });
 
 module.exports = room;

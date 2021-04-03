@@ -9,7 +9,7 @@ const MeetRoute = ({ component: Component, auth, room, meet, ...rest }) => {
   <Route
     {...rest}
     render={props =>
-      (auth.isAuthenticated && room.id && meet.active)? (
+      (auth.isAuthenticated && room._id && meet.active)? (
         <Component {...props} />
       ) : (
         <Redirect to={get.DASHBOARD} />
