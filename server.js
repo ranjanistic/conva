@@ -1,13 +1,17 @@
 const express = require("express"),
   app = express(),
-  { handleCors, sessionTokenValid } = require("./validate"),
+  { handleCors } = require("./validate"),
   { connectToDB } = require("./db"),
   cors = require("cors"),
   helmet = require("helmet"),
   http = require("http"),
   io = require("socket.io"),
   https = require("https"),
-  fs = require("fs");
+  fs = require("fs"),
+
+  User = require("./models/user"),
+  Chat = require("./models/chat"),
+  People = require("./models/people");
 
 app.use(helmet());
 app.use(express.json());
@@ -28,6 +32,11 @@ const channel = {
     people: "people",
     stream: "stream",
   },
+  leaver:{
+      chat:"leavechat",
+      people:"leavepeople",
+      stream:"leavestream"
+  }
 };
 
 const tryHttps = (afterTry) => {
@@ -74,20 +83,49 @@ connectToDB((err, dbname) => {
     socket.on("connection", (client) => {
       console.log("socket connected");
       client.on(channel.provider.chat, (sessionToken, roomID) => {
-        if (sessionTokenValid(sessionToken)) {
+        const session = User.checkSession(sessionToken);
+        if (session) {
           console.log("Listening to chats of", roomID);
-          client.emit(channel.listener.chat, "First Message!");
+          client.emit(channel.listener.chat, Chat.joined(session.username,session.email));
+        } else console.log("Invalid session token", sessionToken);
+      });
+      client.on(channel.leaver.chat, (sessionToken, roomID) => {
+        const session = User.checkSession(sessionToken);
+        if (session) {
+          console.log("Leaving chat of", roomID);
         } else console.log("Invalid session token", sessionToken);
       });
       client.on(channel.provider.people, (sessionToken, roomID) => {
-        if (sessionTokenValid(sessionToken)) {
+        const session = User.checkSession(sessionToken);
+        if (session) {
           console.log("Listening to people of", roomID);
-          client.emit(channel.listener.people, "Welcome!");
+          client.emit(channel.listener.people, People.create(session.username,session.email,true));
         } else console.log("Invalid session token", sessionToken);
       });
-      client.on(channel.provider.stream, (sessionToken, roomID) => {
-        if (sessionTokenValid(sessionToken)) {
+      client.on(channel.leaver.people, (sessionToken, roomID) => {
+        const session = User.checkSession(sessionToken);
+        if (session) {
+          console.log("Leaving people of", roomID);
+          client.emit(channel.listener.people, People.create(session.username,session.email,false));
+        } else console.log("Invalid session token", sessionToken);
+      });
+      client.on(channel.provider.stream,async (sessionToken, roomID) => {
+        const session = User.checkSession(sessionToken);
+        if (session) {
           console.log("Listening to stream of", roomID);
+          let stream = await People.stream(session,roomID);
+          console.log(stream)
+          client.emit(channel.listener.stream, stream);
+        } else console.log("Invalid session token", sessionToken);
+      });
+      client.on(channel.leaver.stream, async (sessionToken, roomID) => {
+        const session = User.checkSession(sessionToken);
+        if (session) {
+          console.log("Leaving stream of", roomID);
+          let stream = await People.stream(session,roomID);
+          console.log(stream)
+          // emit gone stream
+          client.emit(channel.listener.stream, null, stream);
         } else console.log("Invalid session token", sessionToken);
       });
     });

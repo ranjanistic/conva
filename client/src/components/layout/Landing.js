@@ -2,87 +2,45 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {get} from "./../../paths/get";
+import { get } from "./../../paths/get"
+import icon from "../../graphics/icon.svg";
+import { Button } from "../elements/Button";
+import { Image } from "../elements/Image";
+import { Actions } from "../elements/Actions";
 
 class Landing extends Component {
-  getAuthHtml() {
-      return this.props.auth.isAuthenticated?(
-        <div>
-          <h4>
-            <b className="blue-text ">
-            Hey {this.props.auth.user.username}
-            </b>
-          </h4>
-          <p className="flow-text grey-text text-darken-1">
-            You're signed in.
-          </p>
-          <br />
-          <div className="col s6">
-            <Link
-              to={get.DASHBOARD}
-              className="btn btn-large waves-effect waves-light blue accent-3"
-              style={{
-                borderRadius: "3px",
-                fontFamily: "Questrial",
-              }}
-            >
-              Dashboard
-            </Link>
-          </div>
-        </div>
-      ):(
-        <div>
-          <h4>
-            <b className="blue-text ">
-            Conva
-            </b>
-          </h4>
-          <p className="flow-text grey-text text-darken-1">
-            Meetings made easy.
-          </p>
-          <br />
-          <div className="col s6">
-            <Link
-              to={get.auth.SIGNUP}
-              className="btn btn-large waves-effect waves-light blue accent-3"
-              style={{
-                borderRadius: "3px",
-                fontFamily: "Questrial",
-              }}
-            >
-            Signup
-            </Link>
-          </div>
-          <div className="col s6">
-            <Link
-              to={get.auth.LOGIN}
-              className="btn btn-large waves-effect white-text"
-              style={{
-                borderRadius: "3px",
-                letterSpacing: "1.5px",
-              }}
-            >
-            LogIn
-            </Link>
-          </div>
-        </div>
-      )
-  }
-
   render() {
-    let html = (
-      <div
-        style={{ height: "75vh", fontFamily: "Questrial" }}
-        className="container valign-wrapper"
-      >
-        <div className="row">
-        <div className="col s12 center-align">
-          {this.getAuthHtml()}
+    const {isAuthenticated:auth,user} = this.props.auth;
+    return (
+      <div className="w3-col secondary">
+        <nav className="w3-row navbar secondary">
+        <Link to={get.ROOT}>{Image({src:icon,alt:'Icon',width:40})}</Link>Conva
+          <span className="w3-right">{((auth)=>{
+            if(auth)
+              return (<Link to={get.DASHBOARD}>{Button.flat(user.username.split(' ')[0],_=>{},"secondary-text")}</Link>)
+            return (<><Link to={get.auth.LOGIN}>{Button.flat('Login')}</Link><Link to={get.auth.SIGNUP}>{Button.flat('Register',_=>{},"positive")}</Link></>)
+          })(auth)}</span>
+        </nav>
+        <br/>
+        <div className="w3-col w3-half w3-padding-small">
+        <div className="w3-row w3-padding text-primary">
+          <h1>Say hello to<br/> Conva.</h1>
         </div>
+        <div className="w3-row w3-padding text-secondary">
+          <h5>Join convameet now for a fluid meeting experience.</h5>
+        </div>
+        <div className="w3-row w3-padding">
+          <Link to={get.auth.SIGNUP}>{Actions(false,{
+          name:'Register',
+          
+        })}</Link>
+        </div>
+        </div>
+        <div className="w3-col w3-half w3-padding w3-center">
+          {Image({src:icon,alt:'Icon',width:"100%"})}
         </div>
       </div>
     );
-    return html;
   }
 }
 

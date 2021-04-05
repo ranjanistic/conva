@@ -5,7 +5,6 @@ import { Input } from "../elements/Input";
 import { inputType } from "../../utils/validator";
 import { Actions } from "../elements/Actions";
 import { connectToChat, disconnectFromChat } from "./Socket";
-import { Button } from "../elements/Button";
 
 class Chat extends Component {
   constructor() {
@@ -24,7 +23,7 @@ class Chat extends Component {
   }
   
   componentDidMount(){
-    connectToChat(this.props.room.id,(err,newchat)=>{
+    connectToChat(this.props.room._id,(err,newchat)=>{
       let chats = this.state.chats;
       chats.push(newchat);
       this.setState({chats})
@@ -32,7 +31,7 @@ class Chat extends Component {
   }
 
   componentWillUnmount(){
-    disconnectFromChat(this.props.room.id)
+    disconnectFromChat(this.props.room._id)
   }
 
   getAllChats=_=>this.setState({oldchats:this.props.room.chats});
@@ -42,18 +41,14 @@ class Chat extends Component {
     let chatview = [];
     if(oldchats.length){
       newchats = newchats.concat(oldchats)
-    } else {
-      chatview.push(
-        <div className="w3-padding-small w3-center" key={null}>
-          {Button.flat("Load older chats",this.getAllChats,"blue-text")}
-        </div>
-      )
     }
     console.log(newchats)
     newchats.forEach((chat, c) => {
       chatview.push(
-        <div className="w3-padding-small" key={c}>
-          {chat}
+        <div className="w3-row w3-padding-small" key={c}>
+          <div className="w3-col">
+          <span className="blue-text">{chat.time}:{chat.username}</span>:{chat.msg}
+          </div>
         </div>
       );
     });
@@ -86,7 +81,6 @@ class Chat extends Component {
                 type: this.input.type,
                 caption: this.input.caption,
                 onChange: this.onInputChange,
-                autoFocus:true
               })}
             </div>
             <div className="w3-col w3-third">

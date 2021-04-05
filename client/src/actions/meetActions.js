@@ -4,7 +4,6 @@ import { validJoinMeetingData } from "../utils/validator";
 import { REQ_ERRORS, MEET_JOINED, MEET_LEFT, INPUT_ERRORS } from "../utils/dispatchType";
 
 export const joinMeeting = (meetData) => (dispatch) => {
-  console.log(meetData);
   const result = validJoinMeetingData(meetData);
   if (!result.isValid) {
     dispatch({
@@ -30,7 +29,7 @@ export const joinMeeting = (meetData) => (dispatch) => {
 
 export const leaveMeeting = (userData) => (dispatch) => {
   dispatch(loading());
-  postData(post.meet.END, userData)
+  postData(post.meet.LEAVE, userData)
     .then((res) => {
       console.log(res);
       if (res.data.success) {

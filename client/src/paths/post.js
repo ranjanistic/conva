@@ -19,6 +19,6 @@ export const post = {
     },
     meet:{
         JOIN: `${MEET}/join`,
-        END: `${MEET}/end`,
+        LEAVE: `${MEET}/leave`,
     },
 }

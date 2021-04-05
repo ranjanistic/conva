@@ -145,13 +145,22 @@ class Dashboard extends Component {
   };
 
   getRoomsList(loading, rooms = []) {
-    if (!rooms.length || loading)
+    if (loading)
       return (
         <div
           className="w3-center w3-jumbo w3-padding w3-text-gray"
           style={{ marginTop: "30vh" }}
         >
-          {loading ? "No rooms yet.":Loading(120)}
+          {Loading(120)}
+        </div>
+      );
+    if(!rooms.length)
+      return (
+        <div
+          className="w3-center w3-jumbo w3-padding w3-text-gray"
+          style={{ marginTop: "30vh" }}
+        >
+          Create a room.
         </div>
       );
     let roombtns = [];

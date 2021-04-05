@@ -1,8 +1,8 @@
 :root {
   --primary: #ececec;
-  --primary-text: #161616;
+  --primary-text: #616060;
   --secondary: #ffffff;
-  --secondary-text: #000000;
+  --secondary-text: #202020;
   --positive: #2a53da;
   --positive-text: #ffffff;
   --negative: #be0e0e;
@@ -52,21 +52,33 @@
 }
 
 .primary{
-  background-color: var(--primary);
+  background-color: var(--primary) !important;
   color: var(--primary-text);
 }
+.text-primary{
+  color: var(--primary-text) !important;
+}
+.primary-text{
+  color: var(--primary) !important;
+}
 .positive,.positive:hover,.positive:active,.positive:focus{
-    background-color: var(--positive);
+    background-color: var(--positive) !important;
     color: var(--positive-text);
 }
 
 .negative{
-    background-color: var(--negative);
+    background-color: var(--negative) !important;
     color: var(--negative-text);
 }
 .secondary{
-    background-color: var(--secondary);
+    background-color: var(--secondary) !important;
     color: var(--secondary-text);
+}
+.text-secondary{
+    color: var(--secondary-text) !important;
+}
+.secondary-text{
+  color: var(--secondary) !important;
 }
 
 body {
@@ -75,7 +87,7 @@ body {
   color: var(--primary-text);
 }
 
-h4,h3,h2,h1,
+h5,h4,h3,h2,h1,
 button {
   font-family: 'Questrial', sans-serif;
 }
@@ -111,4 +123,10 @@ btn-flat{
 }
 a{
   color: var(--positive);
+}
+.transparent{
+  background: transparent !important;
+}
+.bottom-sheet{
+  height: 100vh;
 }

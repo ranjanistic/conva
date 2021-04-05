@@ -1,17 +1,9 @@
 const Joi = require("joi"),
   { Rooms } = require("../db"),
-  User = require("./user");
-const { validObjectId } = require("../validate");
+  User = require("./user"),
+  { validObjectId } = require("../validate");
 
 class Room {
-  blockModel = {
-    id:String,
-    email:String
-  }
-  requestModel = {
-    id:String,
-    email:String
-  }
   async createNew(room = { title: String, adminID: String }) {
     const { error, value } = Joi.object({
       title:Joi.string().min(2).max(100).required(),

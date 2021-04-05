@@ -13,6 +13,11 @@ const channel = {
         chat:"chatroom",
         people:"people",
         stream:"stream"
+    },
+    leaver:{
+        chat:"leavechat",
+        people:"leavepeople",
+        stream:"leavestream"
     }
 }
 
@@ -24,6 +29,7 @@ export const connectToChat=(roomID,callback)=>{
 
 export const disconnectFromChat=(roomID)=>{
     console.log("disconnecting chat",roomID)
+    socket.emit(channel.leaver.chat,sessionToken(),roomID);
     socket.removeAllListeners(channel.listener.chat);
 }
 
@@ -35,16 +41,18 @@ export const connectToPeople=(roomID,callback)=>{
 
 export const disconnectFromPeople=(roomID)=>{
     console.log("disconnecting people",roomID)
+    socket.emit(channel.leaver.people,sessionToken(),roomID);
     socket.removeAllListeners(channel.listener.people);
 }
 
 export const connectToStream=(roomID,callback)=>{
     console.log("connecting to stream", roomID)
-    socket.on(channel.listener.stream, newstream=>callback(null, newstream ));
+    socket.on(channel.listener.stream, (newstream=null,gonestream=null)=>callback(null, newstream, gonestream));
     socket.emit(channel.provider.stream,sessionToken(),roomID);
 }
 
 export const disconnectFromStream=(roomID)=>{
     console.log("disconnecting stream",roomID)
+    socket.emit(channel.leaver.stream,sessionToken(),roomID);
     socket.removeAllListeners(channel.listener.stream);
 }

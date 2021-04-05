@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { Input } from "../elements/Input";
 import { inputType } from "../../utils/validator";
 import { connectToPeople, disconnectFromPeople } from "./Socket";
-import { Button } from "../elements/Button";
 import { Toast } from "../elements/Toast";
 import { navigatorShare } from "../../actions/actions";
 
@@ -25,15 +24,16 @@ class People extends Component {
   }
 
   componentDidMount(){
-    connectToPeople(this.props.room.id,(err,activeperson)=>{
+    connectToPeople(this.props.room._id,(err,activeperson)=>{
       let activepeople = this.state.activepeople;
       activepeople.push(activeperson);
-      this.setState({activepeople:activepeople})
+      console.log(activepeople)
+      this.setState({activepeople})
     })
   }
 
   componentWillUnmount(){
-    disconnectFromPeople(this.props.room.id)
+    disconnectFromPeople(this.props.room._id)
   }
 
   getAllMembers=_=>this.setState({members:this.props.room.people});
@@ -43,18 +43,17 @@ class People extends Component {
     if(allmembers.length){
       //todo: check if allmembers contain any activepeople & prevent duplicacy.
       activepeople = activepeople.concat(allmembers)
-    } else {
-      peopleview.push(
-        <div className="w3-padding-small w3-center" key={null}>
-          {Button.flat("Show all members",this.getAllMembers,"blue-text")}
-        </div>
-      )
     }
     console.log(activepeople)
     activepeople.forEach((person, p) => {
       peopleview.push(
-        <div className="w3-padding-small" key={p}>
-          {person}
+        <div className="w3-row w3-padding-small" key={p}>
+          <div className="w3-col w3-half">
+          {person.username}
+          </div>
+          <div className="w3-col w3-half">
+            {person.online?'online':'offline'} since {person.join}
+          </div>
         </div>
       );
     });
@@ -87,7 +86,6 @@ class People extends Component {
                 type: this.input.type,
                 caption: this.input.caption,
                 onChange: this.onInputChange,
-                autoFocus:true
               })}
             </div>
             <div className="w3-col w3-third w3-padding">

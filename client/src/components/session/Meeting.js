@@ -2,42 +2,53 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { leaveMeeting } from "../../actions/meetActions";
+import { toggleCamera, toggleMic } from "../../actions/hardware";
 import { get } from "../../paths/get";
 import { Icon } from "../elements/Icon";
 import Chat from "./Chat";
+import M from "materialize-css";
+import People from "./People";
+import { Dialog } from "../elements/Dialog";
+import { connectToStream, disconnectFromStream } from "./Socket";
 
 class Meeting extends Component {
   constructor() {
     super();
     this.initialState = {
       room: {},
-      local:{
-        video:false,
-        audio:false,
-        vstream:null,
-        astream:null
+      streams: [],
+      local: {
+        video: false,
+        audio: false,
+        vstream: null,
+        astream: null,
       },
-      remote:[],
-      actions: {
-        cam: false,
-        mic: false,
-        chatbox: false,
-        active: true,
-      },
-    }
+      remote: [],
+    };
     this.state = this.initialState;
+    this.videos = {};
+    this.audios = {};
+    this.iceServers = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' },
+        { urls: 'stun:stun4.l.google.com:19302' },
+      ],
+    }
   }
 
   toggleCam = (e) => {
     e.preventDefault();
     console.log(this.state);
-    this.props.toggleCamera(!this.state.local.video,this.state.local.vstream);
+    this.props.toggleCamera(!this.state.local.video, this.state.local.vstream);
   };
 
   toggleMic = (e) => {
     e.preventDefault();
     console.log(this.state);
-    this.props.toggleMic(!this.state.local.audio,this.state.local.astream);
+    this.props.toggleMic(!this.state.local.audio, this.state.local.astream);
   };
 
   leave = (e) => {
@@ -45,70 +56,121 @@ class Meeting extends Component {
     this.props.leaveMeeting();
   };
 
-  componentDidUpdate(prevProps,prevState){
+  componentDidUpdate(prevProps, prevState) {
     console.log(this.state);
+    if (this.state.local.video) {
+      this.selfVideo.srcObject = this.state.local.vstream;
+    }
+    if (this.state.local.audio) {
+      // this.audio.srcObject = this.state.local.astream
+    }
   }
-  
+
   componentDidMount() {
     console.log(this.props);
-    if(!this.props.auth.user.verified){
+    if (!this.props.auth.user.verified) {
       return this.props.history.push(get.auth.VERIFY);
     }
-    const {hw:{cam,mic}, room} = this.props;
-    this.setState({ ...this.initialState,room, local:{video:cam.active,audio:mic.active,vstream:cam.stream,astream:mic.stream}});
+    const {
+      hw: { cam, mic },
+      room,
+    } = this.props;
+    this.setState({
+      ...this.initialState,
+      room,
+      local: {
+        video: cam.active,
+        audio: mic.active,
+        vstream: cam.stream,
+        astream: mic.stream,
+      },
+    });
+    connectToStream(this.props.room._id, (err, newstream, gonestream) => {
+      let streams = this.state.streams;
+      if (newstream) {
+        streams.push(newstream);
+        
+      }
+      if (gonestream) {
+        let newstreams = [];
+        streams.forEach((stream) => {
+          if (stream.id !== gonestream.id) newstreams.push(stream);
+        });
+        streams = newstreams;
+      }
+      this.setState({ streams });
+    });
+  }
+
+  componentWillUnmount() {
+    disconnectFromStream(this.props.room._id);
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     console.log(nextProps);
-    const { room, meet } = nextProps;
+    const {
+      room,
+      meet,
+      hw: { cam, mic },
+    } = nextProps;
     if (!meet.active) {
       return this.props.history.push(get.room.self(room._id));
     }
-    return prevState;
+    return {
+      ...prevState,
+      local: {
+        audio: mic.active,
+        astream: mic.active ? mic.stream : null,
+        video: cam.active,
+        vstream: cam.active ? cam.stream : null,
+      },
+    };
   }
 
-  meetActions = () => {
+  meetActions = (local) => {
     let actions = [];
     const allacts = [
       {
-        content: Icon(this.getToggleViewById("cam", this.state.local.video), {
+        content: Icon(local.video ? "videocam" : "videocam_off", {
           classnames: "blue-text",
         }),
-        title:"Toggle Camera",
+        title: "Toggle Camera",
         classnames: "white w3-right",
-        onclick: this.toggle,
+        onclick: this.toggleCam,
       },
       {
-        content: Icon(this.getToggleViewById("mic", this.state.local.audio), {
+        content: Icon(local.audio ? "mic" : "mic_off", {
           classnames: "blue-text",
         }),
-        title:"Toggle Mic",
+        title: "Toggle Mic",
         classnames: "white w3-center",
+        onclick: this.toggleMic,
       },
       {
         content: Icon("chat"),
         classnames: "blue w3-center",
-        title:"Chat Toggle",
+        title: "Chat Toggle",
         onclick: this.toggleChatBox,
       },
       {
-        content: Icon("more_horiz"),
+        content: Icon("people"),
         classnames: "w3-center",
-        title:"Room Info Toggle",
+        title: "Room Info Toggle",
         onclick: this.toggleAbout,
       },
       {
         content: Icon("call_end"),
         classnames: "red w3-left",
-        title:"Leave Meeting",
+        title: "Leave Meeting",
         onclick: this.leave,
       },
     ];
-    allacts.forEach((action) => {
+    allacts.forEach((action, a) => {
       actions.push(
         <div
           style={{ width: `${100 / allacts.length}%` }}
           className="w3-col w3-padding-small w3-center"
+          key={a}
         >
           <button
             title={action.title}
@@ -123,11 +185,11 @@ class Meeting extends Component {
     return <span>{actions}</span>;
   };
 
-  getChildernFrames() {
+  getChildernFrames(streams) {
     let children = [];
-    [1, 2, 3, 4].forEach((e) => {
+    streams.forEach((stream) => {
       children.push(
-        <div className="w3-padding w3-row shadow" key={e}>
+        <div className="w3-padding w3-row shadow" key={stream.id}>
           <div
             style={{
               height: "30vh",
@@ -135,16 +197,25 @@ class Meeting extends Component {
               padding: "0",
               borderRadius: "8px",
             }}
-            className="btn black waves-effect waves-light"
+            className="btn black waves-effect"
           >
             <video
               height="100%"
               width="100%"
               autoPlay="autoplay"
+              id={stream.id + "video"}
               ref={(video) => {
-                this.video = video;
+                this.videos[stream.id] = video;
               }}
             ></video>
+            <audio
+              id={stream.id + "audio"}
+              ref={(audio) => {
+                this.audios[stream.id] = audio;
+              }}
+              autoPlay="autoPlay"
+              hidden={true}
+            ></audio>
           </div>
         </div>
       );
@@ -153,16 +224,18 @@ class Meeting extends Component {
   }
 
   toggleChatBox = (e) => {
-    document.getElementById("children").hidden = document.getElementById(
-      "chat"
-    ).hidden;
-    document.getElementById("chat").hidden = !document.getElementById("chat")
-      .hidden;
+    let inst = M.Modal.init(this.Chat);
+    inst.open();
   };
 
-  toggleAbout = (e) => {};
+  toggleAbout = (e) => {
+    let inst = M.Modal.init(this.About);
+    inst.open();
+  };
+
   render() {
-    const { room } = this.state;
+    const { room, streams, local } = this.state,
+      { user } = this.props.auth;
     return (
       <div className="w3-row" style={{ height: "100vh" }}>
         <div className="w3-col w3-twothird" style={{ height: "100vh" }}>
@@ -171,6 +244,17 @@ class Meeting extends Component {
               className="black white-text"
               style={{ width: "100%", height: "100%" }}
               id="parent"
+              autoPlay="autoplay"
+              ref={(video) => {
+                if (
+                  streams.some(
+                    (stream) =>
+                      String(stream.id) === String(user.id) && stream.admin
+                  )
+                )
+                  this.selfVideo = video;
+                else this.video = video;
+              }}
             ></video>
           </div>
           <div className="w3-row" style={{ height: "15vh" }}>
@@ -180,10 +264,7 @@ class Meeting extends Component {
             >
               <h3 style={{ paddingLeft: "1rem" }}>{room.title}</h3>
             </div>
-            <div
-              className="w3-col w3-half red"
-              style={{ height: "15vh" }}
-            ></div>
+            <div className="w3-col w3-half" style={{ height: "15vh" }}></div>
           </div>
         </div>
 
@@ -193,35 +274,41 @@ class Meeting extends Component {
             id="actions"
             style={{ height: "10vh" }}
           >
-            {this.meetActions()}
+            {this.meetActions(local)}
           </div>
           <div
             className="w3-row secondary"
             id="children"
             style={{ overflowY: "scroll", height: "90vh" }}
-            hidden={false}
           >
-            {this.getChildernFrames()}
-          </div>
-          <div
-            className="w3-row secondary"
-            id="chat"
-            style={{ overflowY: "scroll", height: "90vh" }}
-            hidden={true}
-          >
-            <Chat></Chat>
+            {this.getChildernFrames(streams)}
           </div>
         </div>
+        {Dialog.custom({
+          ref: (Chat) => {
+            this.Chat = Chat;
+          },
+          classes: "bottom-sheet transparent",
+          content: (
+            <div style={{ width: "fit-content", height: "100%" }}>
+              <Chat />
+            </div>
+          ),
+        })}
+        {Dialog.custom({
+          ref: (About) => {
+            this.About = About;
+          },
+          classes: "bottom-sheet transparent",
+          content: (
+            <div style={{ width: "fit-content", height: "100%" }}>
+              <People />
+            </div>
+          ),
+        })}
       </div>
     );
   }
-
-  toggle = (e) => {
-    console.log(e.target.id);
-    this.setState({
-      actions: { [e.target.id]: !this.state.actions[e.target.id] },
-    });
-  };
 
   getToggleViewById(id, on = false) {
     switch (id) {
@@ -236,6 +323,8 @@ class Meeting extends Component {
 }
 
 Meeting.propTypes = {
+  toggleMic: PropTypes.func.isRequired,
+  toggleCamera: PropTypes.func.isRequired,
   leaveMeeting: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   room: PropTypes.object.isRequired,
@@ -250,4 +339,8 @@ const mapStateToProps = (state) => ({
   hw: state.hw,
 });
 
-export default connect(mapStateToProps, { leaveMeeting })(Meeting);
+export default connect(mapStateToProps, {
+  leaveMeeting,
+  toggleMic,
+  toggleCamera,
+})(Meeting);

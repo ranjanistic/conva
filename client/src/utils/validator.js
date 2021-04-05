@@ -213,8 +213,8 @@ export const filterSignupUser = (
   password: String(data.password) || "",
 });
 
-export const filterMeetJoinData = (data = { id: String }) => ({
-  roomID: String(data.id),
+export const filterMeetJoinData = (data = { id: String, _id:String }) => ({
+  roomID: String(data.id||data._id),
 });
 
 export const filterRoomCreateData = (data = {}) => ({
