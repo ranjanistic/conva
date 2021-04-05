@@ -3,11 +3,14 @@ import App from './App';
 
 test('renders login link', () => {
   render(<App />);
-  const linkElement = screen.getByText(/register/i);
-  expect(linkElement).toBeInTheDocument();
+  screen.getAllByText(/register/i).forEach((elem)=>{
+    expect(elem).toBeInTheDocument();
+  })
 });
 
 test('renders signup link', () => {
   render(<App />);
-  expect(screen.getByText(/login/i)).toBeInTheDocument();
+  screen.getAllByText(/login/i).forEach((elem)=>{
+    expect(elem).toBeInTheDocument();
+  })
 });
