@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { get } from "./paths/get";
-import {setAuthToken} from "./utils/setAuthToken";
+import Icon from "./graphics/icon.svg";
+import { Link } from "react-router-dom";
+import { Actions } from "./components/elements/Actions";
+import { Image } from "./components/elements/Image";
+import { setAuthToken } from "./utils/setAuthToken";
 import { setUser, logoutUser } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./utils/store";
@@ -25,8 +29,8 @@ import { refer } from "./actions/actions";
 import { ToastContainer } from "react-toastify";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import "react-toastify/dist/ReactToastify.css";
-import "./fonts/Jost.css"
-import "./fonts/Questrial.css"
+import "./fonts/Jost.css";
+import "./fonts/Questrial.css";
 import "./material-icons.css";
 import "./w3.min.css";
 import "./materialize.min.css";
@@ -67,23 +71,68 @@ const oauthSuccessView = (user) => {
   );
 };
 
+const Page404 = () => (
+  <div className="w3-col secondary" style={{ height: "100vh" }}>
+    <nav className="w3-row navbar secondary">
+      <Link to={get.ROOT}>{Image({ src: Icon, alt: "Icon", width: 40 })}</Link>
+      Conva
+    </nav>
+    {((_) => {
+      let br = [],
+        i = 0;
+      while (i < 3) {
+        br.push(<br key={i} />);
+        i++;
+      }
+      return br;
+    })()}
+    <div className="w3-col w3-half w3-padding">
+      <div className="w3-row w3-padding text-primary">
+        <h1>
+          404
+          <br />
+          Not found.
+        </h1>
+      </div>
+      <div className="w3-row w3-padding text-secondary">
+        <h5>
+          You've landed at a non existing location. Don't worry, we've got a
+          homepage for you.
+        </h5>
+      </div>
+      <div className="w3-row w3-padding">
+        <Link to={get.ROOT}>{Actions(false, { name: "Home" })}</Link>
+      </div>
+      <br />
+      <div className="w3-row w3-padding text-primary">
+        <span>Conva & Convameet are synonyms of the same meeting service.</span>
+      </div>
+    </div>
+  </div>
+);
+
 class App extends Component {
   render() {
     return (
       <Provider store={store}>
         <Router>
           <div className="App">
-            <Route exact path={get.ROOT} component={Landing} />
-            <Route path={get.auth.signup()} component={Register} />
-            <Route path={get.auth.login()} component={Login} />
-            <Route exact path={get.auth.RECOVERY} component={Recovery} />
             <Switch>
+              <Route exact path={get.ROOT} component={Landing} />
+              <Route path={get.auth.signup()} component={Register} />
+              <Route path={get.auth.login()} component={Login} />
+              <Route exact path={get.auth.RECOVERY} component={Recovery} />
               <AuthRoute exact path={get.DASHBOARD} component={Dashboard} />
               <AuthRoute exact path={get.ACCOUNT} component={Account} />
-              <AuthRoute exact path={get.auth.VERIFY} component={Verification} />
+              <AuthRoute
+                exact
+                path={get.auth.VERIFY}
+                component={Verification}
+              />
               <RoomRoute path={get.room.self()} component={Room} />
               <MeetRoute path={get.meet.live()} component={Meeting} />
               <Route path={get.OAUTH.LOGIN} children={<Oauth />} />
+              <Route component={Page404} />
             </Switch>
             <ToastContainer
               position="bottom-left"

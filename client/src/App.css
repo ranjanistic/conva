@@ -81,6 +81,12 @@
   color: var(--secondary) !important;
 }
 
+nav{
+  top:0;
+  position: fixed;
+  z-index: 10;
+}
+
 body {
   font-family: "Questrial", sans-serif;
   background-color: var(--primary);
