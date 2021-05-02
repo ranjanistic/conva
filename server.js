@@ -8,7 +8,6 @@ const express = require("express"),
   io = require("socket.io"),
   https = require("https"),
   fs = require("fs"),
-
   User = require("./models/user"),
   Chat = require("./models/chat"),
   People = require("./models/people");
@@ -32,11 +31,11 @@ const channel = {
     people: "people",
     stream: "stream",
   },
-  leaver:{
-      chat:"leavechat",
-      people:"leavepeople",
-      stream:"leavestream"
-  }
+  leaver: {
+    chat: "leavechat",
+    people: "leavepeople",
+    stream: "leavestream",
+  },
 };
 
 const tryHttps = (afterTry) => {
@@ -51,11 +50,14 @@ const tryHttps = (afterTry) => {
       return http.createServer(app);
     }
   })();
-  return afterTry(server, io(server, {
-    cors: {
-      origin: handleCors,
-    },
-  }));
+  return afterTry(
+    server,
+    io(server, {
+      cors: {
+        origin: handleCors,
+      },
+    })
+  );
 };
 
 connectToDB((err, dbname) => {
@@ -86,7 +88,10 @@ connectToDB((err, dbname) => {
         const session = User.checkSession(sessionToken);
         if (session) {
           console.log("Listening to chats of", roomID);
-          client.emit(channel.listener.chat, Chat.joined(session.username,session.email));
+          client.emit(
+            channel.listener.chat,
+            Chat.joined(session.username, session.email)
+          );
         } else console.log("Invalid session token", sessionToken);
       });
       client.on(channel.leaver.chat, (sessionToken, roomID) => {
@@ -99,22 +104,28 @@ connectToDB((err, dbname) => {
         const session = User.checkSession(sessionToken);
         if (session) {
           console.log("Listening to people of", roomID);
-          client.emit(channel.listener.people, People.create(session.username,session.email,true));
+          client.emit(
+            channel.listener.people,
+            People.create(session.username, session.email, true)
+          );
         } else console.log("Invalid session token", sessionToken);
       });
       client.on(channel.leaver.people, (sessionToken, roomID) => {
         const session = User.checkSession(sessionToken);
         if (session) {
           console.log("Leaving people of", roomID);
-          client.emit(channel.listener.people, People.create(session.username,session.email,false));
+          client.emit(
+            channel.listener.people,
+            People.create(session.username, session.email, false)
+          );
         } else console.log("Invalid session token", sessionToken);
       });
-      client.on(channel.provider.stream,async (sessionToken, roomID) => {
+      client.on(channel.provider.stream, async (sessionToken, roomID) => {
         const session = User.checkSession(sessionToken);
         if (session) {
           console.log("Listening to stream of", roomID);
-          let stream = await People.stream(session,roomID);
-          console.log(stream)
+          let stream = await People.stream(session, roomID);
+          console.log(stream);
           client.emit(channel.listener.stream, stream);
         } else console.log("Invalid session token", sessionToken);
       });
@@ -122,8 +133,8 @@ connectToDB((err, dbname) => {
         const session = User.checkSession(sessionToken);
         if (session) {
           console.log("Leaving stream of", roomID);
-          let stream = await People.stream(session,roomID);
-          console.log(stream)
+          let stream = await People.stream(session, roomID);
+          console.log(stream);
           // emit gone stream
           client.emit(channel.listener.stream, null, stream);
         } else console.log("Invalid session token", sessionToken);
