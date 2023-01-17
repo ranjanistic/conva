@@ -2,7 +2,7 @@ name: Backend CI & CD
 
 on:
   push:
-    branches: [ main, beta ]
+    branches: [ none ]
     paths-ignore:
       - "client/**"
       - "test/**"
