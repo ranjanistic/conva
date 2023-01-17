@@ -6,7 +6,7 @@
   "scripts": {
     "env": "node env.js",
     "heroku-prebuild": "npm install pm2 -g",
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start": "pm2 start ecosystem.config.js --env production",
     "server": "nodemon server",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -52,6 +52,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.4",
     "nodemailer": "^6.6.0",
+    "pm2": "^4.5.4",
     "socket.io": "^4.0.1"
   },
   "devDependencies": {
@@ -60,8 +61,7 @@
     "cz-conventional-changelog": "^3.2.0",
     "es6-promisify": "^6.1.1",
     "mocha": "^8.2.1",
-    "nodemon": "^2.0.7",
-    "pm2": "^4.5.4"
+    "nodemon": "^2.0.7"
   },
   "config": {
     "commitizen": {
